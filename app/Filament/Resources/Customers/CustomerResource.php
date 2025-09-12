@@ -21,6 +21,7 @@ class CustomerResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $label = 'Customer';
     protected static ?string $navigationLabel = 'Customers';
     protected static ?string $pluralLabel = 'Customers';
     protected static ?string $slug = 'customers';
@@ -51,8 +52,8 @@ class CustomerResource extends Resource
     {
         return [
             'index' => ListCustomers::route('/'),
-            'create' => CreateCustomer::route('/create'),
-            'edit' => EditCustomer::route('/{record}/edit'),
+            // 'create' => CreateCustomer::route('/create'),
+            // 'edit' => EditCustomer::route('/{record}/edit'),
         ];
     }
 }
