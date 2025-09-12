@@ -14,6 +14,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 
 class CustomerResource extends Resource
 {
@@ -34,6 +36,11 @@ class CustomerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return CustomerForm::configure($schema);
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    {
+        return $record->first_name . ' ' . $record->last_name;
     }
 
     public static function table(Table $table): Table
