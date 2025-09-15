@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Interfaces\AuthInterface;
 
 class AuthController extends Controller
 {
+    protected $authRepository;
+
+    public function __construct(AuthInterface $authRepository)
+    {
+        $this->authRepository = $authRepository;
+    }
+
     /**
      * Handle an authentication attempt.
      *
@@ -18,17 +22,11 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $userData = $this->authRepository->login($request);
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw new AuthenticationException("The provided credentials are incorrect.");
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return $this->sendApiResponse(true, 'Logged in successfully', [
-            'user' => new UserResource($user),
-            'token' => $token,
+        return $this->sendApiResponse(true, __('messages.login'), [
+            'user' => new UserResource($userData['user']),
+            'token' => $userData['token'],
         ], 200);
     }
 }
