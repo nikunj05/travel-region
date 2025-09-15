@@ -2,6 +2,7 @@
 
 return [
     'login' => 'Login successful',
+    'register' => 'Registration successful',
     'unauthorized' => 'Unauthorized.',
     'catch' => 'Something went wrong!.',
     'record_not_found' => 'Record not found.',
@@ -13,4 +14,5 @@ return [
     'validation_error' => 'There were some errors with your input.',
     'profile.update' => 'Profile updated successfully.',
     'reset_password' => 'Password reset link has been sent to your email.',
+    'invalid_or_expired_token' => 'The token is invalid or has expired. Please login again.',
 ];

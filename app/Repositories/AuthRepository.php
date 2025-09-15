@@ -3,9 +3,12 @@
 namespace App\Repositories;
 
 use App\Interfaces\AuthInterface;
+use App\Jobs\SendResetPasswordMail;
+use App\Models\PasswordReset;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthRepository implements AuthInterface
 {
@@ -25,5 +28,89 @@ class AuthRepository implements AuthInterface
             'user' => $user,
             'token' => $token,
         ];
+    }
+
+    /**
+     * Registers a new user by validating input and storing the user data.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object.
+     * @return \App\Models\User The created user.
+     */
+    public function register($data)
+    {
+        $validated = $data->validated();
+
+        $user = User::create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'country_code' => $validated['country_code'],
+            'mobile' => $validated['mobile'],
+        ]);
+
+        $user->assignRole('customer');
+
+        return $user;
+    }
+
+    /**
+     * Logs out the authenticated user by deleting their tokens.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object containing the authenticated user.
+     * @return void
+     */
+    public function logout($request)
+    {
+        return $request->user()->currentAccessToken()->delete();
+    }
+
+    /**
+     * Sends a password reset link to the user's email.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object containing the user's email.
+     * @return string The URL of the reset password page.
+     */
+    public function sendResetPasswordLink($request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        $token = Str::random(60);
+
+        PasswordReset::updateOrCreate([
+            'email' => $user->email
+        ], [
+            'token' => Hash::make($token),
+            'created_at' => now()
+        ]);
+
+        $resetUrl = env('FRONTEND_URL')."reset-password/$token?email=$user->email";
+
+        dispatch(new SendResetPasswordMail($user, $resetUrl));
+
+        return $resetUrl;
+    }
+
+    /**
+     * Resets the user's password after validating the token.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object containing email, token, and new password.
+     * @return void
+     *
+     * @throws AuthenticationException If the token is invalid or expired.
+     */
+    public function resetPassword($request)
+    {
+        $resetRequest = PasswordReset::where('email', $request->email)->first();
+
+        if (! $resetRequest || ! Hash::check($request->token, $resetRequest->token)) {
+            throw new AuthenticationException(__('messages.invalid_or_expired_token'));
+        }
+
+        User::where('email', $request->email)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return PasswordReset::where('email', $request->email)->delete();
     }
 }
