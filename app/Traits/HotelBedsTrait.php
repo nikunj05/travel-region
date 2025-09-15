@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Http;
 
 trait HotelBedsTrait
 {
+    protected $baseUrl = 'https://api.test.hotelbeds.com';
+    protected $version = '1.0';
+
     /**
      * Generate HotelBeds API signature
      *
@@ -13,8 +16,8 @@ trait HotelBedsTrait
      */
     protected function generateSignature(): string
     {
-        $apiKey = env('HOTEL_BEDS_API_KEY');   // store in config/services.php
-        $secret = env('HOTEL_BEDS_SECRET');    // store in config/services.php
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+        $secret = env('HOTEL_BEDS_SECRET');
 
         $timestamp = time(); // current timestamp in seconds
         $rawString = $apiKey . $secret . $timestamp;
@@ -36,7 +39,7 @@ trait HotelBedsTrait
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
-        ])->post("https://api.test.hotelbeds.com/hotel-api/1.0/hotels", [
+        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", [
                 'stay' => [
                     'checkIn' => $request->check_in,
                     'checkOut' => $request->check_out
@@ -75,7 +78,7 @@ trait HotelBedsTrait
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
-        ])->get("https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels/{$hotelCode}/details", [
+        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
             'language' => strtoupper($language)
         ]);
     }
