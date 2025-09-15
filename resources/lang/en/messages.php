@@ -15,4 +15,6 @@ return [
     'profile.update' => 'Profile updated successfully.',
     'reset_password' => 'Password reset link has been sent to your email.',
     'invalid_or_expired_token' => 'The token is invalid or has expired. Please login again.',
+    'password_incorrect' => 'Old password is incorrect.',
+    'password_change' => 'Password has been changed successfully.',
 ];

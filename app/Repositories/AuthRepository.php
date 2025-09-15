@@ -7,6 +7,7 @@ use App\Jobs\SendResetPasswordMail;
 use App\Models\PasswordReset;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -112,5 +113,27 @@ class AuthRepository implements AuthInterface
         ]);
 
         return PasswordReset::where('email', $request->email)->delete();
+    }
+
+    /**
+     * Changes the authenticated user's password after verifying the old password.
+     *
+     * @param  \Illuminate\Http\Request  $request  The request object containing the old and new passwords.
+     * @return bool True if the password is successfully changed.
+     *
+     * @throws AuthenticationException If the old password is incorrect.
+     */
+    public function changePassword($request)
+    {
+        $user = User::find(Auth::id());
+
+        if (! Hash::check($request->old_password, $user->password)) {
+            throw new AuthenticationException(__('messages.password_incorrect'));
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return true;
     }
 }

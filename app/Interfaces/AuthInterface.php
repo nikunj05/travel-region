@@ -13,4 +13,6 @@ interface AuthInterface
     public function sendResetPasswordLink($data);
 
     public function resetPassword($data);
+
+    public function changePassword($data);
 }

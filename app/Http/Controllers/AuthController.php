@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
@@ -94,5 +95,18 @@ class AuthController extends Controller
         $this->authRepository->resetPassword($request);
 
         return $this->sendApiResponse(true, __('messages.reset_password_msg'), [], 200);
+    }
+
+    /**
+     * Handle change password.
+     *
+     * @param  ChangePasswordRequest  $request  indicate password change successfully flow.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $this->authRepository->changePassword($request);
+
+        return $this->sendApiResponse(true, __('messages.password_change'), [], 200);
     }
 }
