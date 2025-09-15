@@ -20,4 +20,7 @@ return [
     'hotel' => [
         'fetched' => 'Hotels fetched successfully.',
     ],
+    'blog' => [
+        'fetched' => 'Blogs fetched successfully.',
+    ],
 ];
