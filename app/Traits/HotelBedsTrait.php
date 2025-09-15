@@ -54,7 +54,29 @@ trait HotelBedsTrait
                     'radius' => 50,
                     'unit' => 'km'
                 ],
-                'language' => $request->language,
+                'language' => strtolower($request->language),
             ]);
+    }
+
+    /**
+     * Get Hotel Details from HotelBeds API
+     *
+     * @param Request $request
+     * @param string $hotelCode
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function getHotelDetails($request, string $hotelCode)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $language = $request->language ?? 'eng';
+
+        return Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->get("https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels/{$hotelCode}/details", [
+            'language' => strtoupper($language)
+        ]);
     }
 }

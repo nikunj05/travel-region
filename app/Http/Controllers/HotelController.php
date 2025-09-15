@@ -10,6 +10,12 @@ class HotelController extends Controller
 {
     use HotelBedsTrait;
 
+    /**
+     * Handle the incoming request to search for hotels.
+     *
+     * @param SearchHotelRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(SearchHotelRequest $request)
     {
         try {
@@ -21,6 +27,34 @@ class HotelController extends Controller
                     'checkIn' => $response->json()['hotels']['checkIn'],
                     'total' => $response->json()['hotels']['total'],
                     'checkOut' => $response->json()['hotels']['checkOut']
+                ]);
+            }
+
+            return $this->sendApiResponse(false, __('messages.catch'), [
+                'error' => $response->json()
+            ], $response->status());
+
+        } catch (\Exception $e) {
+            return $this->sendApiResponse(false, __('messages.catch'), [
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get details of a specific hotel by its code.
+     *
+     * @param string $hotelCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(Request $request, string $hotelCode)
+    {
+        try {
+            $response = $this->getHotelDetails($request, $hotelCode);
+
+            if ($response->successful()) {
+                return $this->sendApiResponse(true, __('messages.hotel.fetched'), [
+                    'hotel' => $response->json()['hotel']
                 ]);
             }
 
