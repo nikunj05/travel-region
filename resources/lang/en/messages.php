@@ -17,4 +17,7 @@ return [
     'invalid_or_expired_token' => 'The token is invalid or has expired. Please login again.',
     'password_incorrect' => 'Old password is incorrect.',
     'password_change' => 'Password has been changed successfully.',
+    'hotel' => [
+        'fetched' => 'Hotels fetched successfully.',
+    ],
 ];
