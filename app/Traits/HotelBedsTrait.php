@@ -16,8 +16,8 @@ trait HotelBedsTrait
      */
     protected function generateSignature(): string
     {
-        $apiKey = env('HOTEL_BEDS_API_KEY');   // store in config/services.php
-        $secret = env('HOTEL_BEDS_SECRET');    // store in config/services.php
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+        $secret = env('HOTEL_BEDS_SECRET');
 
         $timestamp = time(); // current timestamp in seconds
         $rawString = $apiKey . $secret . $timestamp;
