@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PaginationResource;
 use App\Http\Resources\TestimonialResource;
 use App\Models\Testimonial;
-use Illuminate\Http\Request;
-use PHPUnit\Event\Code\Test;
 
 class TestimonialController extends Controller
 {
