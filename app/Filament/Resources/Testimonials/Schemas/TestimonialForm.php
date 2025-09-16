@@ -30,6 +30,8 @@ class TestimonialForm
                         // next rows, full-width
                         FileUpload::make('photo')
                             ->required()
+                            ->image()
+                            ->imageEditor()
                             ->directory('testimonials') // stored inside storage/app/public/testimonials
                             ->maxSize(2048) // 2 MB
                             ->disk('public')
