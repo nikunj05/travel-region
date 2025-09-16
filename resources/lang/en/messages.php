@@ -19,8 +19,14 @@ return [
     'password_change' => 'Password has been changed successfully.',
     'hotel' => [
         'fetched' => 'Hotels fetched successfully.',
+        'single_fetched' => 'Hotel fetched successfully.',
     ],
     'blog' => [
         'fetched' => 'Blogs fetched successfully.',
+        'single_fetched' => 'Blog fetched successfully.',
+    ],
+    'testimonial' => [
+        'fetched' => 'Testimonials fetched successfully.',
+        'single_fetched' => 'Testimonial fetched successfully.',
     ],
 ];

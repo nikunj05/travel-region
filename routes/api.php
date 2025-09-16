@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TestimonialController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')
@@ -23,6 +24,7 @@ Route::prefix('v1')
     });
 
     Route::resource('blogs', BlogController::class)->only(['index', 'show']);
+    Route::resource('testimonials', TestimonialController::class)->only(['index', 'show']);
 
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
 
