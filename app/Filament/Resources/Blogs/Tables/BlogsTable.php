@@ -16,9 +16,6 @@ class BlogsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('image')
-                    ->label('Thumbnail')
-                    ->square(), // keeps uniform ratio
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('is_featured')
                     ->label('Featured')

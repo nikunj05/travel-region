@@ -37,6 +37,10 @@ class BlogForm
                         ->required()
                         ->directory('blogs') // stored inside storage/app/public/blogs
                         ->maxSize(2048) // 2 MB
+                        ->disk('public')
+                        ->visibility('public')
+                        ->downloadable()
+                        ->previewable(true)
                         ->openable()
                         ->columnSpan(12),
 
