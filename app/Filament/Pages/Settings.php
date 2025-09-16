@@ -10,6 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -36,27 +37,30 @@ class Settings extends Page
         return $schema
             ->components([
                 Form::make([
-                    FileUpload::make('logo')
-                        ->required()
-                        ->directory('settings')
-                        ->maxSize(2048)
-                        ->disk('public')
-                        ->visibility('public')
-                        ->downloadable()
-                        ->previewable(true)
-                        ->openable()
-                        ->columnSpan(6),
+                    Grid::make(12)
+                        ->schema([
+                            FileUpload::make('logo')
+                                ->required()
+                                ->directory('settings')
+                                ->maxSize(2048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(6),
 
-                    FileUpload::make('favicon')
-                        ->required()
-                        ->directory('settings')
-                        ->maxSize(2048)
-                        ->disk('public')
-                        ->visibility('public')
-                        ->downloadable()
-                        ->previewable(true)
-                        ->openable()
-                        ->columnSpan(6),
+                            FileUpload::make('favicon')
+                                ->required()
+                                ->directory('settings')
+                                ->maxSize(2048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(6),
+                        ]),
                 ])
                 ->livewireSubmitHandler('save')
                 ->footer([
