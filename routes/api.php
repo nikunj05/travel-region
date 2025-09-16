@@ -17,11 +17,6 @@ Route::prefix('v1')
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
     });
 
-    Route::middleware('auth:sanctum')->group(function (): void {
-        Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
-        Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
-    });
-
     Route::group(['prefix' => 'hotels'], function (): void {
         Route::post('/', [HotelController::class, 'index'])->name('hotels.index');
         Route::get('/{hotelCode}/details', [HotelController::class, 'show'])->name('hotels.details');
@@ -30,4 +25,9 @@ Route::prefix('v1')
     Route::resource('blogs', BlogController::class)->only(['index', 'show']);
 
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+
+    Route::middleware('auth:sanctum')->group(function (): void {
+        Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+        Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
+    });
 });
