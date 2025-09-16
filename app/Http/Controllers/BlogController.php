@@ -9,9 +9,12 @@ use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $blogs = Blog::paginate();
+        $blogs = Blog::with('category')
+            ->where('is_featured', $request->boolean('is_featured', false))
+            ->latest()
+            ->paginate();
 
         return $this->sendApiResponse(true, __('messages.blog.fetched'), [
             'blogs' => BlogResource::collection($blogs),
