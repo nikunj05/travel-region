@@ -16,6 +16,7 @@ class BlogsTable
     {
         return $table
             ->columns([
+                TextColumn::make('category.name')->searchable(),
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('is_featured')
                     ->label('Featured')
