@@ -20,7 +20,7 @@ class Settings extends Page
 
     protected string $view = 'filament.pages.settings';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     /**
      * @var array<string, mixed> | null
