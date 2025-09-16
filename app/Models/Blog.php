@@ -14,4 +14,9 @@ class Blog extends Model
         'read_time',
         'is_featured',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

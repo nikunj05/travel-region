@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Blogs\Schemas;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -18,6 +19,14 @@ class BlogForm
                 ->columns(12)
                 ->columnSpanFull()
                 ->schema([
+                    Select::make('category_id')
+                        ->label('Category')
+                        ->relationship('category', 'name') // uses relation
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->columnSpan(6),
+
                     TextInput::make('title')
                         ->required()
                         ->columnSpan(6),
@@ -37,6 +46,10 @@ class BlogForm
                         ->required()
                         ->directory('blogs') // stored inside storage/app/public/blogs
                         ->maxSize(2048) // 2 MB
+                        ->disk('public')
+                        ->visibility('public')
+                        ->downloadable()
+                        ->previewable(true)
                         ->openable()
                         ->columnSpan(12),
 
