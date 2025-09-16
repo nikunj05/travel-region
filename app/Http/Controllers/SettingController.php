@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
+    /**
+     * Handle the incoming request to get settings.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $setting = Setting::first();

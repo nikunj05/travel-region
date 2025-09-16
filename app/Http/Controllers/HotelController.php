@@ -53,7 +53,7 @@ class HotelController extends Controller
             $response = $this->getHotelDetails($request, $hotelCode);
 
             if ($response->successful()) {
-                return $this->sendApiResponse(true, __('messages.hotel.fetched'), [
+                return $this->sendApiResponse(true, __('messages.hotel.single_fetched'), [
                     'hotel' => $response->json()['hotel']
                 ]);
             }
