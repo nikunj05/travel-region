@@ -28,6 +28,8 @@ class CategoryResource extends Resource
     protected static ?string $pluralLabel = 'Categories';
     protected static ?string $slug = 'categories';
 
+    protected static ?int $navigationSort = 1;
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name'];
