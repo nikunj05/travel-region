@@ -44,6 +44,8 @@ class BlogForm
                     // next rows, full-width
                     FileUpload::make('image')
                         ->required()
+                        ->image()
+                        ->imageEditor()
                         ->directory('blogs') // stored inside storage/app/public/blogs
                         ->maxSize(2048) // 2 MB
                         ->disk('public')

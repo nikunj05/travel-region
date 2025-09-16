@@ -44,6 +44,8 @@ class Settings extends Page
                         ->schema([
                             FileUpload::make('logo')
                                 ->required()
+                                ->image()
+                                ->imageEditor()
                                 ->directory('settings')
                                 ->maxSize(2048)
                                 ->disk('public')
@@ -55,6 +57,8 @@ class Settings extends Page
 
                             FileUpload::make('footer_logo')
                                 ->required()
+                                ->image()
+                                ->imageEditor()
                                 ->directory('settings')
                                 ->maxSize(2048)
                                 ->disk('public')
@@ -66,6 +70,8 @@ class Settings extends Page
 
                             FileUpload::make('favicon')
                                 ->required()
+                                ->image()
+                                ->imageEditor()
                                 ->directory('settings')
                                 ->maxSize(2048)
                                 ->disk('public')
