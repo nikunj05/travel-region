@@ -15,6 +15,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class CategoryResource extends Resource
 {
@@ -22,9 +23,10 @@ class CategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static string | UnitEnum | null $navigationGroup = 'Blogs';
     protected static ?string $recordTitleAttribute = 'Categories';
     protected static ?string $label = 'Category';
-    protected static ?string $navigationLabel = 'Categories';
+    protected static ?string $navigationLabel = 'Blog Categories';
     protected static ?string $pluralLabel = 'Categories';
     protected static ?string $slug = 'categories';
 

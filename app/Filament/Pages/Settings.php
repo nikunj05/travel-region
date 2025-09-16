@@ -19,7 +19,7 @@ use Filament\Support\Icons\Heroicon;
 
 class Settings extends Page
 {
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Cog;
 
     protected string $view = 'filament.pages.settings';
 
