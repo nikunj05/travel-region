@@ -28,6 +28,8 @@ class BlogResource extends Resource
     protected static ?string $pluralLabel = 'Blogs';
     protected static ?string $slug = 'blogs';
 
+    protected static ?int $navigationSort = 2;
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['title', 'content'];
