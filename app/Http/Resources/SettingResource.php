@@ -25,6 +25,8 @@ class SettingResource extends JsonResource
             // 'footer_support_items' => $this->footer_support_items,
             'copyright' => $this->copyright,
             'footer_info' => $this->footer_info,
+            'contact_us' => $this->contact_us,
+            'whatsapp_number' => $this->whatsapp_number,
         ];
     }
 }

@@ -16,6 +16,8 @@ class Setting extends Model
         'footer_support_items',
         'copyright',
         'footer_info',
+        'contact_us',
+        'whatsapp_number',
     ];
 
     protected function casts(): array
