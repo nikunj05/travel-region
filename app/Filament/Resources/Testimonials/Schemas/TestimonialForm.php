@@ -21,10 +21,12 @@ class TestimonialForm
                     ->schema([
                         TextInput::make('name')
                             ->required()
+                            ->maxLength(255)
                             ->columnSpan(6),
 
                         TextInput::make('location')
                             ->required()
+                            ->maxLength(255)
                             ->columnSpan(6),
 
                         // next rows, full-width
@@ -54,6 +56,7 @@ class TestimonialForm
 
                         TextInput::make('hotel')
                             ->required()
+                            ->maxLength(255)
                             ->columnSpan(6),
 
                         DatePicker::make('stay_date')

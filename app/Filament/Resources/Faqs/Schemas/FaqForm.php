@@ -32,10 +32,12 @@ class FaqForm
                     ->schema([
                         TextInput::make('question')
                             ->required()
+                            ->maxLength(255)
                             ->columnSpan(6),
 
                         TextInput::make('answer')
                             ->required()
+                            ->maxLength(1000)
                             ->columnSpan(6),
                     ]),
             ]);

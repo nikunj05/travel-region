@@ -29,6 +29,7 @@ class BlogForm
 
                     TextInput::make('title')
                         ->required()
+                        ->maxLength(255)
                         ->columnSpan(6),
 
                     TextInput::make('read_time')

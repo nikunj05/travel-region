@@ -18,6 +18,7 @@ class FaqCategoryForm
                     ->schema([
                         TextInput::make('name')
                             ->required()
+                            ->maxLength(255)
                             ->columnSpan(6),
                 ]),
             ]);
