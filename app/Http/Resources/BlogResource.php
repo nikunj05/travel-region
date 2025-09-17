@@ -24,6 +24,7 @@ class BlogResource extends JsonResource
             'full_image_url' => $this->image ? url(Storage::url($this->image)) : null,
             'read_time' => $this->read_time,
             'is_featured' => $this->is_featured,
+            'tags' => $this->tags,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'category' => new CategoryResource($this->whenLoaded('category')),
