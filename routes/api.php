@@ -31,5 +31,11 @@ Route::prefix('v1')
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
+
+        Route::group(['prefix' => 'favorite-hotels'], function (): void {
+            Route::get('/', [HotelController::class, 'listFavorites'])->name('hotels.list-favorites');
+            Route::post('/', [HotelController::class, 'addFavorite'])->name('hotels.add-favorite');
+            Route::delete('/{favorite}', [HotelController::class, 'removeFavorite'])->name('hotels.remove-favorite');
+        });
     });
 });
