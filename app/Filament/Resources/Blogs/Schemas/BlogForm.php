@@ -6,6 +6,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -36,6 +37,9 @@ class BlogForm
                         ->required()
                         ->numeric()
                         ->label('Read Time (in minutes)')
+                        ->columnSpan(6),
+
+                    TagsInput::make('tags')
                         ->columnSpan(6),
 
                     Checkbox::make('is_featured')
