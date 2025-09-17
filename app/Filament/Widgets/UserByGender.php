@@ -9,6 +9,8 @@ class UserByGender extends ChartWidget
 {
     protected ?string $heading = 'User By Gender';
 
+    protected ?string $maxHeight = '250px';
+
     protected function getFilters(): ?array
     {
         return [
