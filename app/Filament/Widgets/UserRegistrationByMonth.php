@@ -9,6 +9,8 @@ class UserRegistrationByMonth extends ChartWidget
 {
     protected ?string $heading = 'User Registration By Month';
 
+    protected ?string $maxHeight = '250px';
+
     protected function getFilters(): ?array
     {
         return [
