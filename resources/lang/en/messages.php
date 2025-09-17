@@ -32,4 +32,8 @@ return [
         'fetched' => 'Testimonials fetched successfully.',
         'single_fetched' => 'Testimonial fetched successfully.',
     ],
+    'notification-preferences' => [
+        'fetched' => 'Notification preferences fetched successfully.',
+        'updated' => 'Notification preferences updated successfully.',
+    ],
 ];
