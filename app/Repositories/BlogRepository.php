@@ -22,6 +22,14 @@ class BlogRepository implements BlogInterface
             ->when($request->has('category_id'), function ($query) use ($request) {
                 $query->whereIn('category_id', explode(',', $request->input('category_id')));
             })
+            ->when($request->has('tags'), function ($query) use ($request) {
+                $tags = explode(',', $request->input('tags'));
+                $query->where(function ($q) use ($tags) {
+                    foreach ($tags as $tag) {
+                        $q->orWhere('tags', 'like', '%' . $tag . '%');
+                    }
+                });
+            })
             ->latest()
             ->paginate();
 
