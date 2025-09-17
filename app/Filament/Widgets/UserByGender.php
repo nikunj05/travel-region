@@ -53,11 +53,10 @@ class UserByGender extends ChartWidget
                     'backgroundColor' => [
                         'rgba(54, 162, 235, 0.2)',
                         'rgba(255, 99, 132, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
                     ]
                 ]
             ],
-            'labels' => array_keys($userCount),
+            'labels' => array_map('ucfirst', array_keys($userCount)),
         ];
     }
 
