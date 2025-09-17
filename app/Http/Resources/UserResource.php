@@ -19,6 +19,13 @@ class UserResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
+            'country_code' => $this->country_code,
+            'mobile' => $this->mobile,
+            'gender' => $this->gender,
+            'date_of_birth' => $this->date_of_birth,
+            'nationality' => $this->nationality,
+            'address' => $this->address,
+            'passport_number' => $this->passport_number,
         ];
     }
 }

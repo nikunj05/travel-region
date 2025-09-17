@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class ProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +24,14 @@ class RegisterRequest extends FormRequest
         return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'country_code' => 'required|digits_between:1,4',
-            'mobile' => 'required|digits_between:8,15|unique:users,mobile',
-            'password' => [
-                'required',
-                'string',
-                'confirmed',
-                'min:6',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/',
-            ],
+            'email' => 'required|email|max:255|unique:users,email,' . $this->user()->id,
+            'gender' => 'required|string|in:male,female',
+            'country_code' => 'required|string|max:10',
+            'mobile' => 'required|string|max:20|unique:users,mobile,' . $this->user()->id,
+            'date_of_birth' => 'required|date|before:today',
+            'nationality' => 'required|string|max:100',
+            'address' => 'nullable|string|max:255',
+            'passport_number' => 'nullable|string|max:20',
         ];
     }
 }

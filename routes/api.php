@@ -32,6 +32,11 @@ Route::prefix('v1')
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
 
+        Route::group(['prefix' => 'profile'], function (): void {
+            Route::get('/', [AuthController::class, 'profile'])->name('auth.profile');
+            Route::put('/', [AuthController::class, 'updateProfile'])->name('auth.update-profile');
+        });
+
         Route::group(['prefix' => 'favorite-hotels'], function (): void {
             Route::get('/', [HotelController::class, 'listFavorites'])->name('hotels.list-favorites');
             Route::post('/', [HotelController::class, 'addFavorite'])->name('hotels.add-favorite');

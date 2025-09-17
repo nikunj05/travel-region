@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\SendResetPasswordRequest;
@@ -108,5 +109,33 @@ class AuthController extends Controller
         $this->authRepository->changePassword($request);
 
         return $this->sendApiResponse(true, __('messages.password_change'), [], 200);
+    }
+
+    /**
+     * Get the authenticated user's profile.
+     *
+     * @param  Request  $request  The incoming request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function profile(Request $request)
+    {
+        return $this->sendApiResponse(true, '', [
+            'user' => new UserResource($request->user()),
+        ], 200);
+    }
+
+    /**
+     * Update the authenticated user's profile.
+     *
+     * @param  ProfileRequest  $request  The incoming request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateProfile(ProfileRequest $request)
+    {
+        $user = $this->authRepository->updateProfile($request);
+
+        return $this->sendApiResponse(true, '', [
+            'user' => new UserResource($user),
+        ], 200);
     }
 }
