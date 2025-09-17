@@ -47,6 +47,7 @@ class FooterSettings extends Page
                         ->schema([
                             TextInput::make('copyright')
                                 ->required()
+                                ->maxLength(255)
                                 ->columnSpan(6),
 
                             FileUpload::make('footer_logo')

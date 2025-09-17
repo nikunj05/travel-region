@@ -40,4 +40,7 @@ return [
         'fetched' => 'User settings fetched successfully.',
         'updated' => 'User settings updated successfully.',
     ],
+    'faq' => [
+        'fetched' => 'FAQs fetched successfully.',
+    ],
 ];

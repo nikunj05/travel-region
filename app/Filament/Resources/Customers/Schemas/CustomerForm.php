@@ -11,9 +11,9 @@ class CustomerForm
     {
         return $schema
             ->components([
-                TextInput::make('first_name')->required(),
-                TextInput::make('last_name')->required(),
-                TextInput::make('email')->email()->required(),
+                TextInput::make('first_name')->required()->maxLength(255),
+                TextInput::make('last_name')->required()->maxLength(255),
+                TextInput::make('email')->email()->required()->maxLength(255),
                 TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
