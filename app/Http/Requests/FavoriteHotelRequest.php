@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
-class ResetPasswordRequest extends FormRequest
+class FavoriteHotelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,13 +22,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            'token' => 'required|string',
-            'password' => [
-                Password::min(8)
-                    ->mixedCase() // Require at least one uppercase and one lowercase letter...
-                    ->numbers(), // Require at least one number...
-            ],
+            'hotel_code' => 'required|string|max:10',
         ];
     }
 }

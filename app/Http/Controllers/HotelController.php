@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FavoriteHotelRequest;
 use App\Http\Requests\SearchHotelRequest;
+use App\Models\FavoriteHotel;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
 
@@ -67,5 +69,55 @@ class HotelController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * List favorite hotels of the authenticated user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function listFavorites(Request $request)
+    {
+        $favorites = $this->getFavoriteHotels($request, $request->user());
+
+        return $this->sendApiResponse(true, __('messages.hotel.favorites_fetched'), [
+            'favorites' => $favorites
+        ]);
+    }
+
+    /**
+    * Add a hotel to the authenticated user's favorites.
+    *
+    * @param FavoriteHotelRequest $request
+    * @return \Illuminate\Http\JsonResponse
+    */
+    public function addFavorite(FavoriteHotelRequest $request)
+    {
+        $favorite = FavoriteHotel::create([
+            'user_id' => $request->user()->id,
+            'hotel_codes' => $request->hotel_code,
+        ]);
+
+        return $this->sendApiResponse(true, __('messages.hotel.favorite_added'), [
+            'favorite' => $favorite
+        ]);
+    }
+
+    /**
+    * Remove a hotel from the authenticated user's favorites.
+    *
+    * @param FavoriteHotel $favorite
+    * @return \Illuminate\Http\JsonResponse
+    */
+    public function removeFavorite(FavoriteHotel $favorite)
+    {
+        if ($favorite->user_id !== request()->user()->id) {
+            return $this->sendApiResponse(false, __('messages.unauthorized'), [], 403);
+        }
+
+        $favorite->delete();
+
+        return $this->sendApiResponse(true, __('messages.hotel.favorite_removed'), []);
     }
 }

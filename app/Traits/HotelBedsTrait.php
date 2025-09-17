@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+use App\Models\FavoriteHotel;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 trait HotelBedsTrait
@@ -81,5 +84,38 @@ trait HotelBedsTrait
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
             'language' => strtoupper($language)
         ]);
+    }
+
+    /**
+     * Get favorite hotels for a user
+     *
+     * @param Request $request
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getFavoriteHotels(Request $request, User $user)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $hotelCodes = FavoriteHotel::where('user_id', $user->id)->pluck('hotel_codes')->map(function ($code) {
+            return (int) $code;
+        })->toArray();
+
+        $language = $request->language ?? 'eng';
+
+        $hotels = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels", [
+            'language' => strtoupper($language),
+            'codes' => implode(',', $hotelCodes)
+        ]);
+
+        if ($hotels->successful()) {
+            return $hotels->json();
+        }
+
+        return [];
     }
 }

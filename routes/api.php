@@ -31,5 +31,26 @@ Route::prefix('v1')
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
+
+        Route::group(['prefix' => 'profile'], function (): void {
+            Route::get('/', [AuthController::class, 'profile'])->name('auth.profile');
+            Route::put('/', [AuthController::class, 'updateProfile'])->name('auth.update-profile');
+        });
+
+        Route::group(['prefix' => 'notification-preferences'], function (): void {
+            Route::get('/', [SettingController::class, 'notificationPreferences'])->name('settings.get-notification-preferences');
+            Route::put('/', [SettingController::class, 'updateNotificationPreferences'])->name('settings.update-notification-preferences');
+        });
+
+        Route::group(['prefix' => 'user-settings'], function (): void {
+            Route::get('/', [SettingController::class, 'userSettings'])->name('settings.get-user-settings');
+            Route::put('/', [SettingController::class, 'updateUserSettings'])->name('settings.update-user-settings');
+        });
+
+        Route::group(['prefix' => 'favorite-hotels'], function (): void {
+            Route::get('/', [HotelController::class, 'listFavorites'])->name('hotels.list-favorites');
+            Route::post('/', [HotelController::class, 'addFavorite'])->name('hotels.add-favorite');
+            Route::delete('/{favorite}', [HotelController::class, 'removeFavorite'])->name('hotels.remove-favorite');
+        });
     });
 });
