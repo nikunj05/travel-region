@@ -42,6 +42,11 @@ Route::prefix('v1')
             Route::put('/', [SettingController::class, 'updateNotificationPreferences'])->name('settings.update-notification-preferences');
         });
 
+        Route::group(['prefix' => 'user-settings'], function (): void {
+            Route::get('/', [SettingController::class, 'userSettings'])->name('settings.get-user-settings');
+            Route::put('/', [SettingController::class, 'updateUserSettings'])->name('settings.update-user-settings');
+        });
+
         Route::group(['prefix' => 'favorite-hotels'], function (): void {
             Route::get('/', [HotelController::class, 'listFavorites'])->name('hotels.list-favorites');
             Route::post('/', [HotelController::class, 'addFavorite'])->name('hotels.add-favorite');

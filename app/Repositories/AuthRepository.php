@@ -161,4 +161,29 @@ class AuthRepository implements AuthInterface
 
         return $user;
     }
+
+    /**
+     * Updates the authenticated user's settings.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object containing settings data.
+     * @return \App\Models\User The updated user.
+     */
+    public function updateUserSettings($request)
+    {
+        $user = User::find(Auth::id());
+
+        $user->language = $request->language;
+        $user->currency = $request->currency;
+        $user->email = $request->email;
+        $user->country_code = $request->country_code;
+        $user->mobile = $request->mobile;
+        $user->save();
+
+        if ($request->password) {
+            $user->password = Hash::make($request->password);
+            $user->save();
+        }
+
+        return $user;
+    }
 }

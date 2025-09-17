@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class ResetPasswordRequest extends FormRequest
+class UserSettingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,11 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            'token' => 'required|string',
+            'language' => 'required|string|max:10',
+            'currency' => 'required|string|max:10',
+            'email' => 'required|email|max:255|unique:users,email,' . $this->user()->id,
+            'country_code' => 'required|string|max:10',
+            'mobile' => 'required|string|max:10',
             'password' => [
                 Password::min(8)
                     ->mixedCase() // Require at least one uppercase and one lowercase letter...

@@ -17,4 +17,6 @@ interface AuthInterface
     public function changePassword($data);
 
     public function updateProfile($data);
+
+    public function updateUserSettings($data);
 }

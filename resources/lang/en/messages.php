@@ -36,4 +36,8 @@ return [
         'fetched' => 'Notification preferences fetched successfully.',
         'updated' => 'Notification preferences updated successfully.',
     ],
+    'user-settings' => [
+        'fetched' => 'User settings fetched successfully.',
+        'updated' => 'User settings updated successfully.',
+    ],
 ];

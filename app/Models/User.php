@@ -33,6 +33,8 @@ class User extends Authenticatable implements FilamentUser
         'nationality',
         'address',
         'passport_number',
+        'language',
+        'currency',
     ];
 
     /**
