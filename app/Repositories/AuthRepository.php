@@ -149,7 +149,7 @@ class AuthRepository implements AuthInterface
 
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
-        $user->email = $request->email;
+        // $user->email = $request->email;
         $user->country_code = $request->country_code;
         $user->mobile = $request->mobile;
         $user->gender = $request->gender;

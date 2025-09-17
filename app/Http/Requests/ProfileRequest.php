@@ -24,7 +24,7 @@ class ProfileRequest extends FormRequest
         return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $this->user()->id,
+            // 'email' => 'required|email|max:255|unique:users,email,' . $this->user()->id,
             'gender' => 'required|string|in:male,female',
             'country_code' => 'required|string|max:10',
             'mobile' => 'required|string|max:20|unique:users,mobile,' . $this->user()->id,
