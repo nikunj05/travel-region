@@ -56,8 +56,8 @@ class AdminPanelProvider extends PanelProvider
             ->resourceCreatePageRedirect('index')
             ->resourceEditPageRedirect('index')
             ->darkMode(false)
-            ->brandLogo(Setting::whereNotNull('logo')->first() ? asset('storage/' . Setting::first()->logo) : null)
-            ->favicon(Setting::whereNotNull('favicon')->first() ? asset('storage/' . Setting::first()->favicon) : null)
+            ->brandLogo(asset('images/logo.png'))
+            // ->favicon(Setting::whereNotNull('favicon')->first() ? asset('storage/' . Setting::first()->favicon) : null)
             ->authMiddleware([
                 Authenticate::class,
             ]);
