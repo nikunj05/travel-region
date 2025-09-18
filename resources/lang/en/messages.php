@@ -44,4 +44,7 @@ return [
     'faq' => [
         'fetched' => 'FAQs fetched successfully.',
     ],
+    'cms' => [
+        'fetched' => 'CMS content fetched successfully.',
+    ],
 ];
