@@ -17,6 +17,12 @@ class BlogController extends Controller
         $this->blogRepository = $blogRepository;
     }
 
+    /**
+     * Handle the incoming request to search for blogs.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $blogs = $this->blogRepository->blogsWithFilters($request);
@@ -27,9 +33,15 @@ class BlogController extends Controller
         ]);
     }
 
+    /**
+     * Get details of a specific blog by its code.
+     *
+     * @param Blog $blog
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Blog $blog)
     {
-        return $this->sendApiResponse(true, __('messages.blog.fetched'), [
+        return $this->sendApiResponse(true, __('messages.blog.single_fetched'), [
             'blog' => new BlogResource($blog)
         ]);
     }

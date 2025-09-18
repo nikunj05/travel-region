@@ -19,8 +19,28 @@ return [
     'password_change' => 'Password has been changed successfully.',
     'hotel' => [
         'fetched' => 'Hotels fetched successfully.',
+        'single_fetched' => 'Hotel fetched successfully.',
+        'favorites_fetched' => 'Favorite hotels fetched successfully.',
+        'favorite_added' => 'Hotel added to favorites.',
+        'favorite_removed' => 'Hotel removed from favorites.',
     ],
     'blog' => [
         'fetched' => 'Blogs fetched successfully.',
+        'single_fetched' => 'Blog fetched successfully.',
+    ],
+    'testimonial' => [
+        'fetched' => 'Testimonials fetched successfully.',
+        'single_fetched' => 'Testimonial fetched successfully.',
+    ],
+    'notification-preferences' => [
+        'fetched' => 'Notification preferences fetched successfully.',
+        'updated' => 'Notification preferences updated successfully.',
+    ],
+    'user-settings' => [
+        'fetched' => 'User settings fetched successfully.',
+        'updated' => 'User settings updated successfully.',
+    ],
+    'faq' => [
+        'fetched' => 'FAQs fetched successfully.',
     ],
 ];

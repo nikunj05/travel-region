@@ -6,6 +6,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -29,12 +30,16 @@ class BlogForm
 
                     TextInput::make('title')
                         ->required()
+                        ->maxLength(255)
                         ->columnSpan(6),
 
                     TextInput::make('read_time')
                         ->required()
                         ->numeric()
                         ->label('Read Time (in minutes)')
+                        ->columnSpan(6),
+
+                    TagsInput::make('tags')
                         ->columnSpan(6),
 
                     Checkbox::make('is_featured')
@@ -44,6 +49,8 @@ class BlogForm
                     // next rows, full-width
                     FileUpload::make('image')
                         ->required()
+                        ->image()
+                        ->imageEditor()
                         ->directory('blogs') // stored inside storage/app/public/blogs
                         ->maxSize(2048) // 2 MB
                         ->disk('public')

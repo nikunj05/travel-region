@@ -20,6 +20,11 @@ class CustomersTable
                 TextColumn::make('first_name')->searchable(),
                 TextColumn::make('last_name')->searchable(),
                 TextColumn::make('email')->searchable(),
+                TextColumn::make('mobile')->searchable(),
+                TextColumn::make('gender')->searchable(),
+                TextColumn::make('date_of_birth')->date()->searchable(),
+                TextColumn::make('nationality')->searchable(),
+                TextColumn::make('address')->searchable(),
             ])
             ->filters([
                 //

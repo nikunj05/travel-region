@@ -13,6 +13,11 @@ class Blog extends Model
         'image',
         'read_time',
         'is_featured',
+        'tags'
+    ];
+
+    protected $casts = [
+        'tags' => 'array',
     ];
 
     public function category()

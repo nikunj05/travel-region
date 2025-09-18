@@ -136,4 +136,54 @@ class AuthRepository implements AuthInterface
 
         return true;
     }
+
+    /**
+     * Updates the authenticated user's profile information.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object containing profile data.
+     * @return \App\Models\User The updated user.
+     */
+    public function updateProfile($request)
+    {
+        $user = User::find(Auth::id());
+
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        // $user->email = $request->email;
+        $user->country_code = $request->country_code;
+        $user->mobile = $request->mobile;
+        $user->gender = $request->gender;
+        $user->date_of_birth = $request->date_of_birth;
+        $user->nationality = $request->nationality;
+        $user->address = $request->address;
+        $user->passport_number = $request->passport_number;
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * Updates the authenticated user's settings.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object containing settings data.
+     * @return \App\Models\User The updated user.
+     */
+    public function updateUserSettings($request)
+    {
+        $user = User::find(Auth::id());
+
+        $user->language = $request->language;
+        $user->currency = $request->currency;
+        $user->email = $request->email;
+        $user->country_code = $request->country_code;
+        $user->mobile = $request->mobile;
+        $user->save();
+
+        if ($request->password) {
+            $user->password = Hash::make($request->password);
+            $user->save();
+        }
+
+        return $user;
+    }
 }

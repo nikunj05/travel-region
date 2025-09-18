@@ -15,18 +15,22 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class BlogResource extends Resource
 {
     protected static ?string $model = Blog::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::BookOpen;
 
+    protected static string | UnitEnum | null $navigationGroup = 'Blogs';
     protected static ?string $recordTitleAttribute = 'Blogs';
     protected static ?string $label = 'Blog';
     protected static ?string $navigationLabel = 'Blogs';
     protected static ?string $pluralLabel = 'Blogs';
     protected static ?string $slug = 'blogs';
+
+    protected static ?int $navigationSort = 2;
 
     public static function getGloballySearchableAttributes(): array
     {
