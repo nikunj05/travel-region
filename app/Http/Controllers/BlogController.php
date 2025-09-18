@@ -43,7 +43,8 @@ class BlogController extends Controller
     public function show(Blog $blog)
     {
         return $this->sendApiResponse(true, __('messages.blog.single_fetched'), [
-            'blog' => new BlogResource($blog)
+            'blog' => new BlogResource($blog),
+            'related_blogs' => BlogResource::collection(Blog::where('id', '!=', $blog->id)->where('category_id', $blog->category_id)->latest()->take(3)->get()),
         ]);
     }
 
