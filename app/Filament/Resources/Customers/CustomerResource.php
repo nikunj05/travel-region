@@ -28,7 +28,7 @@ class CustomerResource extends Resource
     protected static ?string $pluralLabel = 'Customers';
     protected static ?string $slug = 'customers';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function getGloballySearchableAttributes(): array
     {

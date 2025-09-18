@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CmsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\SettingController;
@@ -30,6 +31,8 @@ Route::prefix('v1')
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
 
     Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
+
+    Route::get('cms/{type}', [CmsController::class, 'index'])->name('cms.index')->where('type', 'about|privacy|terms');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');

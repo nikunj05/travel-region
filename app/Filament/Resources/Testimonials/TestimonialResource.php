@@ -28,7 +28,7 @@ class TestimonialResource extends Resource
     protected static ?string $pluralLabel = 'Testimonials';
     protected static ?string $slug = 'testimonials';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 2;
 
     public static function getGloballySearchableAttributes(): array
     {
