@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BlogCommentRequest;
 use App\Http\Resources\BlogResource;
 use App\Http\Resources\PaginationResource;
 use App\Interfaces\BlogInterface;
@@ -43,6 +44,22 @@ class BlogController extends Controller
     {
         return $this->sendApiResponse(true, __('messages.blog.single_fetched'), [
             'blog' => new BlogResource($blog)
+        ]);
+    }
+
+    /**
+     * Store a new comment for a blog post.
+     *
+     * @param BlogCommentRequest $request
+     * @param Blog $blog
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeComment(BlogCommentRequest $request, Blog $blog)
+    {
+        $this->blogRepository->storeComment($request, $blog);
+
+        return $this->sendApiResponse(true, __('messages.blog.comment_added'), [
+            'blog' => new BlogResource($blog->load('comments')),
         ]);
     }
 }
