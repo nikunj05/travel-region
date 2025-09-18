@@ -27,6 +27,7 @@ return [
     'blog' => [
         'fetched' => 'Blogs fetched successfully.',
         'single_fetched' => 'Blog fetched successfully.',
+        'comment_added' => 'Comment added successfully.',
     ],
     'testimonial' => [
         'fetched' => 'Testimonials fetched successfully.',

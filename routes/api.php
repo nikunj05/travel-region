@@ -35,6 +35,8 @@ Route::prefix('v1')
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
 
+        Route::post('blogs/{blog}/comment', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+
         Route::group(['prefix' => 'profile'], function (): void {
             Route::get('/', [AuthController::class, 'profile'])->name('auth.profile');
             Route::put('/', [AuthController::class, 'updateProfile'])->name('auth.update-profile');
