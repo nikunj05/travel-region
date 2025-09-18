@@ -35,4 +35,21 @@ class BlogRepository implements BlogInterface
 
         return $blogs;
     }
+
+    /**
+     * Store a new comment for a blog post.
+     *
+     * @param Request $request
+     * @param Blog $blog
+     * @return Blog
+     */
+    public function storeComment(Request $request, $blog): Blog
+    {
+        $blog->comments()->create([
+            'user_id' => $request->user()->id,
+            'comment' => $request->input('comment'),
+        ]);
+
+        return $blog;
+    }
 }
