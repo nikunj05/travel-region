@@ -16,4 +16,15 @@ class CmsRepository implements CmsInterface
     {
         return CmsPage::all();
     }
+
+    /**
+     * Get a CMS page by its slug.
+     *
+     * @param  string  $slug
+     * @return CmsPage|null
+     */
+    public function getPageBySlug(string $slug)
+    {
+        return CmsPage::where('slug', $slug)->first();
+    }
 }

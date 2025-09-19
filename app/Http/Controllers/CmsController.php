@@ -28,4 +28,19 @@ class CmsController extends Controller
             'content' => $cmsContent
         ]);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function show($slug)
+    {
+        $cmsContent = $this->cmsRepository->getPageBySlug($slug);
+
+        return $this->sendApiResponse(true, __('messages.cms.fetched'), [
+            'content' => $cmsContent
+        ]);
+    }
 }
