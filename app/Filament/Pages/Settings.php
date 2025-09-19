@@ -44,7 +44,6 @@ class Settings extends Page
                     Grid::make(12)
                         ->schema([
                             FileUpload::make('logo')
-                                ->required()
                                 ->image()
                                 ->imageEditor()
                                 ->directory('settings')
@@ -57,7 +56,6 @@ class Settings extends Page
                                 ->columnSpan(6),
 
                             FileUpload::make('favicon')
-                                ->required()
                                 ->image()
                                 ->imageEditor()
                                 ->directory('settings')

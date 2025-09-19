@@ -43,7 +43,6 @@ class SupportSettings extends Page
                     Grid::make(12)
                         ->schema([
                             TextInput::make('contact_us')
-                                ->required()
                                 ->columnSpan(6)
                                 ->mask('9999 99999 99999')
                                 ->label('Contact Us Number'),
@@ -51,7 +50,6 @@ class SupportSettings extends Page
                     Grid::make(12)
                         ->schema([
                             TextInput::make('whatsapp_number')
-                                ->required()
                                 ->columnSpan(6)
                                 ->mask('9999 99999 99999')
                                 ->label('WhatsApp Number'),
