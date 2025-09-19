@@ -20,9 +20,9 @@ class CmsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index($type)
+    public function index()
     {
-        $cmsContent = $this->cmsRepository->getContentByType($type);
+        $cmsContent = $this->cmsRepository->getPages();
 
         return $this->sendApiResponse(true, __('messages.cms.fetched'), [
             'content' => $cmsContent

@@ -32,7 +32,7 @@ Route::prefix('v1')
 
     Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
 
-    Route::get('cms/{type}', [CmsController::class, 'index'])->name('cms.index')->where('type', 'about|privacy|terms');
+    Route::get('pages', [CmsController::class, 'index'])->name('cms.index');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');

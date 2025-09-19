@@ -8,13 +8,12 @@ use App\Models\CmsPage;
 class CmsRepository implements CmsInterface
 {
     /**
-     * Get CMS content by type.
+     * Get all CMS pages.
      *
-     * @param string $type
-     * @return CmsPage|null
+     * @return CmsPage[]|null
      */
-    public function getContentByType(string $type)
+    public function getPages()
     {
-        return CmsPage::where('type', $type)->first();
+        return CmsPage::all();
     }
 }
