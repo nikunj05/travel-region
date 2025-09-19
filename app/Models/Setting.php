@@ -18,6 +18,7 @@ class Setting extends Model
         'footer_info',
         'contact_us',
         'whatsapp_number',
+        'social_media_links',
     ];
 
     protected function casts(): array
@@ -27,6 +28,7 @@ class Setting extends Model
             'footer_explore_items' => 'array',
             'footer_about_items' => 'array',
             'footer_support_items' => 'array',
+            'social_media_links' => 'array',
         ];
     }
 }

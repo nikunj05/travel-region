@@ -15,15 +15,6 @@ class CmsTable
     {
         return $table
             ->columns([
-                TextColumn::make('type')->searchable()
-                    ->formatStateUsing(function ($state) {
-                        return match ($state) {
-                            'about' => 'About Us',
-                            'privacy' => 'Privacy Policy',
-                            'terms' => 'Terms & Conditions',
-                            default => $state,
-                        };
-                    }),
                 TextColumn::make('title')->searchable(),
             ])
             ->filters([

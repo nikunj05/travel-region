@@ -7,6 +7,7 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -46,12 +47,10 @@ class FooterSettings extends Page
                     Grid::make(12)
                         ->schema([
                             TextInput::make('copyright')
-                                ->required()
                                 ->maxLength(255)
                                 ->columnSpan(6),
 
                             FileUpload::make('footer_logo')
-                                ->required()
                                 ->image()
                                 ->imageEditor()
                                 ->directory('settings')
@@ -64,7 +63,6 @@ class FooterSettings extends Page
                                 ->columnSpan(12),
 
                             Textarea::make('footer_info')
-                                ->required()
                                 ->columnSpan(12),
 
                             // CheckboxList::make('footer_explore_items')
@@ -90,6 +88,40 @@ class FooterSettings extends Page
                             //         'booking_policy' => 'Booking Policy',
                             //     ])->columnSpan(4),
                         ]),
+
+                    Repeater::make('social_media_links')
+                        ->label('Social Media Links')
+                        ->schema([
+                            TextInput::make('title')
+                                ->label('Title')
+                                ->placeholder('e.g. Facebook')
+                                ->maxLength(255)
+                                ->columnSpan(6),
+
+                            TextInput::make('link')
+                                ->label('Link')
+                                ->placeholder('e.g. https://www.facebook.com/yourpage')
+                                ->url()
+                                ->maxLength(2048)
+                                ->columnSpan(6)
+                                ->helperText('Please include the full URL, including http:// or https://'),
+
+                            FileUpload::make('icon')
+                                ->label('Icon')
+                                ->image()
+                                ->imageEditor()
+                                ->directory('settings/social-media-icons')
+                                ->maxSize(2048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(6),
+                        ])
+                        ->columns(12)
+                        ->collapsible()
+                        ->addActionLabel('Add Social Link'),
                 ])
                 ->livewireSubmitHandler('save')
                 ->footer([

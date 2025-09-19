@@ -25,17 +25,17 @@ class CmsResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BookOpen;
 
-    protected static ?string $recordTitleAttribute = 'CMS';
-    protected static ?string $label = 'CMS';
+    protected static ?string $recordTitleAttribute = 'Page';
+    protected static ?string $label = 'Page';
     protected static ?string $navigationLabel = 'CMS';
-    protected static ?string $pluralLabel = 'CMS';
+    protected static ?string $pluralLabel = 'Pages';
     protected static ?string $slug = 'cms';
 
     protected static ?int $navigationSort = 6;
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['type', 'title'];
+        return ['title'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string | Htmlable

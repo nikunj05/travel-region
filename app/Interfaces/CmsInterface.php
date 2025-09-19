@@ -4,5 +4,7 @@ namespace App\Interfaces;
 
 interface CmsInterface
 {
-    public function getContentByType(string $type);
+    public function getPages();
+
+    public function getPageBySlug(string $slug);
 }
