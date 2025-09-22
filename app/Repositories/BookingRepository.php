@@ -11,6 +11,28 @@ use Illuminate\Support\Facades\Auth;
 class BookingRepository implements BookingInterface
 {
     /**
+     * Display a listing of the bookings for the authenticated user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index($request)
+    {
+        $user = $request->user();
+        $bookings = $user->bookings()->when(function ($query) {
+            // Add any filtering logic here if needed
+            if ($status = request('status')) {
+                $query->where('status', $status);
+            }
+            if ($hotelCode = request('hotel_code')) {
+                $query->where('hotel_code', $hotelCode);
+            }
+        })->with('details')->get();
+
+        return $bookings;
+    }
+
+    /**
      * Store a newly created booking in storage.
      *
      * @param Request $request

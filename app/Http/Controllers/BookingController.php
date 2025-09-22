@@ -17,6 +17,21 @@ class BookingController extends Controller
     }
 
     /**
+    * Display a listing of the bookings for the authenticated user.
+    *
+    * @param Request $request
+    * @return \Illuminate\Http\JsonResponse
+    */
+    public function index(Request $request)
+    {
+        $bookings = $this->bookingRepository->index($request);
+
+        return $this->sendApiResponse(true, __('messages.booking.listed'), [
+            'bookings' => BookingResource::collection($bookings),
+        ]);
+    }
+
+    /**
      * Store a newly created booking in storage.
      *
      * @param Request $request
