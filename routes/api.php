@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CmsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HotelController;
@@ -40,6 +41,8 @@ Route::prefix('v1')
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
 
         Route::post('blogs/{blog}/comment', [BlogController::class, 'storeComment'])->name('blog.comments.store');
+
+        Route::post('booking', [BookingController::class, 'store'])->name('booking.store');
 
         Route::group(['prefix' => 'profile'], function (): void {
             Route::get('/', [AuthController::class, 'profile'])->name('auth.profile');
