@@ -47,4 +47,7 @@ return [
     'cms' => [
         'fetched' => 'CMS content fetched successfully.',
     ],
+    'booking' => [
+        'added' => 'Booking created successfully.',
+    ],
 ];

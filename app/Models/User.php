@@ -69,4 +69,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }
