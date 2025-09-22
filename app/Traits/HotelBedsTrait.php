@@ -118,4 +118,40 @@ trait HotelBedsTrait
 
         return [];
     }
+
+    /**
+     * Confirm booking with HotelBeds API
+     *
+     * @param array $data
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function bookingConfirmation($data)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $hotels = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/bookings", [
+            'holder' => [
+                'name' => $data['first_name'],
+                'surname' => $data['last_name']
+            ],
+            'rooms' => [
+                [
+                    'rateKey' => $data['rate_key']
+                ]
+            ],
+            'clientReference' => 'booking-ref-' . $data['booking_id'],
+            'remark' => $data['remark'] ?? 'Booking remarks are to be written here.',
+            'tolerance' => 2,
+        ]);
+
+        if ($hotels->successful()) {
+            return $hotels->json();
+        }
+
+        return [];
+    }
 }
