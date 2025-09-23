@@ -56,6 +56,36 @@ class AuthRepository implements AuthInterface
     }
 
     /**
+     * Handles social authentication by returning the authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming request object.
+     * @return \App\Models\User The authenticated user.
+     */
+    public function socialAuth($request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'social_media_id' => $request->social_media_id,
+                'password' => Hash::make(Str::random(12)),
+            ]);
+
+            $user->assignRole('customer');
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return [
+            'user' => $user,
+            'token' => $token,
+        ];
+    }
+
+    /**
      * Logs out the authenticated user by deleting their tokens.
      *
      * @param  \Illuminate\Http\Request  $request  The incoming request object containing the authenticated user.

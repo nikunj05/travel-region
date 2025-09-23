@@ -8,6 +8,7 @@ use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\SendResetPasswordRequest;
+use App\Http\Requests\SocialMediaRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\AuthInterface;
 use Illuminate\Http\Request;
@@ -65,6 +66,22 @@ class AuthController extends Controller
             ['user' => new UserResource($user)],
             201
         );
+    }
+
+    /**
+     * Handle social authentication.
+     *
+     * @param  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function socialAuth(SocialMediaRequest $request)
+    {
+        $userData = $this->authRepository->socialAuth($request);
+
+        return $this->sendApiResponse(true, __('messages.login'), [
+            'user' => new UserResource($userData['user']),
+            'token' => $userData['token'],
+        ], 200);
     }
 
     /**
