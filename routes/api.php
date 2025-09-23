@@ -15,6 +15,7 @@ Route::prefix('v1')
     ->group(function (): void {
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('social-auth', [AuthController::class, 'socialAuth'])->name('auth.social-auth');
 
     Route::prefix('password')->group(function (): void {
         Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot-password');

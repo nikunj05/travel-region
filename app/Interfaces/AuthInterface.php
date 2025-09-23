@@ -8,6 +8,8 @@ interface AuthInterface
 
     public function register($data);
 
+    public function socialAuth($data);
+
     public function logout($data);
 
     public function sendResetPasswordLink($data);
