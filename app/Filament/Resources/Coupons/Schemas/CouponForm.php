@@ -24,6 +24,15 @@ class CouponForm
 
                         TextInput::make('code')
                             ->required()
+                            ->unique(ignoreRecord: true)
+                            ->dehydrateStateUsing(fn ($state) => strtoupper(str_replace(' ', '', $state)))
+                            ->afterStateUpdated(fn ($state, callable $set) =>
+                                $set('code', strtoupper(str_replace(' ', '', $state)))
+                            )
+                            ->extraInputAttributes([
+                                'style' => 'text-transform: uppercase',
+                                'oninput' => "this.value = this.value.replace(/\\s+/g, '').toUpperCase();",
+                            ])
                             ->maxLength(15)
                             ->columnSpan(6),
 
