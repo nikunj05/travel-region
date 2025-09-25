@@ -28,7 +28,7 @@ class BlogResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'category' => new CategoryResource($this->category),
-            'comments' => BlogCommentResource::collection($this->comments),
+            // 'comments' => BlogCommentResource::collection($this->comments),
         ];
     }
 }

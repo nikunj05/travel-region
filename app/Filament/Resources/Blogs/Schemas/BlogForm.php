@@ -31,6 +31,7 @@ class BlogForm
                     TextInput::make('title')
                         ->required()
                         ->maxLength(255)
+                        ->translatable()
                         ->columnSpan(6),
 
                     TextInput::make('read_time')
@@ -62,6 +63,7 @@ class BlogForm
 
                     RichEditor::make('content')
                         ->required()
+                        ->translatable()
                         ->columnSpan(12),
                 ]),
         ]);
