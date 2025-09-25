@@ -22,11 +22,13 @@ class TestimonialForm
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('location')
                             ->required()
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         // next rows, full-width
@@ -45,6 +47,8 @@ class TestimonialForm
 
                         Textarea::make('message')
                             ->required()
+                            ->maxLength(1000)
+                            ->translatable()
                             ->columnSpan(12),
 
                         TextInput::make('rating')
@@ -57,6 +61,7 @@ class TestimonialForm
                         TextInput::make('hotel')
                             ->required()
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         DatePicker::make('stay_date')
