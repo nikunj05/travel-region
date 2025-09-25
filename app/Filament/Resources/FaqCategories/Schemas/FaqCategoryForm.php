@@ -19,6 +19,7 @@ class FaqCategoryForm
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
                 ]),
             ]);
