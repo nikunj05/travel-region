@@ -11,14 +11,15 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Throwable;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -56,8 +57,36 @@ class AdminPanelProvider extends PanelProvider
             ->resourceCreatePageRedirect('index')
             ->resourceEditPageRedirect('index')
             ->darkMode(false)
-            ->brandLogo(asset('images/logo.png'))
-            // ->favicon(Setting::whereNotNull('favicon')->first() ? asset('storage/' . Setting::first()->favicon) : null)
+            ->brandLogo(function () {
+                try {
+                    // Check if DB is connected and table exists
+                    DB::connection()->getPdo();
+
+                    if (Schema::hasTable('settings')) {
+                        $setting = Setting::whereNotNull('logo')->first();
+                        return $setting ? asset('storage/' . $setting->logo) : null;
+                    }
+                } catch (Throwable $e) {
+                    // Fail silently if DB not ready
+                    return null;
+                }
+
+                return null;
+            })
+            ->favicon(function () {
+                try {
+                    DB::connection()->getPdo();
+
+                    if (Schema::hasTable('settings')) {
+                        $setting = Setting::whereNotNull('favicon')->first();
+                        return $setting ? asset('storage/' . $setting->favicon) : null;
+                    }
+                } catch (\Throwable $e) {
+                    return null;
+                }
+
+                return null;
+            })
             ->authMiddleware([
                 Authenticate::class,
             ]);
