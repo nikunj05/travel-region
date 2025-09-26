@@ -48,6 +48,12 @@ class FooterSettings extends Page
                         ->schema([
                             TextInput::make('copyright')
                                 ->maxLength(255)
+                                ->translatable()
+                                ->columnSpan(6),
+
+                            Textarea::make('footer_info')
+                                ->maxLength(1000)
+                                ->translatable()
                                 ->columnSpan(6),
 
                             FileUpload::make('footer_logo')
@@ -60,9 +66,6 @@ class FooterSettings extends Page
                                 ->downloadable()
                                 ->previewable(true)
                                 ->openable()
-                                ->columnSpan(12),
-
-                            Textarea::make('footer_info')
                                 ->columnSpan(12),
 
                             // CheckboxList::make('footer_explore_items')

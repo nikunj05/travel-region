@@ -27,10 +27,30 @@ class BlogForm
                         ->preload()
                         ->required()
                         ->columnSpan(6),
+                ]),
 
+            Grid::make()
+                ->columns(12)
+                ->columnSpanFull()
+                ->schema([
                     TextInput::make('title')
                         ->required()
                         ->maxLength(255)
+                        ->translatable()
+                        ->columnSpan(6),
+
+                    // next rows, full-width
+                    FileUpload::make('image')
+                        ->required()
+                        ->image()
+                        ->imageEditor()
+                        ->directory('blogs') // stored inside storage/app/public/blogs
+                        ->maxSize(2048) // 2 MB
+                        ->disk('public')
+                        ->visibility('public')
+                        ->downloadable()
+                        ->previewable(true)
+                        ->openable()
                         ->columnSpan(6),
 
                     TextInput::make('read_time')
@@ -46,22 +66,9 @@ class BlogForm
                         ->label('Is Featured')
                         ->columnSpan(12), // vertical center
 
-                    // next rows, full-width
-                    FileUpload::make('image')
-                        ->required()
-                        ->image()
-                        ->imageEditor()
-                        ->directory('blogs') // stored inside storage/app/public/blogs
-                        ->maxSize(2048) // 2 MB
-                        ->disk('public')
-                        ->visibility('public')
-                        ->downloadable()
-                        ->previewable(true)
-                        ->openable()
-                        ->columnSpan(12),
-
                     RichEditor::make('content')
                         ->required()
+                        ->translatable()
                         ->columnSpan(12),
                 ]),
         ]);

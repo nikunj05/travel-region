@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Blog extends Model
 {
+    use HasTranslations;
+
     protected $fillable = [
         'category_id',
         'title',
@@ -16,8 +19,15 @@ class Blog extends Model
         'tags'
     ];
 
+    public $translatable = [
+        'title',
+        'content',
+    ];
+
     protected $casts = [
         'tags' => 'array',
+        'title' => 'array',
+        'content' => 'array',
     ];
 
     public function category()

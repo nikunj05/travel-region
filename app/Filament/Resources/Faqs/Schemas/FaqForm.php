@@ -33,11 +33,13 @@ class FaqForm
                         TextInput::make('question')
                             ->required()
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('answer')
                             ->required()
                             ->maxLength(1000)
+                            ->translatable()
                             ->columnSpan(6),
                     ]),
             ]);

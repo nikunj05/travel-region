@@ -14,6 +14,7 @@ class CategoryForm
                 TextInput::make('name')
                         ->required()
                         ->maxLength(255)
+                        ->translatable()
             ]);
     }
 }

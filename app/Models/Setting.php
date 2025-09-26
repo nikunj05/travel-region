@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Setting extends Model
 {
+    use HasTranslations;
+
     protected $fillable = [
         'logo',
         'footer_logo',
@@ -21,6 +24,8 @@ class Setting extends Model
         'social_media_links',
     ];
 
+    public $translatable = ['copyright', 'footer_info'];
+
     protected function casts(): array
     {
         return [
@@ -29,6 +34,8 @@ class Setting extends Model
             'footer_about_items' => 'array',
             'footer_support_items' => 'array',
             'social_media_links' => 'array',
+            'copyright' => 'array',
+            'footer_info' => 'array',
         ];
     }
 }

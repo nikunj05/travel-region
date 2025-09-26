@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BlogCommentRequest;
 use App\Http\Resources\BlogResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\PaginationResource;
 use App\Interfaces\BlogInterface;
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -61,6 +63,20 @@ class BlogController extends Controller
 
         return $this->sendApiResponse(true, __('messages.blog.comment_added'), [
             'blog' => new BlogResource($blog->load('comments')),
+        ]);
+    }
+
+    /**
+     * Get a list of blog categories.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function categories()
+    {
+        $categories = Category::whereHas('blogs')->get();
+
+        return $this->sendApiResponse(true, __('messages.blog.categories_fetched'), [
+            'categories' => CategoryResource::collection($categories),
         ]);
     }
 }

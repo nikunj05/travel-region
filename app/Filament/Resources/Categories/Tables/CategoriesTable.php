@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Models\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -14,6 +15,7 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->query(Category::latest())
             ->columns([
                 TextColumn::make('name')->searchable(),
             ])
