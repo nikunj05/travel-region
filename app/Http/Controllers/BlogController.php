@@ -79,4 +79,18 @@ class BlogController extends Controller
             'categories' => CategoryResource::collection($categories),
         ]);
     }
+
+    /**
+     * Get a list of blog tags.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tags()
+    {
+        $tags = Blog::distinct()->pluck('tags')->flatten()->unique()->values()->toArray();
+
+        return $this->sendApiResponse(true, __('messages.blog.tags_fetched'), [
+            'tags' => $tags,
+        ]);
+    }
 }

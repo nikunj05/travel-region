@@ -28,6 +28,7 @@ Route::prefix('v1')
     });
 
     Route::get('blog-categories', [BlogController::class, 'categories'])->name('blog.categories');
+    Route::get('blog-tags', [BlogController::class, 'tags'])->name('blog.tags');
     Route::resource('blogs', BlogController::class)->only(['index', 'show']);
     Route::resource('testimonials', TestimonialController::class)->only(['index', 'show']);
 
