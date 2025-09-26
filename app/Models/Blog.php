@@ -12,6 +12,7 @@ class Blog extends Model
     protected $fillable = [
         'category_id',
         'title',
+        'slug',
         'content',
         'image',
         'read_time',
@@ -32,6 +33,11 @@ class Blog extends Model
         'title' => 'array',
         'content' => 'array',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function category()
     {

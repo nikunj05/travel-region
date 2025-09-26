@@ -10,6 +10,7 @@ use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class BlogForm
 {
@@ -20,15 +21,6 @@ class BlogForm
                 ->columns(12)
                 ->columnSpanFull()
                 ->schema([
-                    TextInput::make('title')
-                        ->required()
-                        ->maxLength(255)
-                        ->translatable()
-                        ->columnSpan(6),
-
-                    TagsInput::make('tags')
-                        ->columnSpan(6),
-
                     Select::make('category_id')
                         ->label('Category')
                         ->relationship('category', 'name') // uses relation
@@ -41,6 +33,35 @@ class BlogForm
                         ->required()
                         ->numeric()
                         ->label('Read Time (in minutes)')
+                        ->columnSpan(6),
+
+                    TextInput::make('title')
+                        ->required()
+                        ->maxLength(255)
+                        ->translatable()
+                        ->columnSpan(6)
+                        ->live(onBlur: true) // generates slug when user leaves the field
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (is_array($state['title'])) {
+                                // pick English (or first available language)
+                                $value = $state['title']['en'] ?? reset($state['title']) ?? null;
+                            } else {
+                                $value = $state['title'];
+                            }
+
+                            if ($value) {
+                                $set('slug', Str::slug($value));
+                            }
+                        }),
+
+                    TextInput::make('slug')
+                        ->label('Slug')
+                        ->unique(ignoreRecord: true)
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpan(6),
+
+                    TagsInput::make('tags')
                         ->columnSpan(6),
 
                     // next rows, full-width

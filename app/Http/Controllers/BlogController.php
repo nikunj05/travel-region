@@ -44,7 +44,7 @@ class BlogController extends Controller
      */
     public function show($blog)
     {
-        $blog = Blog::findOrFail($blog);
+        $blog = Blog::where('slug', $blog)->firstOrFail();
 
         return $this->sendApiResponse(true, __('messages.blog.single_fetched'), [
             'blog' => new BlogResource($blog),
