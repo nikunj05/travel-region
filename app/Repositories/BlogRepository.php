@@ -29,9 +29,19 @@ class BlogRepository implements BlogInterface
                         $q->orWhere('tags', 'like', '%' . $tag . '%');
                     }
                 });
-            })
-            ->latest()
-            ->paginate();
+            });
+
+        if ($request->has('sort_by')) {
+            $sortBy = $request->input('sort_by');
+            $sortOrder = $request->input('sort_order', 'asc');
+            if (in_array($sortBy, ['created_at', 'read_time']) && in_array($sortOrder, ['asc', 'desc'])) {
+                $blogs = $blogs->orderBy($sortBy, $sortOrder);
+            }
+        } else {
+            $blogs = $blogs->latest();
+        }
+
+        $blogs = $blogs->paginate();
 
         return $blogs;
     }
