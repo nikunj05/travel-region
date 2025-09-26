@@ -27,6 +27,7 @@ Route::prefix('v1')
         Route::get('/{hotelCode}/details', [HotelController::class, 'show'])->name('hotels.details');
     });
 
+    Route::get('blog-categories', [BlogController::class, 'categories'])->name('blog.categories');
     Route::resource('blogs', BlogController::class)->only(['index', 'show']);
     Route::resource('testimonials', TestimonialController::class)->only(['index', 'show']);
 

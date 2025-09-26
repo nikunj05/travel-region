@@ -16,4 +16,9 @@ class Category extends Model
     protected $casts = [
         'name' => 'array',
     ];
+
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class);
+    }
 }
