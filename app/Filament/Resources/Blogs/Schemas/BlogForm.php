@@ -39,6 +39,12 @@ class BlogForm
                         ->translatable()
                         ->columnSpan(6),
 
+                    TextInput::make('read_time')
+                        ->required()
+                        ->numeric()
+                        ->label('Read Time (in minutes)')
+                        ->columnSpan(6),
+
                     // next rows, full-width
                     FileUpload::make('image')
                         ->required()
@@ -53,13 +59,24 @@ class BlogForm
                         ->openable()
                         ->columnSpan(6),
 
-                    TextInput::make('read_time')
-                        ->required()
-                        ->numeric()
-                        ->label('Read Time (in minutes)')
+                    // next rows, full-width
+                    FileUpload::make('author_image')
+                        ->image()
+                        ->imageEditor()
+                        ->directory('blogs') // stored inside storage/app/public/blogs
+                        ->maxSize(2048) // 2 MB
+                        ->disk('public')
+                        ->visibility('public')
+                        ->downloadable()
+                        ->previewable(true)
+                        ->openable()
                         ->columnSpan(6),
 
                     TagsInput::make('tags')
+                        ->columnSpan(6),
+
+                    TextInput::make('author')
+                        ->maxLength(255)
                         ->columnSpan(6),
 
                     Checkbox::make('is_featured')

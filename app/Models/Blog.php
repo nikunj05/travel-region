@@ -16,7 +16,9 @@ class Blog extends Model
         'image',
         'read_time',
         'is_featured',
-        'tags'
+        'tags',
+        'author',
+        'author_image',
     ];
 
     public $translatable = [

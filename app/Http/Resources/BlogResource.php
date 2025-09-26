@@ -27,6 +27,9 @@ class BlogResource extends JsonResource
             'tags' => $this->tags,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'author' => $this->author,
+            'author_image' => $this->author_image,
+            'full_author_image_url' => $this->author_image ? url(Storage::url($this->author_image)) : null,
             'category' => new CategoryResource($this->category),
             // 'comments' => BlogCommentResource::collection($this->comments),
         ];
