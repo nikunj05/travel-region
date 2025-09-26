@@ -20,23 +20,21 @@ class BlogForm
                 ->columns(12)
                 ->columnSpanFull()
                 ->schema([
+                    TextInput::make('title')
+                        ->required()
+                        ->maxLength(255)
+                        ->translatable()
+                        ->columnSpan(6),
+
+                    TagsInput::make('tags')
+                        ->columnSpan(6),
+
                     Select::make('category_id')
                         ->label('Category')
                         ->relationship('category', 'name') // uses relation
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->columnSpan(6),
-                ]),
-
-            Grid::make()
-                ->columns(12)
-                ->columnSpanFull()
-                ->schema([
-                    TextInput::make('title')
-                        ->required()
-                        ->maxLength(255)
-                        ->translatable()
                         ->columnSpan(6),
 
                     TextInput::make('read_time')
@@ -59,6 +57,28 @@ class BlogForm
                         ->openable()
                         ->columnSpan(6),
 
+                    Checkbox::make('is_featured')
+                        ->label('Is Featured')
+                        ->columnSpan(6), // vertical center
+
+                    RichEditor::make('content')
+                        ->required()
+                        ->translatable()
+                        ->columnSpan(12),
+                ]),
+
+            Grid::make()
+                ->columns(12)
+                ->columnSpanFull()
+                ->schema([
+                    TextInput::make('author')
+                        ->maxLength(255)
+                        ->columnSpan(6),
+
+                    TextInput::make('author_info')
+                        ->maxLength(255)
+                        ->columnSpan(6),
+
                     // next rows, full-width
                     FileUpload::make('author_image')
                         ->image()
@@ -71,22 +91,6 @@ class BlogForm
                         ->previewable(true)
                         ->openable()
                         ->columnSpan(6),
-
-                    TagsInput::make('tags')
-                        ->columnSpan(6),
-
-                    TextInput::make('author')
-                        ->maxLength(255)
-                        ->columnSpan(6),
-
-                    Checkbox::make('is_featured')
-                        ->label('Is Featured')
-                        ->columnSpan(12), // vertical center
-
-                    RichEditor::make('content')
-                        ->required()
-                        ->translatable()
-                        ->columnSpan(12),
                 ]),
         ]);
     }

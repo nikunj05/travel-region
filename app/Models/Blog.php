@@ -19,6 +19,7 @@ class Blog extends Model
         'tags',
         'author',
         'author_image',
+        'author_info',
     ];
 
     public $translatable = [

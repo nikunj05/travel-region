@@ -28,6 +28,7 @@ class BlogResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'author' => $this->author,
+            'author_info' => $this->author_info,
             'author_image' => $this->author_image,
             'full_author_image_url' => $this->author_image ? url(Storage::url($this->author_image)) : null,
             'category' => new CategoryResource($this->category),
