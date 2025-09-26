@@ -41,6 +41,7 @@ class CmsForm
                     ->schema([
                         RichEditor::make('content')
                             ->required()
+                            ->translatable()
                             ->columnSpan(12),
                     ]),
             ]);

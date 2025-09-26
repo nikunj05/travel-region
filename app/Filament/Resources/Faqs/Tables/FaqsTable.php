@@ -17,7 +17,6 @@ class FaqsTable
             ->columns([
                 TextColumn::make('category.name')->searchable(),
                 TextColumn::make('question')->searchable(),
-                TextColumn::make('answer')->searchable(),
             ])
             ->filters([
                 //

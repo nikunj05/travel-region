@@ -14,7 +14,6 @@ class UserRegistrationByMonth extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            'today' => 'Today',
             'week' => 'Last 7 days',
             'month' => 'Last 30 days',
             'year' => 'This year',
@@ -23,7 +22,7 @@ class UserRegistrationByMonth extends ChartWidget
 
     protected function getData(): array
     {
-        $activeFilter = $this->filter ?? 'today';
+        $activeFilter = $this->filter ?? 'week';
 
         // registered users count by month name
         switch ($activeFilter) {

@@ -14,7 +14,6 @@ class UserByGender extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            'today' => 'Today',
             'week' => 'Last 7 days',
             'month' => 'Last 30 days',
             'year' => 'This year',
@@ -23,7 +22,7 @@ class UserByGender extends ChartWidget
 
     protected function getData(): array
     {
-        $activeFilter = $this->filter ?? 'today';
+        $activeFilter = $this->filter ?? 'week';
 
         // users gender count
         $userCount = User::selectRaw('gender, COUNT(*) as count')
