@@ -34,11 +34,6 @@ class Blog extends Model
         'content' => 'array',
     ];
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
-
     public function category()
     {
         return $this->belongsTo(Category::class);
