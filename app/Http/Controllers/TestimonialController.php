@@ -29,8 +29,10 @@ class TestimonialController extends Controller
      * @param Testimonial $testimonial
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Testimonial $testimonial)
+    public function show($testimonial)
     {
+        $testimonial = Testimonial::findOrFail($testimonial);
+
         return $this->sendApiResponse(true, __('messages.testimonial.single_fetched'), [
             'testimonial' => new TestimonialResource($testimonial)
         ]);

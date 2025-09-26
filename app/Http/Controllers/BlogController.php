@@ -42,8 +42,10 @@ class BlogController extends Controller
      * @param Blog $blog
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Blog $blog)
+    public function show($blog)
     {
+        $blog = Blog::findOrFail($blog);
+
         return $this->sendApiResponse(true, __('messages.blog.single_fetched'), [
             'blog' => new BlogResource($blog),
             'related_blogs' => BlogResource::collection(Blog::where('id', '!=', $blog->id)->where('category_id', $blog->category_id)->latest()->take(3)->get()),
