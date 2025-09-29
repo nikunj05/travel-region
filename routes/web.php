@@ -7,4 +7,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/webhook/tap', [TapWebhookController::class, 'handle'])->name('tap.webhook');
+Route::any('/webhook/tap', [TapWebhookController::class, 'handle'])->name('tap.webhook');
