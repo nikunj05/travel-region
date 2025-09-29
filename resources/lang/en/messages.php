@@ -53,5 +53,6 @@ return [
     'payment' => [
         'checkout_initiated' => 'Checkout initiated successfully.',
         'checkout_failed' => 'Failed to initiate checkout.',
+        'already_paid' => 'This booking has already been paid.',
     ],
 ];
