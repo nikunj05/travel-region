@@ -7,6 +7,7 @@ use App\Http\Controllers\CmsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TapPaymentController;
 use App\Http\Controllers\TestimonialController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,8 @@ Route::prefix('v1')
 
         Route::get('bookings', [BookingController::class, 'index'])->name('booking.index');
         Route::post('bookings', [BookingController::class, 'store'])->name('booking.store');
+
+        Route::post('checkout', [TapPaymentController::class, 'checkout'])->name('payment.checkout');
 
         Route::group(['prefix' => 'profile'], function (): void {
             Route::get('/', [AuthController::class, 'profile'])->name('auth.profile');

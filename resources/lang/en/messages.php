@@ -50,4 +50,8 @@ return [
     'booking' => [
         'added' => 'Booking created successfully.',
     ],
+    'payment' => [
+        'checkout_initiated' => 'Checkout initiated successfully.',
+        'checkout_failed' => 'Failed to initiate checkout.',
+    ],
 ];
