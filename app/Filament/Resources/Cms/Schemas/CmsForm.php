@@ -54,12 +54,14 @@ class CmsForm
                     ->schema([
                         Checkbox::make('about_us')
                             ->label('Is About Us Page?')
+                            ->reactive()
                             ->columnSpan(12),
                     ]),
 
                 Grid::make()
                     ->columns(12)
                     ->columnSpanFull()
+                    ->visible(fn ($get) => $get('about_us'))
                     ->schema([
                         // next rows, full-width
                         FileUpload::make('founder_image')
@@ -77,6 +79,7 @@ class CmsForm
 
                 Repeater::make('why_we_exist')
                     ->label('Why We Exist')
+                    ->visible(fn ($get) => $get('about_us'))
                     ->schema([
                         TextInput::make('title')
                             ->label('Title')
@@ -107,6 +110,7 @@ class CmsForm
                 Grid::make()
                     ->columns(12)
                     ->columnSpanFull()
+                    ->visible(fn ($get) => $get('about_us'))
                     ->schema([
                         FileUpload::make('our_partners')
                             ->label('Our Partners')
@@ -125,6 +129,7 @@ class CmsForm
 
                 Repeater::make('few_highlights')
                     ->label('A Few Highlights')
+                    ->visible(fn ($get) => $get('about_us'))
                     ->schema([
                         TextInput::make('title')
                             ->label('Title')
@@ -155,6 +160,7 @@ class CmsForm
                 Grid::make()
                     ->columns(12)
                     ->columnSpanFull()
+                    ->visible(fn ($get) => $get('about_us'))
                     ->schema([
                         TextInput::make('ready_to_explore_title')
                             ->maxLength(255)
