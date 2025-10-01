@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CmsResource;
 use App\Interfaces\CmsInterface;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,7 @@ class CmsController extends Controller
         $cmsContent = $this->cmsRepository->getPages();
 
         return $this->sendApiResponse(true, __('messages.cms.fetched'), [
-            'content' => $cmsContent
+            'content' => CmsResource::collection($cmsContent)
         ]);
     }
 
@@ -40,7 +41,7 @@ class CmsController extends Controller
         $cmsContent = $this->cmsRepository->getPageBySlug($slug);
 
         return $this->sendApiResponse(true, __('messages.cms.fetched'), [
-            'content' => $cmsContent
+            'content' => new CmsResource($cmsContent)
         ]);
     }
 }
