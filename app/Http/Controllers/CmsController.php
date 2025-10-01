@@ -40,6 +40,10 @@ class CmsController extends Controller
     {
         $cmsContent = $this->cmsRepository->getPageBySlug($slug);
 
+        if (!$cmsContent) {
+            abort(404);
+        }
+
         return $this->sendApiResponse(true, __('messages.cms.fetched'), [
             'content' => new CmsResource($cmsContent)
         ]);
