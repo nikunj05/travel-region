@@ -9,11 +9,27 @@ class CmsPage extends Model
 {
     use HasTranslations;
 
-    protected $fillable = ['slug', 'title', 'content'];
+    protected $fillable = [
+        'slug',
+        'title',
+        'content',
+        'about_us',
+        'founder_image',
+        'why_we_exist',
+        'our_partners',
+        'few_highlights',
+        'ready_to_explore_title',
+        'ready_to_explore_sub_title',
+        'ready_to_explore_image'
+    ];
 
     public $translatable = ['content'];
 
     protected $casts = [
         'content' => 'array',
+        'about_us' => 'boolean',
+        'why_we_exist' => 'array',
+        'our_partners' => 'array',
+        'few_highlights' => 'array',
     ];
 }
