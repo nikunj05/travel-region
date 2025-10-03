@@ -177,6 +177,13 @@ class AuthRepository implements AuthInterface
     {
         $user = User::find(Auth::id());
 
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $filename = time().'_'.$file->getClientOriginalName();
+            $filePath = $file->storeAs('profile_images', $filename, 'public');
+            $user->profile_image = '/storage/'.$filePath;
+        }
+
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         // $user->email = $request->email;

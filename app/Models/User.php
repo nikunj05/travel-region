@@ -36,6 +36,7 @@ class User extends Authenticatable implements FilamentUser
         'passport_number',
         'language',
         'currency',
+        'profile_image',
     ];
 
     /**

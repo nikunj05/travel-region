@@ -26,6 +26,8 @@ class UserResource extends JsonResource
             'nationality' => $this->nationality,
             'address' => $this->address,
             'passport_number' => $this->passport_number,
+            'profile_image' => $this->profile_image,
+            'profile_image_url' => $this->profile_image ? url($this->profile_image) : null,
         ];
     }
 }
