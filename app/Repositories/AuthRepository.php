@@ -209,11 +209,21 @@ class AuthRepository implements AuthInterface
     {
         $user = User::find(Auth::id());
 
-        $user->language = $request->language;
-        $user->currency = $request->currency;
-        $user->email = $request->email;
-        $user->country_code = $request->country_code;
-        $user->mobile = $request->mobile;
+        if ($request->language) {
+            $user->language = $request->language;
+        }
+        if ($request->currency) {
+            $user->currency = $request->currency;
+        }
+        if ($request->email) {
+            $user->email = $request->email;
+        }
+        if ($request->country_code) {
+            $user->country_code = $request->country_code;
+        }
+        if ($request->mobile) {
+            $user->mobile = $request->mobile;
+        }
         $user->save();
 
         if ($request->password) {

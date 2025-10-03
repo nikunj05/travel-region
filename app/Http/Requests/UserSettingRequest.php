@@ -23,11 +23,11 @@ class UserSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'language' => 'required|string|max:10',
-            'currency' => 'required|string|max:10',
-            'email' => 'required|email|max:255|unique:users,email,' . $this->user()->id,
-            'country_code' => 'required|string|max:10',
-            'mobile' => 'required|string|max:10',
+            'language' => 'nullable|string|max:10',
+            'currency' => 'nullable|string|max:10',
+            'email' => 'nullable|email|max:255|unique:users,email,' . $this->user()->id,
+            'country_code' => 'nullable|string|max:10',
+            'mobile' => 'nullable|string|max:10',
             'password' => [
                 Password::min(8)
                     ->mixedCase() // Require at least one uppercase and one lowercase letter...
