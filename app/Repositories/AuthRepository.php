@@ -17,7 +17,7 @@ class AuthRepository implements AuthInterface
     {
         $validated = $request->validated();
 
-        $user = User::where('email', $validated['email'])->first();
+        $user = User::role('customer')->where('email', $validated['email'])->first();
 
         if (! $user || ! Hash::check($validated['password'], $user->password)) {
             throw new AuthenticationException(__('messages.invalid_credentials'));
