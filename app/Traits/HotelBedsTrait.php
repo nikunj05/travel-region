@@ -101,6 +101,9 @@ trait HotelBedsTrait
             return (int) $code;
         })->toArray();
 
+        $page = $request->get('page', 1);
+        $perPage = $request->get('per_page', 100);
+
         $language = $request->language ?? 'eng';
 
         $hotels = Http::withHeaders([
@@ -109,7 +112,8 @@ trait HotelBedsTrait
             'X-Signature' => $this->generateSignature(),
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels", [
             'language' => strtoupper($language),
-            'codes' => implode(',', $hotelCodes)
+            'codes' => implode(',', $hotelCodes),
+            'from' => ($page - 1) * $perPage,
         ]);
 
         if ($hotels->successful()) {
