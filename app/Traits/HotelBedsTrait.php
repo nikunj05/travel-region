@@ -38,7 +38,7 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        return Http::withHeaders([
+        $availableHotels = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -62,6 +62,29 @@ trait HotelBedsTrait
                 ],
                 'language' => strtolower($request->language),
             ]);
+
+        if ($availableHotels->successful()) {
+            $codes = [];
+            foreach ($availableHotels['hotels']['hotels'] as $hotel) {
+                $codes[] = $hotel['code'];
+            }
+
+            $page = $request->get('page', 1);
+            $perPage = $request->get('per_page', 100);
+
+            $language = $request->language ?? 'eng';
+
+            $hotelContent = $this->hotelContentApiUsingCodes($codes, $page, $perPage, $language);
+
+            return [
+                'hotels' => $hotelContent['hotels'] ?? [],
+                'checkIn' => $request->check_in,
+                'checkOut' => $request->check_out,
+                'total' => $availableHotels['hotels']['total']
+            ];
+        } else {
+            throw new \Exception(__('messages.catch'));
+        }
     }
 
     /**
@@ -95,16 +118,25 @@ trait HotelBedsTrait
      */
     public function getFavoriteHotels(Request $request, User $user)
     {
-        $apiKey = env('HOTEL_BEDS_API_KEY');
-
         $hotelCodes = FavoriteHotel::where('user_id', $user->id)->pluck('hotel_codes')->map(function ($code) {
             return (int) $code;
         })->toArray();
 
-        $page = $request->get('page', 1);
-        $perPage = $request->get('per_page', 100);
+        return $this->hotelContentApiUsingCodes($hotelCodes, $request->get('page', 1), $request->get('per_page', 100), $request->language ?? 'eng');
+    }
 
-        $language = $request->language ?? 'eng';
+    /**
+     * Fetch hotel content using hotel codes
+     *
+     * @param array $hotelCodes
+     * @param int $page
+     * @param int $perPage
+     * @param string $language
+     * @return void
+     */
+    public function hotelContentApiUsingCodes($hotelCodes, $page, $perPage, $language)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
 
         $hotels = Http::withHeaders([
             'Accept' => 'application/json',

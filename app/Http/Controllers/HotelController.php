@@ -23,18 +23,12 @@ class HotelController extends Controller
         try {
             $response = $this->checkHotelAvailability($request);
 
-            if ($response->successful()) {
-                return $this->sendApiResponse(true, __('messages.hotel.fetched'), [
-                    'hotels' => $response->json()['hotels']['hotels'],
-                    'checkIn' => $response->json()['hotels']['checkIn'],
-                    'total' => $response->json()['hotels']['total'],
-                    'checkOut' => $response->json()['hotels']['checkOut']
-                ]);
-            }
-
-            return $this->sendApiResponse(false, __('messages.catch'), [
-                'error' => $response->json()
-            ], $response->status());
+            return $this->sendApiResponse(true, __('messages.hotel.fetched'), [
+                'hotels' => $response['hotels'],
+                'checkIn' => $response['checkIn'],
+                'total' => $response['total'],
+                'checkOut' => $response['checkOut']
+            ]);
 
         } catch (\Exception $e) {
             return $this->sendApiResponse(false, __('messages.catch'), [
