@@ -83,6 +83,9 @@ trait HotelBedsTrait
                 'total' => $availableHotels['hotels']['total']
             ];
         } else {
+            if (isset($availableHotels['error']) && $availableHotels['error']) {
+                throw new \Exception($availableHotels['error']);
+            }
             throw new \Exception(__('messages.catch'));
         }
     }
