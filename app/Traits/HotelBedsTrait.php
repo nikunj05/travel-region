@@ -155,6 +155,9 @@ trait HotelBedsTrait
             return $hotels->json();
         }
 
+        if (isset($hotels['error']) && $hotels['error']) {
+            throw new \Exception($hotels['error']);
+        }
         return [];
     }
 
