@@ -64,9 +64,22 @@ trait HotelBedsTrait
             ]);
 
         if ($availableHotels->successful()) {
+            $hotelData = [];
             $codes = [];
             foreach ($availableHotels['hotels']['hotels'] as $hotel) {
                 $codes[] = $hotel['code'];
+                $hotelData[$hotel['code']] = [
+                    'code' => $hotel['code'],
+                    'minRate' => $hotel['minRate'],
+                    'maxRate' => $hotel['maxRate'],
+                    'currency' => $hotel['currency'],
+                    'categoryCode' => $hotel['categoryCode'],
+                    'categoryName' => $hotel['categoryName'],
+                    'zoneCode' => $hotel['zoneCode'],
+                    'zoneName' => $hotel['zoneName'],
+                    'latitude' => $hotel['latitude'],
+                    'longitude' => $hotel['longitude'],
+                ];
             }
 
             $page = $request->get('page', 1);
@@ -75,6 +88,12 @@ trait HotelBedsTrait
             $language = $request->language ?? 'eng';
 
             $hotelContent = $this->hotelContentApiUsingCodes($codes, $page, $perPage, $language);
+
+            foreach ($hotelContent['hotels'] as &$content) {
+                if (isset($hotelData[$content['code']])) {
+                    $content = array_merge($content, $hotelData[$content['code']]);
+                }
+            }
 
             return [
                 'hotels' => $hotelContent['hotels'] ?? [],
