@@ -23,7 +23,13 @@ class CmsPage extends Model
         'ready_to_explore_image'
     ];
 
-    public $translatable = ['content'];
+    public $translatable = [
+        'content',
+        'why_we_exist',
+        'few_highlights',
+        'ready_to_explore_title',
+        'ready_to_explore_sub_title',
+    ];
 
     protected $casts = [
         'content' => 'array',
