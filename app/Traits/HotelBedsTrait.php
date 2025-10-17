@@ -102,6 +102,9 @@ trait HotelBedsTrait
                 'total' => $availableHotels['hotels']['total']
             ];
         } else {
+            if (isset($availableHotels['error']) && is_array($availableHotels['error']) && isset($availableHotels['error']['message'])) {
+                throw new \Exception($availableHotels['error']['message']);
+            }
             if (isset($availableHotels['error']) && $availableHotels['error']) {
                 throw new \Exception($availableHotels['error']);
             }
