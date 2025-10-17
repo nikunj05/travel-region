@@ -84,11 +84,13 @@ class CmsForm
                         TextInput::make('title')
                             ->label('Title')
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('description')
                             ->label('Description')
                             ->maxLength(2048)
+                            ->translatable()
                             ->columnSpan(6),
 
                         FileUpload::make('icon')
@@ -134,11 +136,13 @@ class CmsForm
                         TextInput::make('title')
                             ->label('Title')
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('description')
                             ->label('Description')
                             ->maxLength(2048)
+                            ->translatable()
                             ->columnSpan(6),
 
                         FileUpload::make('icon')
@@ -164,10 +168,12 @@ class CmsForm
                     ->schema([
                         TextInput::make('ready_to_explore_title')
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('ready_to_explore_sub_title')
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
 
                         FileUpload::make('ready_to_explore_image')
