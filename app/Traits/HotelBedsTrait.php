@@ -38,6 +38,14 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
+        $paxes = [];
+        for ($i = 0; $i < $request->children; $i++) {
+            $paxes[] = [
+                'type' => 'CH',
+                'age' => 17
+            ];
+        }
+
         $availableHotels = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
@@ -51,7 +59,8 @@ trait HotelBedsTrait
                     [
                         'rooms' => $request->rooms,
                         'adults' => $request->adults,
-                        'children' => $request->children ?? 0
+                        'children' => $request->children ?? 0,
+                        'paxes' => $paxes ?? []
                     ]
                 ],
                 'geolocation' => [
