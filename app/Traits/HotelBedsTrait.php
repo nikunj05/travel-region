@@ -81,6 +81,10 @@ trait HotelBedsTrait
             $payload['filter']['maxRate'] = $request->max_price;
         }
 
+        if ($request->has('accommodations')) {
+            $payload['accommodations'] = explode(',', $request->accommodations);
+        }
+
         $availableHotels = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
@@ -166,6 +170,28 @@ trait HotelBedsTrait
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
             'language' => strtoupper($language)
         ]);
+    }
+
+    /**
+     * Get Accommodation Types from HotelBeds API
+     *
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function getAccommodationTypes()
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $language = $request->language ?? 'eng';
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/types/accommodations", [
+            'language' => strtoupper($language)
+        ]);
+
+        return $response->json()['accommodations'] ?? [];
     }
 
     /**

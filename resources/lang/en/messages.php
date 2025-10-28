@@ -55,4 +55,5 @@ return [
         'checkout_failed' => 'Failed to initiate checkout.',
         'already_paid' => 'This booking has already been paid.',
     ],
+    'accommodation_types_fetched' => 'Accommodation types fetched successfully.',
 ];

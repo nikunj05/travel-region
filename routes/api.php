@@ -26,6 +26,7 @@ Route::prefix('v1')
     Route::group(['prefix' => 'hotels'], function (): void {
         Route::post('/', [HotelController::class, 'index'])->name('hotels.index');
         Route::get('/{hotelCode}/details', [HotelController::class, 'show'])->name('hotels.details');
+        Route::get('/accommodation-types', [HotelController::class, 'accommodationTypes'])->name('hotels.accommodation-types');
     });
 
     Route::get('blog-categories', [BlogController::class, 'categories'])->name('blog.categories');

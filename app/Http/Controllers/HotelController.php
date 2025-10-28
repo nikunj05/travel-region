@@ -38,6 +38,20 @@ class HotelController extends Controller
     }
 
     /**
+     * Get accommodation types from HotelBeds API.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function accommodationTypes()
+    {
+        $response = $this->getAccommodationTypes();
+
+        return $this->sendApiResponse(true, __('messages.accommodation_types_fetched'), [
+            'accommodation_types' => $response
+        ]);
+    }
+
+    /**
      * Get details of a specific hotel by its code.
      *
      * @param string $hotelCode
