@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BookingRequest;
+use App\Http\Requests\CouponCodeRequest;
 use App\Http\Resources\BookingResource;
 use App\Interfaces\BookingInterface;
 use Illuminate\Http\Request;
@@ -44,5 +45,18 @@ class BookingController extends Controller
         return $this->sendApiResponse(true, __('messages.booking.added'), [
             'booking' => new BookingResource($booking),
         ], 201);
+    }
+
+    /**
+     * Apply a coupon to the booking.
+     *
+     * @param CouponCodeRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkCoupon(CouponCodeRequest $request)
+    {
+        $response = $this->bookingRepository->checkCoupon($request);
+
+        return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
     }
 }

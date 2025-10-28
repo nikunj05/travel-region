@@ -56,4 +56,8 @@ return [
         'already_paid' => 'This booking has already been paid.',
     ],
     'accommodation_types_fetched' => 'Accommodation types fetched successfully.',
+    'coupon' => [
+        'invalid' => 'The coupon code is invalid.',
+        'valid' => 'Coupon code is valid.',
+    ],
 ];

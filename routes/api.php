@@ -49,6 +49,7 @@ Route::prefix('v1')
 
         Route::get('bookings', [BookingController::class, 'index'])->name('booking.index');
         Route::post('bookings', [BookingController::class, 'store'])->name('booking.store');
+        Route::post('check-coupon', [BookingController::class, 'checkCoupon'])->name('booking.check-coupon');
 
         Route::post('checkout', [TapPaymentController::class, 'checkout'])->name('payment.checkout');
 

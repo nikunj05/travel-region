@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\BookingInterface;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Models\Coupon;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -71,5 +72,32 @@ class BookingRepository implements BookingInterface
         }
 
         return $booking;
+    }
+
+    /**
+     * Apply a coupon to the booking.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function checkCoupon($request)
+    {
+        $coupon = Coupon::where('code', $request->coupon_code)
+            ->first();
+
+        if (!$coupon) {
+            return [
+                'status' => false,
+                'message' => __('messages.coupon.invalid'),
+            ];
+        }
+
+        return [
+            'status' => true,
+            'message' => __('messages.coupon.valid'),
+            'data' => [
+                'coupon' => $coupon,
+            ],
+        ];
     }
 }
