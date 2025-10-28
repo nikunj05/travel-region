@@ -30,6 +30,9 @@ class SearchHotelRequest extends FormRequest
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'language' => 'required|string|in:eng,ara',
+            'star_rating' => 'nullable|integer|between:1,5',
+            'min_price' => 'nullable|numeric|min:0',
+            'max_price' => 'nullable|numeric|min:0',
         ];
     }
 }

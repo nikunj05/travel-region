@@ -46,70 +46,95 @@ trait HotelBedsTrait
             ];
         }
 
+        $payload = [
+            'stay' => [
+                'checkIn' => $request->check_in,
+                'checkOut' => $request->check_out
+            ],
+            'occupancies' => [
+                [
+                    'rooms' => $request->rooms,
+                    'adults' => $request->adults,
+                    'children' => $request->children ?? 0,
+                    'paxes' => $paxes ?? []
+                ]
+            ],
+            'geolocation' => [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'radius' => 50,
+                'unit' => 'km'
+            ],
+            'language' => strtolower($request->language),
+        ];
+
+        if ($request->has('star_rating')) {
+            $payload['filter']['minCategory'] = $request->star_rating;
+            $payload['filter']['maxCategory'] = $request->star_rating;
+        }
+
+        if ($request->has('min_price')) {
+            $payload['filter']['minRate'] = $request->min_price;
+        }
+
+        if ($request->has('max_price')) {
+            $payload['filter']['maxRate'] = $request->max_price;
+        }
+
         $availableHotels = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
-        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", [
-                'stay' => [
-                    'checkIn' => $request->check_in,
-                    'checkOut' => $request->check_out
-                ],
-                'occupancies' => [
-                    [
-                        'rooms' => $request->rooms,
-                        'adults' => $request->adults,
-                        'children' => $request->children ?? 0,
-                        'paxes' => $paxes ?? []
-                    ]
-                ],
-                'geolocation' => [
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                    'radius' => 50,
-                    'unit' => 'km'
-                ],
-                'language' => strtolower($request->language),
-            ]);
+        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", $payload);
 
         if ($availableHotels->successful()) {
             $hotelData = [];
             $codes = [];
-            foreach ($availableHotels['hotels']['hotels'] as $hotel) {
-                $codes[] = $hotel['code'];
-                $hotelData[$hotel['code']] = [
-                    'code' => $hotel['code'],
-                    'minRate' => $hotel['minRate'],
-                    'maxRate' => $hotel['maxRate'],
-                    'currency' => $hotel['currency'],
-                    'categoryCode' => $hotel['categoryCode'],
-                    'categoryName' => $hotel['categoryName'],
-                    'zoneCode' => $hotel['zoneCode'],
-                    'zoneName' => $hotel['zoneName'],
-                    'latitude' => $hotel['latitude'],
-                    'longitude' => $hotel['longitude'],
+
+            if (isset($availableHotels['hotels']['hotels'])) {
+                foreach ($availableHotels['hotels']['hotels'] as $hotel) {
+                    $codes[] = $hotel['code'];
+                    $hotelData[$hotel['code']] = [
+                        'code' => $hotel['code'],
+                        'minRate' => $hotel['minRate'],
+                        'maxRate' => $hotel['maxRate'],
+                        'currency' => $hotel['currency'],
+                        'categoryCode' => $hotel['categoryCode'],
+                        'categoryName' => $hotel['categoryName'],
+                        'zoneCode' => $hotel['zoneCode'],
+                        'zoneName' => $hotel['zoneName'],
+                        'latitude' => $hotel['latitude'],
+                        'longitude' => $hotel['longitude'],
+                    ];
+                }
+
+                $page = $request->get('page', 1);
+                $perPage = $request->get('per_page', 100);
+
+                $language = $request->language ?? 'eng';
+
+                $hotelContent = $this->hotelContentApiUsingCodes($codes, $page, $perPage, $language);
+
+                foreach ($hotelContent['hotels'] as &$content) {
+                    if (isset($hotelData[$content['code']])) {
+                        $content = array_merge($content, $hotelData[$content['code']]);
+                    }
+                }
+
+                return [
+                    'hotels' => $hotelContent['hotels'] ?? [],
+                    'checkIn' => $request->check_in,
+                    'checkOut' => $request->check_out,
+                    'total' => $availableHotels['hotels']['total']
+                ];
+            } else {
+                return [
+                    'hotels' => [],
+                    'checkIn' => $request->check_in,
+                    'checkOut' => $request->check_out,
+                    'total' => $availableHotels['hotels']['total']
                 ];
             }
-
-            $page = $request->get('page', 1);
-            $perPage = $request->get('per_page', 100);
-
-            $language = $request->language ?? 'eng';
-
-            $hotelContent = $this->hotelContentApiUsingCodes($codes, $page, $perPage, $language);
-
-            foreach ($hotelContent['hotels'] as &$content) {
-                if (isset($hotelData[$content['code']])) {
-                    $content = array_merge($content, $hotelData[$content['code']]);
-                }
-            }
-
-            return [
-                'hotels' => $hotelContent['hotels'] ?? [],
-                'checkIn' => $request->check_in,
-                'checkOut' => $request->check_out,
-                'total' => $availableHotels['hotels']['total']
-            ];
         } else {
             if (isset($availableHotels['error']) && is_array($availableHotels['error']) && isset($availableHotels['error']['message'])) {
                 throw new \Exception($availableHotels['error']['message']);
