@@ -24,10 +24,10 @@ trait CurrencyConversion
         return Cache::remember($cacheKey, now()->addHours(6), function () use ($fromCurrency, $toCurrency, $today) {
             $exchangeRate = RateExchange::where('from_currency', $fromCurrency)
                 ->where('to_currency', $toCurrency)
-                ->where('rate_date', $today)
+                // ->where('rate_date', $today)
                 ->first();
 
-            return $exchangeRate ? $exchangeRate->rate : null;
+            return $exchangeRate;
         });
     }
 
