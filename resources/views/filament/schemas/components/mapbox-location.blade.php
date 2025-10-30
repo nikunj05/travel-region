@@ -27,14 +27,18 @@
     @endif
 
     <div class="relative">
-        <input
-            id="{{ $id }}"
-            type="text"
-            x-model="query"
-            @input.debounce.400ms="search"
-            placeholder="Search for location..."
-            class="fi-input block w-full border-gray-300 shadow-sm rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-600 focus:ring-primary-600 dark:focus:border-primary-500"
-        />
+        <div class="fi-input-wrp fi-fo-text-input">
+            <div class="fi-input-wrp-content-ctn">
+                <input
+                    id="{{ $id }}"
+                    type="text"
+                    x-model="query"
+                    @input.debounce.400ms="search"
+                    placeholder="Search for location..."
+                    class="fi-input fi-fo-text-input fi-fo-input-without-prefix-suffix w-full"
+                />
+            </div>
+        </div>
 
         <div
             x-show="isOpen"
@@ -42,28 +46,21 @@
             @click.away="isOpen = false"
             class="absolute z-50 mt-1 w-full"
         >
-            <ul class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
+            <ul class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-lg shadow-lg max-h-60 overflow-auto">
                 <template x-for="place in results" :key="place.id">
                     <li
                         @click="selectPlace(place)"
-                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 text-sm text-gray-900 dark:text-white border-b border-gray-100 dark:border-white/5 last:border-b-0 transition"
                         x-text="place.place_name"
                     ></li>
                 </template>
 
-                <template x-if="results.length === 0 && query.length >= 3 && !loading">
+                <template x-if="results.length === 0 && query.length >= 3">
                     <li class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                         No locations found
                     </li>
                 </template>
             </ul>
-        </div>
-
-        <div x-show="loading" class="absolute right-3 top-3">
-            <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
         </div>
     </div>
 </div>
@@ -74,7 +71,6 @@
         query: value || '',
         results: [],
         isOpen: false,
-        loading: false,
 
         init() {
             // Watch for external state changes
@@ -90,11 +86,8 @@
             if (this.query.length < 3) {
                 this.results = [];
                 this.isOpen = false;
-                this.loading = false;
                 return;
             }
-
-            this.loading = true;
 
             try {
                 const res = await fetch(
@@ -107,8 +100,6 @@
                 console.error('Mapbox search error:', error);
                 this.results = [];
                 this.isOpen = false;
-            } finally {
-                this.loading = false;
             }
         },
 
