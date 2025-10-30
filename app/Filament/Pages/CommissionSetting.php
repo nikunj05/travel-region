@@ -15,9 +15,9 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use UnitEnum;
 
-class CommisionSetting extends Page
+class CommissionSetting extends Page
 {
-    protected string $view = 'filament.pages.commision-setting';
+    protected string $view = 'filament.pages.commission-setting';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::PercentBadge;
 
