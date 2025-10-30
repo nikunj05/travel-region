@@ -3,12 +3,16 @@
 namespace App\Traits;
 
 use App\Models\FavoriteHotel;
+use App\Models\Setting;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 trait HotelBedsTrait
 {
+    use CurrencyConversion;
+
     protected $baseUrl = 'https://api.test.hotelbeds.com';
     protected $version = '1.0';
 
@@ -95,14 +99,47 @@ trait HotelBedsTrait
             $hotelData = [];
             $codes = [];
 
+            $setting = Setting::first();
+
+            $desiredCurrency = "SAR";
+
             if (isset($availableHotels['hotels']['hotels'])) {
                 foreach ($availableHotels['hotels']['hotels'] as $hotel) {
                     $codes[] = $hotel['code'];
+
+                    try {
+                        $convertedPrices = $this->getUpdatedExchangeRates($hotel['currency'], $desiredCurrency);
+                    } catch (Exception $e) {
+                        $convertedPrices = 1; // Fallback to 1 if conversion fails
+                        $desiredCurrency = $hotel['currency'];
+                    }
+
+                    $commission_percentage = 0;
+                    if ($hotel['categoryName'] == '5 STARS') {
+                        $commission_percentage = $setting->five_star_commission;
+                    } elseif ($hotel['categoryName'] == '4 STARS') {
+                        $commission_percentage = $setting->four_star_commission;
+                    } elseif ($hotel['categoryName'] == '3 STARS') {
+                        $commission_percentage = $setting->three_star_commission;
+                    } elseif ($hotel['categoryName'] == '2 STARS') {
+                        $commission_percentage = $setting->two_star_commission;
+                    } elseif ($hotel['categoryName'] == '1 STAR') {
+                        $commission_percentage = $setting->one_star_commission;
+                    }
+
                     $hotelData[$hotel['code']] = [
                         'code' => $hotel['code'],
-                        'minRate' => $hotel['minRate'],
-                        'maxRate' => $hotel['maxRate'],
-                        'currency' => $hotel['currency'],
+                        'originalMinRate' => $hotel['minRate'],
+                        'originalMaxRate' => $hotel['maxRate'],
+                        'originalCurrency' => $hotel['currency'],
+
+                        'convertedMinRate' => (string) round(($hotel['minRate'] * $convertedPrices), 2),
+                        'convertedMaxRate' => (string) round(($hotel['maxRate'] * $convertedPrices), 2),
+
+                        'minRate' => (string) round((($hotel['minRate'] * $convertedPrices) * (1 + ($commission_percentage / 100))), 2),
+                        'maxRate' => (string) round((($hotel['maxRate'] * $convertedPrices) * (1 + ($commission_percentage / 100))), 2),
+                        'currency' => $desiredCurrency,
+
                         'categoryCode' => $hotel['categoryCode'],
                         'categoryName' => $hotel['categoryName'],
                         'zoneCode' => $hotel['zoneCode'],
