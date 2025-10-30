@@ -27,6 +27,9 @@ class SettingResource extends JsonResource
             'footer_info' => $this->footer_info,
             'contact_us' => $this->contact_us,
             'whatsapp_number' => $this->whatsapp_number,
+            'home_title' => $this->home_title,
+            'home_subtitle' => $this->home_subtitle,
+            'home_hero_image' => $this->home_hero_image ? url(Storage::url($this->home_hero_image)) : null,
             'social_media_links' => collect($this->social_media_links)->map(function ($socialMedia) {
                 return [
                     'title' => $socialMedia['title'],
