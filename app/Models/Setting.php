@@ -25,6 +25,11 @@ class Setting extends Model
         'home_title',
         'home_subtitle',
         'home_hero_image',
+        'five_star_commission',
+        'four_star_commission',
+        'three_star_commission',
+        'two_star_commission',
+        'one_star_commission',
     ];
 
     public $translatable = ['copyright', 'footer_info', 'home_title', 'home_subtitle'];

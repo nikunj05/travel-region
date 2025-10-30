@@ -21,7 +21,7 @@ class HeroContent extends Page
 {
     protected string $view = 'filament.pages.hero-content';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::Cog;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Film;
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
     protected static ?string $navigationLabel = 'Hero Content';
