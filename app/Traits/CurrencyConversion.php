@@ -6,6 +6,7 @@ use App\Models\RateExchange;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -17,13 +18,17 @@ trait CurrencyConversion
     public function getExchangeRate($fromCurrency, $toCurrency)
     {
         $today = Carbon::today();
+        $cacheKey = 'exchange_rate_' . $fromCurrency . '_' . $toCurrency . '_' . $today->toDateString();
 
-        $exchangeRate = RateExchange::where('from_currency', $fromCurrency)
-            ->where('to_currency', $toCurrency)
-            ->where('rate_date', $today)
-            ->first();
+        // Cache for 6 hours
+        return Cache::remember($cacheKey, now()->addHours(6), function () use ($fromCurrency, $toCurrency, $today) {
+            $exchangeRate = RateExchange::where('from_currency', $fromCurrency)
+                ->where('to_currency', $toCurrency)
+                ->where('rate_date', $today)
+                ->first();
 
-        return $exchangeRate ? $exchangeRate->rate : null;
+            return $exchangeRate ? $exchangeRate->rate : null;
+        });
     }
 
     /**
