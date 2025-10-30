@@ -43,7 +43,7 @@ class PopularDestinationForm
                             ->image()
                             ->imageEditor()
                             ->directory('popular-destinations')
-                            ->maxSize(4048)
+                            ->maxSize(10048)
                             ->disk('public')
                             ->visibility('public')
                             ->downloadable()

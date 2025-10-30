@@ -60,4 +60,7 @@ return [
         'invalid' => 'The coupon code is invalid.',
         'valid' => 'Coupon code is valid.',
     ],
+    'popular_destinations' => [
+        'fetched' => 'Popular destinations fetched successfully.',
+    ],
 ];
