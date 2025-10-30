@@ -70,6 +70,9 @@ trait HotelBedsTrait
                 'unit' => 'km'
             ],
             'language' => strtolower($request->language),
+            'filter' => [
+                'maxHotels' => 50
+            ]
         ];
 
         if ($request->has('star_rating')) {
