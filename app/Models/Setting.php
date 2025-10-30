@@ -22,9 +22,12 @@ class Setting extends Model
         'contact_us',
         'whatsapp_number',
         'social_media_links',
+        'home_title',
+        'home_subtitle',
+        'home_hero_image',
     ];
 
-    public $translatable = ['copyright', 'footer_info'];
+    public $translatable = ['copyright', 'footer_info', 'home_title', 'home_subtitle'];
 
     protected function casts(): array
     {
@@ -36,6 +39,8 @@ class Setting extends Model
             'social_media_links' => 'array',
             'copyright' => 'array',
             'footer_info' => 'array',
+            'home_title' => 'array',
+            'home_subtitle' => 'array',
         ];
     }
 }
