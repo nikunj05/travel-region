@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CmsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\PopularDestinationController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TapPaymentController;
 use App\Http\Controllers\TestimonialController;
@@ -37,6 +38,8 @@ Route::prefix('v1')
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
 
     Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
+
+    Route::get('popular-destinations', [PopularDestinationController::class, 'index'])->name('popular-destinations.index');
 
     Route::get('pages', [CmsController::class, 'index'])->name('cms.index');
     Route::get('pages/{slug}', [CmsController::class, 'show'])->name('cms.show');
