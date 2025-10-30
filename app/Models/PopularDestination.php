@@ -10,7 +10,7 @@ class PopularDestination extends Model
     use HasTranslations;
 
     protected $fillable = [
-        'name',
+        'location',
         'image',
         'city',
         'state',
@@ -18,4 +18,15 @@ class PopularDestination extends Model
         'latitude',
         'longitude',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            // If location is not set but we have the components, build it
+            if (!$model->location && $model->city && $model->country) {
+                $parts = array_filter([$model->city, $model->state, $model->country]);
+                $model->location = implode(', ', $parts);
+            }
+        });
+    }
 }

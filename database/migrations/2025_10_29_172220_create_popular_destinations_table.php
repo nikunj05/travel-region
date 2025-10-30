@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('popular_destinations', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('image');
+            $table->string('location');
+            $table->text('image');
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();

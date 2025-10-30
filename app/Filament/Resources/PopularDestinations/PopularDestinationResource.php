@@ -30,12 +30,12 @@ class PopularDestinationResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name'];
+        return ['location'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
     {
-        return $record->name;
+        return $record->location;
     }
 
     public static function form(Schema $schema): Schema

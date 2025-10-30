@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PopularDestinations\Schemas;
 
+use App\Forms\Components\MapboxLocation;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -17,24 +18,71 @@ class PopularDestinationForm
                     ->columns(12)
                     ->columnSpanFull()
                     ->schema([
-                        TextInput::make('name')
+                        MapboxLocation::make('location')
+                            ->label('Search Location')
                             ->required()
-                            ->maxLength(255)
-                            ->columnSpan(6),
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // if (is_array($state)) {
+                                //     $set('latitude', $state['latitude'] ?? null);
+                                //     $set('longitude', $state['longitude'] ?? null);
+                                //     $set('city', $state['city'] ?? null);
+                                //     $set('state', $state['state'] ?? null);
+                                //     $set('country', $state['country'] ?? null);
+                                // }
+                            })
+                            ->columnSpanFull(),
+                    ]),
 
-                        // next rows, full-width
+                Grid::make()
+                    ->columns(12)
+                    ->columnSpanFull()
+                    ->schema([
                         FileUpload::make('image')
                             ->required()
                             ->image()
                             ->imageEditor()
-                            ->directory('popular-destinations') // stored inside storage/app/public/popular-destinations
-                            ->maxSize(4048) // 4 MB
+                            ->directory('popular-destinations')
+                            ->maxSize(4048)
                             ->disk('public')
                             ->visibility('public')
                             ->downloadable()
                             ->previewable(true)
                             ->openable()
                             ->columnSpan(6),
+                    ]),
+
+                Grid::make()
+                    ->columns(12)
+                    ->columnSpanFull()
+                    ->schema([
+                        TextInput::make('city')
+                            ->columnSpan(4)
+                            ->readOnly()
+                            ->dehydrated(true),
+                        TextInput::make('state')
+                            ->columnSpan(4)
+                            ->readOnly()
+                            ->dehydrated(true),
+                        TextInput::make('country')
+                            ->columnSpan(4)
+                            ->readOnly()
+                            ->dehydrated(true),
+                    ]),
+
+                Grid::make()
+                    ->columns(12)
+                    ->columnSpanFull()
+                    ->schema([
+                        TextInput::make('latitude')
+                            ->columnSpan(6)
+                            ->readOnly()
+                            ->dehydrated(true),
+
+                        TextInput::make('longitude')
+                            ->columnSpan(6)
+                            ->readOnly()
+                            ->dehydrated(true),
                     ]),
             ]);
     }
