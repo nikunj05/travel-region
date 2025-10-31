@@ -242,7 +242,29 @@ trait HotelBedsTrait
 
             if ($availableHotels->successful()) {
                 if (isset($availableHotels->json()['hotels']['hotels']) && isset($availableHotels->json()['hotels']['hotels'][0]['rooms'])) {
-                    $hotel_content['rooms'] = $availableHotels->json()['hotels']['hotels'][0]['rooms'];
+                    $availabilityRooms = $availableHotels->json()['hotels']['hotels'][0]['rooms'];
+
+                    // Create a map of content rooms by code for quick lookup
+                    $contentRoomsMap = collect($hotel_content['rooms'] ?? [])
+                        ->filter(fn($room) => isset($room['roomCode']))
+                        ->keyBy('roomCode');
+
+                    // Start with availability rooms and add missing fields from content rooms
+                    $hotel_content['rooms'] = collect($availabilityRooms)->map(function ($availabilityRoom) use ($contentRoomsMap) {
+                        // Skip if availability room doesn't have a code
+                        if (!isset($availabilityRoom['code'])) {
+                            return $availabilityRoom;
+                        }
+
+                        $roomCode = $availabilityRoom['code'];
+
+                        // If this room exists in content, merge (content fields first, then availability overrides)
+                        if ($contentRoomsMap->has($roomCode)) {
+                            return array_merge($contentRoomsMap->get($roomCode), $availabilityRoom);
+                        }
+
+                        return $availabilityRoom;
+                    })->toArray();
                 }
             }
 
