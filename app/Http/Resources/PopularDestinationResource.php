@@ -25,6 +25,8 @@ class PopularDestinationResource extends JsonResource
             'country' => $this->country,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'hotel_count' => $this->hotel_count,
+            'hotel_min_price' => $this->hotel_min_price,
         ];
     }
 }

@@ -17,6 +17,8 @@ class PopularDestination extends Model
         'country',
         'latitude',
         'longitude',
+        'hotel_count',
+        'hotel_min_price',
     ];
 
     protected static function booted()

@@ -84,6 +84,20 @@ class PopularDestinationForm
                             ->readOnly()
                             ->dehydrated(true),
                     ]),
+
+                Grid::make()
+                    ->columns(12)
+                    ->columnSpanFull()
+                    ->schema([
+                        TextInput::make('hotel_count')
+                            ->columnSpan(6)
+                            ->numeric(),
+
+                        TextInput::make('hotel_min_price')
+                            ->columnSpan(6)
+                            ->numeric(),
+                    ]),
+
             ]);
     }
 }
