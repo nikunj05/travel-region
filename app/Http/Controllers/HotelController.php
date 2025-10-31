@@ -60,18 +60,11 @@ class HotelController extends Controller
     public function show(Request $request, string $hotelCode)
     {
         try {
-            $response = $this->getHotelDetails($request, $hotelCode);
+            $hotels = $this->getHotelDetails($request, $hotelCode);
 
-            if ($response->successful()) {
-                return $this->sendApiResponse(true, __('messages.hotel.single_fetched'), [
-                    'hotel' => $response->json()['hotel']
-                ]);
-            }
-
-            return $this->sendApiResponse(false, __('messages.catch'), [
-                'error' => $response->json()
-            ], $response->status());
-
+            return $this->sendApiResponse(true, __('messages.hotel.single_fetched'), [
+                'hotel' => $hotels
+            ]);
         } catch (\Exception $e) {
             return $this->sendApiResponse(false, __('messages.catch'), [
                 'error' => $e->getMessage()

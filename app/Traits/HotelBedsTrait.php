@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\FavoriteHotel;
 use App\Models\Setting;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -203,13 +204,52 @@ trait HotelBedsTrait
 
         $language = $request->language ?? 'eng';
 
-        return Http::withHeaders([
+        $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
             'language' => strtoupper($language)
         ]);
+
+        if ($response->successful()) {
+
+            $hotel_content = $response->json()['hotel'];
+
+            $availableHotels = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Api-key' => $apiKey,
+                'X-Signature' => $this->generateSignature(),
+            ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", [
+                'stay' => [
+                    'checkIn' => Carbon::tomorrow()->format('Y-m-d'),
+                    'checkOut' => Carbon::tomorrow()->addDays(1)->format('Y-m-d')
+                ],
+                'occupancies' => [
+                    [
+                        'rooms' => 1,
+                        'adults' => 1,
+                        'children' => 0
+                    ]
+                ],
+                'language' => strtolower($request->language),
+                'hotels' => [
+                    'hotel' => [
+                        $hotel_content['code']
+                    ]
+                ]
+            ]);
+
+            if ($availableHotels->successful()) {
+                if (isset($availableHotels->json()['hotels']['hotels']) && isset($availableHotels->json()['hotels']['hotels'][0]['rooms'])) {
+                    $hotel_content['rooms'] = $availableHotels->json()['hotels']['hotels'][0]['rooms'];
+                }
+            }
+
+            return $hotel_content;
+        }
+
+        throw new \Exception(__('messages.catch'));
     }
 
     /**
