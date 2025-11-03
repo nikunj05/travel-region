@@ -211,6 +211,31 @@ trait HotelBedsTrait
 
         $language = $request->language ?? 'eng';
 
+        $checkIn = $request->check_in ?? Carbon::tomorrow()->format('Y-m-d');
+        $checkOut = $request->check_out ?? Carbon::tomorrow()->addDays(1)->format('Y-m-d');
+
+        $rooms = [];
+        foreach ($request->rooms as $room) {
+            $roomData = [
+                'rooms' => 1,
+                'adults' => $room['adults'],
+                'children' => $room['children'] ?? 0,
+            ];
+
+            if (isset($room['children']) && $room['children'] > 0) {
+                $paxes = [];
+                for ($i = 0; $i < $room['children']; $i++) {
+                    $paxes[] = [
+                        'type' => 'CH',
+                        'age' => 11
+                    ];
+                }
+                $roomData['paxes'] = $paxes;
+            }
+
+            $rooms[] = $roomData;
+        }
+
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
@@ -229,16 +254,10 @@ trait HotelBedsTrait
                 'X-Signature' => $this->generateSignature(),
             ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", [
                 'stay' => [
-                    'checkIn' => Carbon::tomorrow()->format('Y-m-d'),
-                    'checkOut' => Carbon::tomorrow()->addDays(1)->format('Y-m-d')
+                    'checkIn' => $checkIn,
+                    'checkOut' => $checkOut
                 ],
-                'occupancies' => [
-                    [
-                        'rooms' => 1,
-                        'adults' => 1,
-                        'children' => 0
-                    ]
-                ],
+                'occupancies' => $rooms,
                 'language' => strtolower($request->language),
                 'hotels' => [
                     'hotel' => [
@@ -275,7 +294,12 @@ trait HotelBedsTrait
                 }
             }
 
-            return $hotel_content;
+            return [
+                'hotel' => $hotel_content,
+                'checkIn' => $checkIn,
+                'checkOut' => $checkOut,
+                'rooms' => $rooms,
+            ];
         }
 
         throw new \Exception(__('messages.catch'));

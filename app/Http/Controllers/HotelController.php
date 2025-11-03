@@ -63,7 +63,10 @@ class HotelController extends Controller
             $hotels = $this->getHotelDetails($request, $hotelCode);
 
             return $this->sendApiResponse(true, __('messages.hotel.single_fetched'), [
-                'hotel' => $hotels
+                'hotel' => $hotels['hotel'],
+                'checkIn' => $hotels['checkIn'],
+                'checkOut' => $hotels['checkOut'],
+                'rooms' => $hotels['rooms'],
             ]);
         } catch (\Exception $e) {
             return $this->sendApiResponse(false, __('messages.catch'), [
