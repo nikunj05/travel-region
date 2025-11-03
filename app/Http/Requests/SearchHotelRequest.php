@@ -24,15 +24,18 @@ class SearchHotelRequest extends FormRequest
         return [
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
-            'rooms' => 'required|integer|min:1',
-            'adults' => 'required|integer|min:1',
-            'children' => 'nullable|integer|min:0',
+            // 'rooms' => 'required|integer|min:1',
+            // 'adults' => 'required|integer|min:1',
+            // 'children' => 'nullable|integer|min:0',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'language' => 'required|string|in:eng,ara',
             'star_rating' => 'nullable|integer|between:1,5',
             'min_price' => 'nullable|numeric|min:0',
             'max_price' => 'nullable|numeric|min:0',
+            'rooms' => 'required|array',
+            'rooms.*.adults' => 'required|integer|min:1',
+            'rooms.*.children' => 'nullable|integer|min:0',
         ];
     }
 }

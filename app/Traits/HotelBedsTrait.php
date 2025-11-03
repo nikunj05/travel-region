@@ -43,12 +43,26 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $paxes = [];
-        for ($i = 0; $i < $request->children; $i++) {
-            $paxes[] = [
-                'type' => 'CH',
-                'age' => 17
+        $rooms = [];
+        foreach ($request->rooms as $room) {
+            $roomData = [
+                'rooms' => 1,
+                'adults' => $room['adults'],
+                'children' => $room['children'] ?? 0,
             ];
+
+            if (isset($room['children']) && $room['children'] > 0) {
+                $paxes = [];
+                for ($i = 0; $i < $room['children']; $i++) {
+                    $paxes[] = [
+                        'type' => 'CH',
+                        'age' => 11
+                    ];
+                }
+                $roomData['paxes'] = $paxes;
+            }
+
+            $rooms[] = $roomData;
         }
 
         $payload = [
@@ -56,14 +70,7 @@ trait HotelBedsTrait
                 'checkIn' => $request->check_in,
                 'checkOut' => $request->check_out
             ],
-            'occupancies' => [
-                [
-                    'rooms' => $request->rooms,
-                    'adults' => $request->adults,
-                    'children' => $request->children ?? 0,
-                    'paxes' => $paxes ?? []
-                ]
-            ],
+            'occupancies' => $rooms,
             'geolocation' => [
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
