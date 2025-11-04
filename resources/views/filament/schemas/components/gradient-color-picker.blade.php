@@ -15,7 +15,13 @@
             maxColors: {{ $maxColors }},
 
             init() {
-                if (!this.colors || !Array.isArray(this.colors)) {
+                try {
+                    if (typeof this.colors === 'string') {
+                        this.colors = JSON.parse(this.colors);
+                    }
+                } catch (_) {}
+
+                if (!Array.isArray(this.colors) || this.colors.length === 0) {
                     this.colors = [
                         { color: '#ff0000', position: 0 },
                         { color: '#0000ff', position: 100 }
@@ -25,16 +31,15 @@
 
             addColor() {
                 if (this.colors.length < this.maxColors) {
-                    this.colors.push({
-                        color: '#000000',
-                        position: 50
-                    });
+                    this.colors.push({ color: '#000000', position: 50 });
+                    this.colors = [...this.colors];
                 }
             },
 
             removeColor(index) {
                 if (this.colors.length > 2) {
                     this.colors.splice(index, 1);
+                    this.colors = [...this.colors];
                 }
             },
 
@@ -74,15 +79,12 @@
 
         <!-- Color Stops -->
         <div class="space-y-3">
-            <div class="flex items-center justify-between">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Color Stops
-                </label>
+            <div class="fi-ac fi-align-start">
                 <button
                     type="button"
                     @click="addColor()"
                     x-show="colors.length < maxColors"
-                    class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
+                    class="fi-color fi-color-primary fi-bg-color-400 hover:fi-bg-color-300 dark:fi-bg-color-600 dark:hover:fi-bg-color-500 fi-text-color-900 hover:fi-text-color-800 dark:fi-text-color-950 dark:hover:fi-text-color-950 fi-btn fi-size-md fi-ac-btn-action"
                 >
                     + Add Color
                 </button>
@@ -109,12 +111,17 @@
                         />
                     </div>
 
-                    <input
-                        type="text"
-                        x-model="color.color"
-                        class="w-24 px-2 py-1 text-sm rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        placeholder="#000000"
-                    />
+                    <div class="fi-input-wrp fi-fo-text-input">
+                        <div class="fi-input-wrp-content-ctn">
+                            <input
+                                type="text"
+                                readonly
+                                x-model="color.color"
+                                class="fi-input fi-fo-text-input fi-fo-input-without-prefix-suffix w-full"
+                                placeholder="#000000"
+                            />
+                        </div>
+                    </div>
 
                     <button
                         type="button"
@@ -131,7 +138,7 @@
         </div>
 
         <!-- CSS Output -->
-        <div>
+        <div class="mt-4">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 CSS Output
             </label>
