@@ -30,6 +30,7 @@ class Setting extends Model
         'three_star_commission',
         'two_star_commission',
         'one_star_commission',
+        'faq_background_color',
     ];
 
     public $translatable = ['copyright', 'footer_info', 'home_title', 'home_subtitle'];

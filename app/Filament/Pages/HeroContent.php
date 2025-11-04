@@ -2,9 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Forms\Components\GradientColorPicker;
 use App\Models\Setting;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -66,6 +68,20 @@ class HeroContent extends Page
                                 ->previewable(true)
                                 ->openable()
                                 ->columnSpan(12),
+                        ]),
+
+                    Section::make('FAQ Page')
+                        ->schema([
+                            // ColorPicker::make('faq_background_color')
+                            //     ->columnSpan(12)
+                            //     ->label('Background Color'),
+
+                            GradientColorPicker::make('faq_background_color')
+                                ->label('Background Color')
+                                ->maxColors(5)
+                                ->columnSpan(12)
+                                ->direction('to right')
+                                ->columnSpanFull(),
                         ]),
                 ])
                     ->livewireSubmitHandler('save')
