@@ -92,16 +92,16 @@
 
             <template x-for="(color, index) in colors" :key="index">
                 <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <input
-                        type="color"
-                        x-model="color.color"
-                        class="w-12 h-12 rounded cursor-pointer"
-                    />
 
                     <div class="flex-1">
                         <label class="text-xs text-gray-600 dark:text-gray-400">
                             Position: <span x-text="color.position + '%'"></span>
                         </label>
+                        <input
+                            type="color"
+                            x-model="color.color"
+                            class="w-12 h-12 rounded cursor-pointer"
+                        />
                         <input
                             type="range"
                             x-model.number="color.position"
@@ -121,18 +121,16 @@
                                 placeholder="#000000"
                             />
                         </div>
+                        <button
+                            type="button"
+                            @click="removeColor(index)"
+                            x-show="colors.length > 2"
+                            class="fi-color fi-color-primary fi-bg-color-400 hover:fi-bg-color-300 dark:fi-bg-color-600 dark:hover:fi-bg-color-500 fi-text-color-900 hover:fi-text-color-800 dark:fi-text-color-950 dark:hover:fi-text-color-950 fi-btn fi-size-md fi-ac-btn-action"
+                        >
+                            Remove
+                        </button>
                     </div>
 
-                    <button
-                        type="button"
-                        @click="removeColor(index)"
-                        x-show="colors.length > 2"
-                        class="text-red-600 hover:text-red-700 dark:text-red-400"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
                 </div>
             </template>
         </div>
