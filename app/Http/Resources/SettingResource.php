@@ -39,6 +39,7 @@ class SettingResource extends JsonResource
                         : null,
                 ];
             })->toArray(),
+            'faq_background_color' => $this->faq_background_color,
         ];
     }
 }

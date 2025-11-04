@@ -47,6 +47,7 @@ class Setting extends Model
             'footer_info' => 'array',
             'home_title' => 'array',
             'home_subtitle' => 'array',
+            'faq_background_color' => 'array',
         ];
     }
 }
