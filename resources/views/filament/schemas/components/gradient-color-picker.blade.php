@@ -67,7 +67,7 @@
         },
 
         removeColor(index) {
-            if (this.colors.length > 2) {
+            if (this.colors.length > 1) {
                 this.colors.splice(index, 1);
                 this.updateGradient();
             }
@@ -145,7 +145,7 @@
                                 class="fi-input fi-fo-text-input fi-fo-input-without-prefix-suffix w-full"
                                 placeholder="#000000" />
                         </div>
-                        <button type="button" @click="removeColor(index)" x-show="colors.length > 2"
+                        <button type="button" @click="removeColor(index)" x-show="colors.length > 1"
                             class="fi-color fi-color-primary fi-bg-color-400 hover:fi-bg-color-300
                                 dark:fi-bg-color-600 dark:hover:fi-bg-color-500
                                 fi-text-color-900 hover:fi-text-color-800
