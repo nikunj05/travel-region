@@ -111,6 +111,7 @@
                 <option value="to bottom left">Diagonal ↙</option>
                 <option value="to top right">Diagonal ↗</option>
                 <option value="to top left">Diagonal ↖</option>
+                <option value="360deg">360deg</option>
             </select>
         </div>
 
