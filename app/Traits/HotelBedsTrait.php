@@ -247,6 +247,7 @@ trait HotelBedsTrait
         if ($response->successful()) {
 
             $hotel_content = $response->json()['hotel'];
+            $similar_hotels = $response->json()['hotels'] ?? [];
 
             $availableHotels = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -296,6 +297,7 @@ trait HotelBedsTrait
 
             return [
                 'hotel' => $hotel_content,
+                'similar_hotels' => $similar_hotels,
                 'checkIn' => $checkIn,
                 'checkOut' => $checkOut,
                 'rooms' => $rooms,

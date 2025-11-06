@@ -64,6 +64,7 @@ class HotelController extends Controller
 
             return $this->sendApiResponse(true, __('messages.hotel.single_fetched'), [
                 'hotel' => $hotels['hotel'],
+                'similar_hotels' => $hotels['similar_hotels'],
                 'checkIn' => $hotels['checkIn'],
                 'checkOut' => $hotels['checkOut'],
                 'rooms' => $hotels['rooms'],
