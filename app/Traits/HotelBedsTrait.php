@@ -215,25 +215,27 @@ trait HotelBedsTrait
         $checkOut = $request->check_out ?? Carbon::tomorrow()->addDays(1)->format('Y-m-d');
 
         $rooms = [];
-        foreach ($request->rooms as $room) {
-            $roomData = [
-                'rooms' => 1,
-                'adults' => $room['adults'],
-                'children' => $room['children'] ?? 0,
-            ];
+        if ($request->rooms) {
+            foreach ($request->rooms as $room) {
+                $roomData = [
+                    'rooms' => 1,
+                    'adults' => $room['adults'],
+                    'children' => $room['children'] ?? 0,
+                ];
 
-            if (isset($room['children']) && $room['children'] > 0) {
-                $paxes = [];
-                for ($i = 0; $i < $room['children']; $i++) {
-                    $paxes[] = [
-                        'type' => 'CH',
-                        'age' => 11
-                    ];
+                if (isset($room['children']) && $room['children'] > 0) {
+                    $paxes = [];
+                    for ($i = 0; $i < $room['children']; $i++) {
+                        $paxes[] = [
+                            'type' => 'CH',
+                            'age' => 11
+                        ];
+                    }
+                    $roomData['paxes'] = $paxes;
                 }
-                $roomData['paxes'] = $paxes;
-            }
 
-            $rooms[] = $roomData;
+                $rooms[] = $roomData;
+            }
         }
 
         $response = Http::withHeaders([
@@ -247,7 +249,6 @@ trait HotelBedsTrait
         if ($response->successful()) {
 
             $hotel_content = $response->json()['hotel'];
-            $similar_hotels = $response->json()['hotels'] ?? [];
 
             $availableHotels = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -297,7 +298,6 @@ trait HotelBedsTrait
 
             return [
                 'hotel' => $hotel_content,
-                'similar_hotels' => $similar_hotels,
                 'checkIn' => $checkIn,
                 'checkOut' => $checkOut,
                 'rooms' => $rooms,
