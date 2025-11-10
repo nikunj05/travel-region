@@ -116,10 +116,6 @@ class HotelController extends Controller
     */
     public function removeFavorite(FavoriteHotel $favorite)
     {
-        if ($favorite->user_id !== request()->user()->id) {
-            return $this->sendApiResponse(false, __('messages.unauthorized'), [], 403);
-        }
-
         $favorite->delete();
 
         return $this->sendApiResponse(true, __('messages.hotel.favorite_removed'), []);
