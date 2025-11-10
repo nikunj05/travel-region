@@ -15,6 +15,15 @@ class SettingResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $hero_image = null;
+        if (app()->getLocale() == 'ar') {
+            $hero_image = $this->home_hero_image_ar ? url(Storage::url($this->home_hero_image_ar)) : null;
+        }
+
+        if (app()->getLocale() == 'en') {
+            $hero_image = $this->home_hero_image ? url(Storage::url($this->home_hero_image)) : null;
+        }
+
         return [
             'logo' => $this->logo ? url(Storage::url($this->logo)) : null,
             'favicon' => $this->favicon ? url(Storage::url($this->favicon)) : null,
@@ -29,7 +38,7 @@ class SettingResource extends JsonResource
             'whatsapp_number' => $this->whatsapp_number,
             'home_title' => $this->home_title,
             'home_subtitle' => $this->home_subtitle,
-            'home_hero_image' => $this->home_hero_image ? url(Storage::url($this->home_hero_image)) : null,
+            'home_hero_image' => $hero_image,
             'social_media_links' => collect($this->social_media_links)->map(function ($socialMedia) {
                 return [
                     'title' => $socialMedia['title'],
