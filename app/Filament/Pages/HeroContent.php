@@ -58,10 +58,24 @@ class HeroContent extends Page
                                 ->label('Hero Subtitle'),
 
                             FileUpload::make('home_hero_image')
+                                ->label('Hero Image English')
                                 ->image()
                                 ->imageEditor()
                                 ->directory('hero-content')
-                                ->maxSize(2048)
+                                ->maxSize(5048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(12),
+
+                            FileUpload::make('home_hero_image_ar')
+                                ->label('Hero Image Arabic')
+                                ->image()
+                                ->imageEditor()
+                                ->directory('hero-content')
+                                ->maxSize(5048)
                                 ->disk('public')
                                 ->visibility('public')
                                 ->downloadable()
