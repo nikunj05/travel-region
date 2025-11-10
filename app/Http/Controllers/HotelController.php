@@ -114,9 +114,9 @@ class HotelController extends Controller
     * @param FavoriteHotel $favorite
     * @return \Illuminate\Http\JsonResponse
     */
-    public function removeFavorite(FavoriteHotel $favorite)
+    public function removeFavorite($favorite)
     {
-        $favorite->delete();
+        FavoriteHotel::where('id', $favorite)->delete();
 
         return $this->sendApiResponse(true, __('messages.hotel.favorite_removed'), []);
     }
