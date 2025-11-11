@@ -268,6 +268,23 @@ trait HotelBedsTrait
                 ]
             ]);
 
+            $setting = Setting::first();
+
+            $commission_percentage = 0;
+            if (isset($hotel_content['category']) && isset($hotel_content['category']['description'])) {
+                if ($hotel_content['category']['description']['content'] == '5 STARS') {
+                    $commission_percentage = $setting->five_star_commission;
+                } elseif ($hotel_content['category']['description']['content'] == '4 STARS') {
+                    $commission_percentage = $setting->four_star_commission;
+                } elseif ($hotel_content['category']['description']['content'] == '3 STARS') {
+                    $commission_percentage = $setting->three_star_commission;
+                } elseif ($hotel_content['category']['description']['content'] == '2 STARS') {
+                    $commission_percentage = $setting->two_star_commission;
+                } elseif ($hotel_content['category']['description']['content'] == '1 STAR') {
+                    $commission_percentage = $setting->one_star_commission;
+                }
+            }
+
             $desiredCurrency = "SAR";
 
             if ($availableHotels->successful()) {
@@ -289,11 +306,9 @@ trait HotelBedsTrait
                                 $desiredCurrency = $rateCurrency;
                             }
 
-                            $originalNet = $rate['net'];
-                            $net = (string) round(($rate['net'] * $convertedPrices), 2);
-
-                            $rate['originalNet'] = $originalNet;
-                            $rate['net'] = $net;
+                            $rate['originalNet'] = $rate['net'];
+                            $rate['convertedRate'] = (string) round(($rate['net'] * $convertedPrices), 2);
+                            $rate['net'] = (string) round((($rate['net'] * $convertedPrices) * (1 + ($commission_percentage / 100))), 2);
                             $rate['currency'] = $desiredCurrency;
                         }
                         unset($rate); // Unset the inner loop reference
