@@ -74,7 +74,7 @@ Route::prefix('v1')
         Route::group(['prefix' => 'favorite-hotels'], function (): void {
             Route::get('/', [HotelController::class, 'listFavorites'])->name('hotels.list-favorites');
             Route::post('/', [HotelController::class, 'addFavorite'])->name('hotels.add-favorite');
-            Route::delete('/{favorite}', [HotelController::class, 'removeFavorite'])->name('hotels.remove-favorite');
+            Route::delete('/{hotelCode}', [HotelController::class, 'removeFavorite'])->name('hotels.remove-favorite');
         });
     });
 });
