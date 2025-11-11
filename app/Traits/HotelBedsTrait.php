@@ -268,9 +268,37 @@ trait HotelBedsTrait
                 ]
             ]);
 
+            $desiredCurrency = "SAR";
+
             if ($availableHotels->successful()) {
                 if (isset($availableHotels->json()['hotels']['hotels']) && isset($availableHotels->json()['hotels']['hotels'][0]['rooms'])) {
                     $availabilityRooms = $availableHotels->json()['hotels']['hotels'][0]['rooms'];
+
+                    // Use reference for the outer loop as well
+                    foreach ($availabilityRooms as &$availabilityRoom) {
+                        foreach ($availabilityRoom['rates'] as &$rate) {
+                            $rateCurrency = 'SAR';
+                            if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['currency'])) {
+                                $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
+                            }
+
+                            try {
+                                $convertedPrices = $this->getUpdatedExchangeRates($rateCurrency, $desiredCurrency);
+                            } catch (Exception $e) {
+                                $convertedPrices = 1;
+                                $desiredCurrency = $rateCurrency;
+                            }
+
+                            $originalNet = $rate['net'];
+                            $net = (string) round(($rate['net'] * $convertedPrices), 2);
+
+                            $rate['originalNet'] = $originalNet;
+                            $rate['net'] = $net;
+                            $rate['currency'] = $desiredCurrency;
+                        }
+                        unset($rate); // Unset the inner loop reference
+                    }
+                    unset($availabilityRoom); // Unset the outer loop reference
 
                     // Create a map of content rooms by code for quick lookup
                     $contentRoomsMap = collect($hotel_content['rooms'] ?? [])
