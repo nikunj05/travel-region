@@ -295,8 +295,14 @@ trait HotelBedsTrait
                     foreach ($availabilityRooms as &$availabilityRoom) {
                         foreach ($availabilityRoom['rates'] as &$rate) {
                             $rateCurrency = 'SAR';
+
+                            $taxes = 0;
                             if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['currency'])) {
                                 $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
+
+                                foreach ($rate['taxes']['taxes'] as $tax) {
+                                    $taxes += $tax['amount'];
+                                }
                             }
 
                             try {
@@ -306,9 +312,23 @@ trait HotelBedsTrait
                                 $desiredCurrency = $rateCurrency;
                             }
 
+                            $netWithOutCommission = round(($rate['net'] * $convertedPrices), 2);
+
+                            if ($taxes > 0) {
+                                $taxes = round(($taxes * $convertedPrices), 2);
+                            }
+
+                            $commissionAmount = 0;
+                            if ($commission_percentage > 0) {
+                                $commissionAmount = round(($netWithOutCommission * ($commission_percentage / 100)), 2);
+                            }
+
                             $rate['originalNet'] = $rate['net'];
-                            $rate['convertedRate'] = (string) round(($rate['net'] * $convertedPrices), 2);
-                            $rate['net'] = (string) round((($rate['net'] * $convertedPrices) * (1 + ($commission_percentage / 100))), 2);
+                            $rate['convertedRate'] = (string) $netWithOutCommission;
+                            $rate['taxesRate'] = (string) $taxes;
+                            $rate['commission_percentage'] = (string) $commission_percentage;
+                            $rate['commissionAmount'] = (string) $commissionAmount;
+                            $rate['net'] = (string) round(($netWithOutCommission + $commissionAmount + $taxes), 2);
                             $rate['currency'] = $desiredCurrency;
                         }
                         unset($rate); // Unset the inner loop reference
