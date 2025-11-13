@@ -61,6 +61,7 @@ class BookingRepository implements BookingInterface
             BookingDetail::create([
                 'booking_id' => $booking->id,
                 'room_code' => $detail['room_code'],
+                'rate_key' => $detail['rate_key'],
                 'price_per_night' => $detail['price_per_night'],
                 'first_name' => $detail['first_name'],
                 'last_name' => $detail['last_name'],
