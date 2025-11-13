@@ -51,6 +51,7 @@ class BookingRepository implements BookingInterface
             'rooms' => $request->rooms,
             'adults' => $request->adults,
             'children' => $request->children ?? 0,
+            'nights' => $request->nights,
             'total_price' => $request->total_price,
             'currency' => $request->currency,
         ]);
@@ -60,7 +61,6 @@ class BookingRepository implements BookingInterface
             BookingDetail::create([
                 'booking_id' => $booking->id,
                 'room_code' => $detail['room_code'],
-                'nights' => $detail['nights'],
                 'price_per_night' => $detail['price_per_night'],
                 'first_name' => $detail['first_name'],
                 'last_name' => $detail['last_name'],
@@ -68,6 +68,7 @@ class BookingRepository implements BookingInterface
                 'country' => $detail['country'],
                 'country_code' => $detail['country_code'],
                 'phone' => $detail['phone'],
+                'is_primary' => $detail['is_primary'] ? 1 : 0,
             ]);
         }
 

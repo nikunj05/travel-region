@@ -16,6 +16,7 @@ class BookingDetail extends Model
         'country',
         'country_code',
         'phone',
+        'is_primary',
     ];
 
     public function booking()

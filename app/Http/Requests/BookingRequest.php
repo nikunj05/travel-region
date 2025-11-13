@@ -29,10 +29,11 @@ class BookingRequest extends FormRequest
             'adults' => 'required|integer|min:1',
             'children' => 'nullable|integer|min:0',
             'currency' => 'required|string|max:10',
+            'nights' => 'nullable|integer|min:1',
             'special_requests' => 'nullable|string',
             'details' => 'required|array',
+            'details.*.rate_key' => 'required|string',
             'details.*.room_code' => 'required|string|max:15',
-            'details.*.nights' => 'nullable|integer|min:1',
             'details.*.price_per_night' => 'required|numeric|min:0',
             'details.*.first_name' => 'nullable|string|max:255',
             'details.*.last_name' => 'nullable|string|max:255',
@@ -40,6 +41,7 @@ class BookingRequest extends FormRequest
             'details.*.country' => 'nullable|string|max:255',
             'details.*.country_code' => 'nullable|string|max:10',
             'details.*.phone' => 'nullable|string|max:20',
+            'details.*.is_primary' => 'required|boolean|default:0',
         ];
     }
 }
