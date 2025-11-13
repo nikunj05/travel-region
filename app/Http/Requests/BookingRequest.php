@@ -41,7 +41,7 @@ class BookingRequest extends FormRequest
             'details.*.country' => 'nullable|string|max:255',
             'details.*.country_code' => 'nullable|string|max:10',
             'details.*.phone' => 'nullable|string|max:20',
-            'details.*.is_primary' => 'required|boolean|default:0',
+            'details.*.is_primary' => 'required|boolean',
         ];
     }
 }
