@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TapPaymentRequest;
 use App\Models\Booking;
-use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -13,7 +12,7 @@ class TapPaymentController extends Controller
 {
     public function checkout(TapPaymentRequest $request)
     {
-        if (Order::where('booking_id', $request->booking_id)->where('status', 'paid')->exists()) {
+        if (Booking::where('id', $request->booking_id)->where('status', 'paid')->exists()) {
             return $this->sendApiResponse(false, __('messages.payment.already_paid'), [], 422);
         }
 
@@ -69,9 +68,9 @@ class TapPaymentController extends Controller
 
             if ($response->successful()) {
 
-                Order::updateOrCreate([
+                Booking::updateOrCreate([
+                    'id' => $booking->id,
                     'user_id' => Auth::id(),
-                    'booking_id' => $booking->id,
                     'status' => 'pending',
                 ], [
                     'amount' => $request->amount,

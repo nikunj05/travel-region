@@ -14,9 +14,12 @@ class Booking extends Model
         'rooms',
         'adults',
         'children',
+        'nights',
         'total_price',
         'currency',
         'status',
+        'coupon_id',
+        'tap_response',
     ];
 
     protected $casts = [
