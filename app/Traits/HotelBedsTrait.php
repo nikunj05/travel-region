@@ -110,38 +110,27 @@ trait HotelBedsTrait
             $hotelData = [];
             $codes = [];
 
-            $setting = Setting::first();
-
-            $desiredCurrency = "SAR";
-
             if (isset($availableHotels['hotels']['hotels'])) {
                 foreach ($availableHotels['hotels']['hotels'] as $hotel) {
                     $codes[] = $hotel['code'];
 
-                    try {
-                        $convertedPrices = $this->getUpdatedExchangeRates($hotel['currency'], $desiredCurrency);
-                    } catch (Exception $e) {
-                        $convertedPrices = 1; // Fallback to 1 if conversion fails
-                        $desiredCurrency = $hotel['currency'];
+                    $hotel_category = '';
+                    if (isset($hotel['categoryName'])) {
+                        $hotel_category = $hotel['categoryName'];
                     }
 
-                    $commission_percentage = 0;
-                    if (isset($hotel['categoryName'])) {
-                        $commission_percentage = $this->getCommissionRate($hotel['categoryName']);
-                    }
+                    $minPrices = $this->calculatePrice($hotel['minRate'], $hotel_category, $hotel['currency'], []);
+                    $maxPrices = $this->calculatePrice($hotel['maxRate'], $hotel_category, $hotel['currency'], []);
 
                     $hotelData[$hotel['code']] = [
                         'code' => $hotel['code'],
-                        'originalMinRate' => $hotel['minRate'],
-                        'originalMaxRate' => $hotel['maxRate'],
-                        'originalCurrency' => $hotel['currency'],
 
-                        'convertedMinRate' => (string) round(($hotel['minRate'] * $convertedPrices), 2),
-                        'convertedMaxRate' => (string) round(($hotel['maxRate'] * $convertedPrices), 2),
+                        'minPrices' => $minPrices,
+                        'maxPrices' => $maxPrices,
 
-                        'minRate' => (string) round((($hotel['minRate'] * $convertedPrices) * (1 + ($commission_percentage / 100))), 2),
-                        'maxRate' => (string) round((($hotel['maxRate'] * $convertedPrices) * (1 + ($commission_percentage / 100))), 2),
-                        'currency' => $desiredCurrency,
+                        'minRate' => (string) round($minPrices['final_amount'], 2),
+                        'maxRate' => (string) round($maxPrices['final_amount'], 2),
+                        'currency' => $maxPrices['converted_currency'],
 
                         'categoryCode' => $hotel['categoryCode'],
                         'categoryName' => $hotel['categoryName'],
@@ -260,12 +249,10 @@ trait HotelBedsTrait
                 ]
             ]);
 
-            $commission_percentage = 0;
+            $hotel_category = '';
             if (isset($hotel_content['category']) && isset($hotel_content['category']['description'])) {
-                $commission_percentage = $this->getCommissionRate($hotel_content['category']['description']['content']);
+                $hotel_category = $hotel_content['category']['description']['content'];
             }
-
-            $desiredCurrency = "SAR";
 
             if ($availableHotels->successful()) {
                 if (isset($availableHotels->json()['hotels']['hotels']) && isset($availableHotels->json()['hotels']['hotels'][0]['rooms'])) {
@@ -276,40 +263,17 @@ trait HotelBedsTrait
                         foreach ($availabilityRoom['rates'] as &$rate) {
                             $rateCurrency = 'SAR';
 
-                            $taxes = 0;
+                            $tax_array = [];
                             if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['currency'])) {
                                 $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
-
-                                foreach ($rate['taxes']['taxes'] as $tax) {
-                                    $taxes += $tax['amount'];
-                                }
+                                $tax_array = $rate['taxes']['taxes'];
                             }
 
-                            try {
-                                $convertedPrices = $this->getUpdatedExchangeRates($rateCurrency, $desiredCurrency);
-                            } catch (Exception $e) {
-                                $convertedPrices = 1;
-                                $desiredCurrency = $rateCurrency;
-                            }
+                            $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency, $tax_array);
 
-                            $netWithOutCommission = round(($rate['net'] * $convertedPrices), 2);
-
-                            if ($taxes > 0) {
-                                $taxes = round(($taxes * $convertedPrices), 2);
-                            }
-
-                            $commissionAmount = 0;
-                            if ($commission_percentage > 0) {
-                                $commissionAmount = round(($netWithOutCommission * ($commission_percentage / 100)), 2);
-                            }
-
-                            $rate['originalNet'] = $rate['net'];
-                            $rate['convertedRate'] = (string) $netWithOutCommission;
-                            $rate['taxesRate'] = (string) $taxes;
-                            $rate['commission_percentage'] = (string) $commission_percentage;
-                            $rate['commissionAmount'] = (string) $commissionAmount;
-                            $rate['net'] = (string) round(($netWithOutCommission + $commissionAmount + $taxes), 2);
-                            $rate['currency'] = $desiredCurrency;
+                            $rate['prices'] = $prices;
+                            $rate['net'] = (string) round($prices['final_amount'], 2);
+                            $rate['currency'] = $prices['converted_currency'];
                         }
                         unset($rate); // Unset the inner loop reference
                     }

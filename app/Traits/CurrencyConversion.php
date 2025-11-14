@@ -106,4 +106,57 @@ trait CurrencyConversion
 
         return $commission_percentage;
     }
+
+    /**
+     * Calculate final price after conversion, commission, and taxes
+     *
+     * @param float $amount
+     * @param string $category
+     * @param string $fromCurrency
+     * @param array $taxes
+     * @return array
+     */
+    public function calculatePrice($amount, $category, $fromCurrency, $taxes = [])
+    {
+        $expectedCurrency = 'SAR';
+
+        try {
+            $exchangeRate = $this->getUpdatedExchangeRates($fromCurrency, $expectedCurrency);
+        } catch (Exception $e) {
+            $exchangeRate = 1; // Fallback to 1 if conversion fails
+            $expectedCurrency = $fromCurrency;
+        }
+
+        $commission_percentage = $this->getCommissionRate($category);
+
+        $converted_amount = $amount * $exchangeRate;
+
+        $commission_amount = ($commission_percentage / 100) * $converted_amount;
+
+        /* Add taxes if any */
+        $tax_amount = 0;
+        $tax_converted_amount = 0;
+        if (count($taxes)) {
+            foreach ($taxes as $tax) {
+                $tax_amount += $tax['amount'];
+            }
+
+            // convert tax amount to expected currency
+            if ($tax_amount > 0) {
+                $tax_converted_amount = $tax_amount * $exchangeRate;
+            }
+        }
+
+        return [
+            'original_amount' => $amount,
+            'original_currency' => $fromCurrency,
+            'converted_currency' => $expectedCurrency,
+            'commission_percentage' => $commission_percentage,
+            'tax_amount' => $tax_amount,
+            'converted_amount' => $converted_amount,
+            'commission_amount' => $commission_amount,
+            'tax_converted_amount' => $tax_converted_amount,
+            'final_amount' => $converted_amount + $commission_amount + $tax_converted_amount
+        ];
+    }
 }
