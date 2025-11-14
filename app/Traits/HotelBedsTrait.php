@@ -126,16 +126,8 @@ trait HotelBedsTrait
                     }
 
                     $commission_percentage = 0;
-                    if ($hotel['categoryName'] == '5 STARS') {
-                        $commission_percentage = $setting->five_star_commission;
-                    } elseif ($hotel['categoryName'] == '4 STARS') {
-                        $commission_percentage = $setting->four_star_commission;
-                    } elseif ($hotel['categoryName'] == '3 STARS') {
-                        $commission_percentage = $setting->three_star_commission;
-                    } elseif ($hotel['categoryName'] == '2 STARS') {
-                        $commission_percentage = $setting->two_star_commission;
-                    } elseif ($hotel['categoryName'] == '1 STAR') {
-                        $commission_percentage = $setting->one_star_commission;
+                    if (isset($hotel['categoryName'])) {
+                        $commission_percentage = $this->getCommissionRate($hotel['categoryName']);
                     }
 
                     $hotelData[$hotel['code']] = [
@@ -268,21 +260,9 @@ trait HotelBedsTrait
                 ]
             ]);
 
-            $setting = Setting::first();
-
             $commission_percentage = 0;
             if (isset($hotel_content['category']) && isset($hotel_content['category']['description'])) {
-                if ($hotel_content['category']['description']['content'] == '5 STARS') {
-                    $commission_percentage = $setting->five_star_commission;
-                } elseif ($hotel_content['category']['description']['content'] == '4 STARS') {
-                    $commission_percentage = $setting->four_star_commission;
-                } elseif ($hotel_content['category']['description']['content'] == '3 STARS') {
-                    $commission_percentage = $setting->three_star_commission;
-                } elseif ($hotel_content['category']['description']['content'] == '2 STARS') {
-                    $commission_percentage = $setting->two_star_commission;
-                } elseif ($hotel_content['category']['description']['content'] == '1 STAR') {
-                    $commission_percentage = $setting->one_star_commission;
-                }
+                $commission_percentage = $this->getCommissionRate($hotel_content['category']['description']['content']);
             }
 
             $desiredCurrency = "SAR";

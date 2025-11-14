@@ -73,4 +73,37 @@ trait CurrencyConversion
 
         return true;
     }
+
+    /**
+     * Get commission rate based on hotel category
+     *
+     * @param string $category
+     * @return float
+     */
+    public function getCommissionRate($category)
+    {
+        $setting = Setting::first();
+
+        switch ($category) {
+            case '5 STARS':
+                $commission_percentage = $setting->five_star_commission;
+                break;
+            case '4 STARS':
+                $commission_percentage = $setting->four_star_commission;
+                break;
+            case '3 STARS':
+                $commission_percentage = $setting->three_star_commission;
+                break;
+            case '2 STARS':
+                $commission_percentage = $setting->two_star_commission;
+                break;
+            case '1 STAR':
+                $commission_percentage = $setting->one_star_commission;
+                break;
+            default:
+                $commission_percentage = 0;
+        }
+
+        return $commission_percentage;
+    }
 }
