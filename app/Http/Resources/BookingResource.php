@@ -31,6 +31,7 @@ class BookingResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'details' => BookingDetailResource::collection($this->details),
+            'room_details' => BookingRoomResource::collection($this->booking_room),
         ];
     }
 }

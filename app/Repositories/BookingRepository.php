@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\BookingInterface;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Models\BookingRoom;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -60,8 +61,6 @@ class BookingRepository implements BookingInterface
         foreach ($request->details as $detail) {
             BookingDetail::create([
                 'booking_id' => $booking->id,
-                'room_code' => $detail['room_code'],
-                'rate_key' => $detail['rate_key'],
                 'price_per_night' => $detail['price_per_night'],
                 'first_name' => $detail['first_name'],
                 'last_name' => $detail['last_name'],
@@ -70,6 +69,15 @@ class BookingRepository implements BookingInterface
                 'country_code' => $detail['country_code'],
                 'phone' => $detail['phone'],
                 'is_primary' => $detail['is_primary'] ? 1 : 0,
+            ]);
+        }
+
+        $booking->booking_room()->delete();
+        foreach ($request->room_details as $room) {
+            BookingRoom::create([
+                'booking_id' => $booking->id,
+                'room_code' => $room['room_code'],
+                'rate_key' => $room['rate_key'],
             ]);
         }
 

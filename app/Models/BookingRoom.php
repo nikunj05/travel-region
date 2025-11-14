@@ -4,18 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BookingDetail extends Model
+class BookingRoom extends Model
 {
     protected $fillable = [
         'booking_id',
-        'price_per_night',
-        'first_name',
-        'last_name',
-        'email',
-        'country',
-        'country_code',
-        'phone',
-        'is_primary',
+        'room_code',
+        'rate_key',
     ];
 
     public function booking()

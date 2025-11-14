@@ -31,9 +31,12 @@ class BookingRequest extends FormRequest
             'currency' => 'required|string|max:10',
             'nights' => 'nullable|integer|min:1',
             'special_requests' => 'nullable|string',
+
+            'room_details' => 'required|array',
+            'room_details.*.rate_key' => 'required|string',
+            'room_details.*.room_code' => 'required|string|max:15',
+
             'details' => 'required|array',
-            'details.*.rate_key' => 'required|string',
-            'details.*.room_code' => 'required|string|max:15',
             'details.*.price_per_night' => 'required|numeric|min:0',
             'details.*.first_name' => 'nullable|string|max:255',
             'details.*.last_name' => 'nullable|string|max:255',
