@@ -22,8 +22,6 @@ class TapPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => 'required|numeric',
-            'currency' => 'required|string',
             'booking_id' => 'required|integer|exists:bookings,id',
         ];
     }

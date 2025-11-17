@@ -12,7 +12,10 @@ class TapPaymentController extends Controller
 {
     public function checkout(TapPaymentRequest $request)
     {
-        if (Booking::where('id', $request->booking_id)->where('status', 'paid')->exists()) {
+        $existingBooking = Booking::where('id', $request->booking_id)
+            ->where('status', 'pending')
+            ->first();
+        if (empty($existingBooking)) {
             return $this->sendApiResponse(false, __('messages.payment.already_paid'), [], 422);
         }
 
@@ -21,8 +24,8 @@ class TapPaymentController extends Controller
         $booking = Booking::findOrFail($request->booking_id);
 
         $payload = [
-            "amount" => $request->amount,
-            "currency" => $request->currency,
+            "amount" => $booking->total_price,
+            "currency" => $booking->currency,
             "customer_initiated" => true,
             "threeDSecure" => true,
             "save_card" => false,
@@ -68,13 +71,7 @@ class TapPaymentController extends Controller
 
             if ($response->successful()) {
 
-                Booking::updateOrCreate([
-                    'id' => $booking->id,
-                    'user_id' => Auth::id(),
-                    'status' => 'pending',
-                ], [
-                    'amount' => $request->amount,
-                    'currency' => $request->currency,
+                $existingBooking->update([
                     'tap_response' => $response->body(),
                 ]);
 
