@@ -12,20 +12,16 @@ class TapPaymentController extends Controller
 {
     public function checkout(TapPaymentRequest $request)
     {
-        $existingBooking = Booking::where('id', $request->booking_id)
+        $existingBooking = Booking::where('order', $request->order)
             ->where('status', 'pending')
             ->first();
         if (empty($existingBooking)) {
             return $this->sendApiResponse(false, __('messages.payment.already_paid'), [], 422);
         }
 
-        $paymentId = uniqid();
-
-        $booking = Booking::findOrFail($request->booking_id);
-
         $payload = [
-            "amount" => $booking->total_price,
-            "currency" => $booking->currency,
+            "amount" => $existingBooking->total_price,
+            "currency" => $existingBooking->currency,
             "customer_initiated" => true,
             "threeDSecure" => true,
             "save_card" => false,
@@ -34,12 +30,12 @@ class TapPaymentController extends Controller
                 "sms" => true,
             ],
             "metadata" => [
-                "booking_id" => $booking->id,
-                "hotel_code" => $booking->hotel_code,
+                "booking_id" => $existingBooking->id,
+                "hotel_code" => $existingBooking->hotel_code,
             ],
             "reference" => [
-                "transaction" => "txn_" . $paymentId,
-                "order" => "ord_" . $paymentId,
+                "transaction" => "txn_" . $existingBooking->order,
+                "order" => $existingBooking->order,
             ],
             "customer" => [
                 "first_name" => Auth::user()->first_name,

@@ -22,7 +22,7 @@ class TapPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'booking_id' => 'required|integer|exists:bookings,id',
+            'order' => 'required|string|exists:bookings,order',
         ];
     }
 }

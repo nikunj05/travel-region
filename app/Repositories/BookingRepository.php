@@ -42,11 +42,14 @@ class BookingRepository implements BookingInterface
      */
     public function store($request)
     {
+        $orderId = uniqid();
+
         $booking = Booking::updateOrCreate([
             'user_id' => Auth::id(),
             'hotel_code' => $request->hotel_code,
             'status' => 'pending',
         ], [
+            'order' => 'ord_' . $orderId,
             'check_in' => $request->check_in,
             'check_out' => $request->check_out,
             'rooms' => $request->rooms,
