@@ -26,7 +26,7 @@ class HotelController extends Controller
             return $this->sendApiResponse(true, __('messages.hotel.fetched'), [
                 'hotels' => $response['hotels'],
                 'checkIn' => $response['checkIn'],
-                'total' => $response['total'],
+                'total' => count($response['hotels']),
                 'checkOut' => $response['checkOut']
             ]);
 

@@ -140,19 +140,45 @@ trait HotelBedsTrait
 
                 $page = $request->get('page', 1);
                 $perPage = $request->get('per_page', $availableHotels->json()['hotels']['total']);
-
                 $language = $request->language ?? 'eng';
 
-                $hotelContent = $this->hotelContentApiUsingCodes($codes, $page, $perPage, $language);
+                // Chunk codes into groups of 100
+                $codeChunks = array_chunk($codes, 100);
+                $allHotelContent = [];
 
-                foreach ($hotelContent['hotels'] as &$content) {
-                    if (isset($hotelData[$content['code']])) {
-                        $content = array_merge($content, $hotelData[$content['code']]);
+                foreach ($codeChunks as $chunk) {
+                    $hotelContent = $this->hotelContentApiUsingCodes($chunk, $page, $perPage, $language);
+
+                    if (isset($hotelContent['hotels']) && is_array($hotelContent['hotels'])) {
+                        $allHotelContent = array_merge($allHotelContent, $hotelContent['hotels']);
+                    }
+                }
+
+                // Create a lookup array for quick access by hotel code
+                $contentByCode = [];
+                foreach ($allHotelContent as $content) {
+                    if (isset($content['code'])) {
+                        $contentByCode[$content['code']] = $content;
+                    }
+                }
+
+                // Merge data in the original order from $codes
+                $finalHotels = [];
+                foreach ($codes as $code) {
+                    if (isset($contentByCode[$code])) {
+                        $hotel = $contentByCode[$code];
+
+                        // Merge with availability data
+                        if (isset($hotelData[$code])) {
+                            $hotel = array_merge($hotel, $hotelData[$code]);
+                        }
+
+                        $finalHotels[] = $hotel;
                     }
                 }
 
                 return [
-                    'hotels' => $hotelContent['hotels'] ?? [],
+                    'hotels' => $finalHotels,
                     'checkIn' => $request->check_in,
                     'checkOut' => $request->check_out,
                     'total' => $availableHotels['hotels']['total']
