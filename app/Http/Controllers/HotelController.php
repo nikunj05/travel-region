@@ -120,4 +120,18 @@ class HotelController extends Controller
 
         return $this->sendApiResponse(true, __('messages.hotel.favorite_removed'), []);
     }
+
+    /**
+     * Get locations and destinations from HotelBeds API.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function locationsDestinations(Request $request)
+    {
+        $response = $this->getLocationsAndDestinations($request);
+
+        return $this->sendApiResponse(true, __('messages.locations_destinations_fetched'), [
+            'destinations' => $response['destinations']
+        ]);
+    }
 }

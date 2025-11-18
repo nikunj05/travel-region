@@ -443,4 +443,27 @@ trait HotelBedsTrait
 
         return [];
     }
+
+    /**
+     * Get locations and destinations
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function getLocationsAndDestinations($request)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $locations = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/locations/destinations");
+
+        if ($locations->successful()) {
+            return $locations->json();
+        }
+
+        return [];
+    }
 }
