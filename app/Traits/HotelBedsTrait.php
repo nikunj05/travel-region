@@ -139,7 +139,7 @@ trait HotelBedsTrait
                 }
 
                 $page = $request->get('page', 1);
-                $perPage = $request->get('per_page', 100);
+                $perPage = $request->get('per_page', $availableHotels->json()['hotels']['total']);
 
                 $language = $request->language ?? 'eng';
 
