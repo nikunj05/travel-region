@@ -111,23 +111,38 @@ trait HotelBedsTrait
                 foreach ($availableHotels['hotels']['hotels'] as $hotel) {
                     $codes[] = $hotel['code'];
 
-                    $hotel_category = '';
-                    if (isset($hotel['categoryName'])) {
-                        $hotel_category = $hotel['categoryName'];
+                    $hotel_category = $hotel['categoryName'] ?? '';
+
+                    $minNet = PHP_FLOAT_MAX;
+                    $rateCurrency = 'SAR';
+                    $tax_array = [];
+
+                    // First pass: find min/max net values and get tax info
+                    foreach ($hotel['rooms'] as $hotelRooms) {
+                        foreach ($hotelRooms['rates'] as $rate) {
+                            $netValue = (float) $rate['net'];
+                            if ($netValue < $minNet) {
+                                $minNet = $netValue;
+                                // Get currency and tax info (assuming it's consistent across rates)
+                                if (empty($tax_array) && isset($rate['taxes']['taxes'][0])) {
+                                    $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
+                                    $tax_array = $rate['taxes']['taxes'];
+                                }
+                            }
+                        }
                     }
 
-                    $minPrices = $this->calculatePrice($hotel['minRate'], $hotel_category, $hotel['currency'], []);
-                    $maxPrices = $this->calculatePrice($hotel['maxRate'], $hotel_category, $hotel['currency'], []);
+                    // Only calculate prices twice (for min and max)
+                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency, $tax_array);
 
                     $hotelData[$hotel['code']] = [
                         'code' => $hotel['code'],
 
                         'minPrices' => $minPrices,
-                        'maxPrices' => $maxPrices,
 
                         'minRate' => (string) round($minPrices['final_amount'], 2),
-                        'maxRate' => (string) round($maxPrices['final_amount'], 2),
-                        'currency' => $maxPrices['converted_currency'],
+                        'maxRate' => (string) round($hotel['maxRate'], 2),
+                        'currency' => $minPrices['converted_currency'],
 
                         'categoryCode' => $hotel['categoryCode'],
                         'categoryName' => $hotel['categoryName'],
