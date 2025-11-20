@@ -20,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->group('api', [
             \App\Http\Middleware\SetLocale::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'webhook/tap',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Using the trait for a consistent API response
