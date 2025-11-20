@@ -50,12 +50,12 @@ class BookingController extends Controller
     /**
      * Apply a coupon to the booking.
      *
-     * @param CouponCodeRequest $request
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function checkCoupon(CouponCodeRequest $request)
+    public function applyCoupon(CouponCodeRequest $request)
     {
-        $response = $this->bookingRepository->checkCoupon($request);
+        $response = $this->bookingRepository->applyCoupon($request);
 
         return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
     }

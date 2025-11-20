@@ -63,4 +63,5 @@ return [
     'popular_destinations' => [
         'fetched' => 'Popular destinations fetched successfully.',
     ],
+    'locations_destinations_fetched' => 'Destinations fetched successfully.',
 ];

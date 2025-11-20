@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Http\Resources\BookingResource;
 use App\Interfaces\BookingInterface;
 use App\Models\Booking;
 use App\Models\BookingDetail;
@@ -93,7 +94,7 @@ class BookingRepository implements BookingInterface
      * @param Request $request
      * @return array
      */
-    public function checkCoupon($request)
+    public function applyCoupon($request)
     {
         $coupon = Coupon::where('code', $request->coupon_code)
             ->first();
@@ -105,11 +106,26 @@ class BookingRepository implements BookingInterface
             ];
         }
 
+        $booking = Booking::where('order', $request->order)
+            ->firstOrFail();
+
+        $discount_amount = 0;
+        if ($coupon->type === 'percentage') {
+            $discount_amount = ($coupon->discount / 100) * $booking->total_price;
+        } elseif ($coupon->type === 'fixed') {
+            $discount_amount = $coupon->discount;
+        }
+
+        $booking->update([
+            'coupon_id' => $coupon->id,
+            'discount_amount' => $discount_amount,
+        ]);
+
         return [
             'status' => true,
             'message' => __('messages.coupon.valid'),
             'data' => [
-                'coupon' => $coupon,
+                'booking' => new BookingResource($booking->fresh()),
             ],
         ];
     }

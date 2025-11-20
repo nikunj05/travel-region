@@ -8,5 +8,5 @@ interface BookingInterface
 
     public function store($request);
 
-    public function checkCoupon($request);
+    public function applyCoupon($request);
 }

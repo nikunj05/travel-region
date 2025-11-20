@@ -20,7 +20,7 @@ class TapPaymentController extends Controller
         }
 
         $payload = [
-            "amount" => $existingBooking->total_price,
+            "amount" => $existingBooking->total_price - $existingBooking->discount_amount,
             "currency" => $existingBooking->currency,
             "customer_initiated" => true,
             "threeDSecure" => true,

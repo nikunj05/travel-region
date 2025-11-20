@@ -22,6 +22,7 @@ class CouponCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'order' => 'required|string|max:50',
             'coupon_code' => 'required|string|max:50',
         ];
     }

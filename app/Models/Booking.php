@@ -17,6 +17,7 @@ class Booking extends Model
         'children',
         'nights',
         'total_price',
+        'discount_amount',
         'currency',
         'status',
         'coupon_id',
@@ -41,5 +42,10 @@ class Booking extends Model
     public function booking_room()
     {
         return $this->hasMany(BookingRoom::class);
+    }
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
     }
 }

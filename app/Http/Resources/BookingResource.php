@@ -25,6 +25,7 @@ class BookingResource extends JsonResource
             'children' => $this->children,
             'nights' => $this->nights,
             'total_price' => $this->total_price,
+            'discount_amount' => $this->discount_amount,
             'currency' => $this->currency,
             'order' => $this->order,
             'status' => $this->status,
@@ -33,6 +34,7 @@ class BookingResource extends JsonResource
             'updated_at' => $this->updated_at,
             'details' => BookingDetailResource::collection($this->details),
             'room_details' => BookingRoomResource::collection($this->booking_room),
+            'coupon' => $this->coupon ? new CouponResource($this->coupon) : null,
         ];
     }
 }
