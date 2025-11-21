@@ -52,12 +52,12 @@ trait HotelBedsTrait
                 'children' => $room['children'] ?? 0,
             ];
 
-            if (isset($room['children']) && $room['children'] > 0) {
+            if (isset($room['childrenAges']) && count($room['childrenAges']) > 0) {
                 $paxes = [];
-                for ($i = 0; $i < $room['children']; $i++) {
+                foreach ($room['childrenAges'] as $childAge) {
                     $paxes[] = [
                         'type' => 'CH',
-                        'age' => 11
+                        'age' => $childAge
                     ];
                 }
                 $roomData['paxes'] = $paxes;
@@ -243,12 +243,12 @@ trait HotelBedsTrait
                     'children' => $room['children'] ?? 0,
                 ];
 
-                if (isset($room['children']) && $room['children'] > 0) {
+                if (isset($room['childrenAges']) && count($room['childrenAges']) > 0) {
                     $paxes = [];
-                    for ($i = 0; $i < $room['children']; $i++) {
+                    foreach ($room['childrenAges'] as $childAge) {
                         $paxes[] = [
                             'type' => 'CH',
-                            'age' => 11
+                            'age' => $childAge
                         ];
                     }
                     $roomData['paxes'] = $paxes;
