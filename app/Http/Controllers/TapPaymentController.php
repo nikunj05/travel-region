@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TapPaymentRequest;
 use App\Models\Booking;
+use App\Traits\HotelBedsTrait;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class TapPaymentController extends Controller
 {
+    use HotelBedsTrait;
+
     public function checkout(TapPaymentRequest $request)
     {
         $existingBooking = Booking::where('order', $request->order)
@@ -17,6 +21,16 @@ class TapPaymentController extends Controller
             ->first();
         if (empty($existingBooking)) {
             return $this->sendApiResponse(false, __('messages.payment.already_paid'), [], 422);
+        }
+
+        // check room available or not
+        try {
+            $room_rates = $existingBooking->booking_room->pluck('rate_key')->toArray();
+            $this->checkRoomAvailability($room_rates);
+        } catch (Exception $e) {
+            return $this->sendApiResponse(false, __('messages.payment.room_not_available'), [
+                'error' => $e->getMessage()
+            ], 422);
         }
 
         $payload = [

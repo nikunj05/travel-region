@@ -481,4 +481,25 @@ trait HotelBedsTrait
 
         return [];
     }
+
+    public function checkRoomAvailability($room_rates)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $hotels = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/checkrates", [
+            'rooms' => array_map(function ($rateKey) {
+                return ['rateKey' => $rateKey];
+            }, $room_rates)
+        ]);
+
+        if ($hotels->successful()) {
+            return $hotels->json();
+        }
+
+        throw new \Exception(__('messages.catch'));
+    }
 }
