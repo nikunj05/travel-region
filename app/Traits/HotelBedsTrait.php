@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Booking;
 use App\Models\FavoriteHotel;
 use App\Models\Setting;
 use App\Models\User;
@@ -442,17 +443,18 @@ trait HotelBedsTrait
                 'name' => $data['first_name'],
                 'surname' => $data['last_name']
             ],
-            'rooms' => [
-                [
-                    'rateKey' => $data['rate_key']
-                ]
-            ],
-            'clientReference' => 'booking-ref-' . $data['booking_id'],
-            'remark' => $data['remark'] ?? 'Booking remarks are to be written here.',
+            'rooms' => $data['rate_keys'],
+            'clientReference' => 'booking-ref-' . $data['order'],
+            'remark' => $data['remark'] ?? null,
             'tolerance' => 2,
         ]);
 
         if ($hotels->successful()) {
+
+            Booking::where('id', $data['booking_id'])->update([
+                'booking_reference' => $hotels->json()['booking']['reference'],
+            ]);
+
             return $hotels->json();
         }
 

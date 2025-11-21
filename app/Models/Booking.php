@@ -10,6 +10,7 @@ class Booking extends Model
         'user_id',
         'hotel_code',
         'order',
+        'booking_reference',
         'check_in',
         'check_out',
         'rooms',
