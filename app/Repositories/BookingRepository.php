@@ -30,7 +30,7 @@ class BookingRepository implements BookingInterface
             if ($hotelCode = request('hotel_code')) {
                 $query->where('hotel_code', $hotelCode);
             }
-        })->with('details')->get();
+        })->with('details')->paginate();
 
         return $bookings;
     }

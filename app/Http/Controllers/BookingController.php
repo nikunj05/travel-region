@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookingRequest;
 use App\Http\Requests\CouponCodeRequest;
 use App\Http\Resources\BookingResource;
+use App\Http\Resources\PaginationResource;
 use App\Interfaces\BookingInterface;
 use Illuminate\Http\Request;
 
@@ -29,6 +30,7 @@ class BookingController extends Controller
 
         return $this->sendApiResponse(true, __('messages.booking.listed'), [
             'bookings' => BookingResource::collection($bookings),
+            'pagination' => new PaginationResource($bookings)
         ]);
     }
 
