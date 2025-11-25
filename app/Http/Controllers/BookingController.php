@@ -33,6 +33,21 @@ class BookingController extends Controller
     }
 
     /**
+     * Display the specified booking.
+     *
+     * @param int $order
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($order)
+    {
+        $booking = $this->bookingRepository->show($order);
+
+        return $this->sendApiResponse(true, __('messages.booking.show'), [
+            'booking' => new BookingResource($booking),
+        ]);
+    }
+
+    /**
      * Store a newly created booking in storage.
      *
      * @param Request $request

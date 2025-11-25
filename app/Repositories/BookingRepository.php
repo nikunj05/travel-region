@@ -36,6 +36,22 @@ class BookingRepository implements BookingInterface
     }
 
     /**
+     * Display the specified booking.
+     *
+     * @param int $order
+     * @return Booking
+     */
+    public function show($order)
+    {
+        $booking = Booking::where('order', $order)
+            ->where('user_id', Auth::id())
+            ->with('details', 'booking_room')
+            ->firstOrFail();
+
+        return $booking;
+    }
+
+    /**
      * Store a newly created booking in storage.
      *
      * @param Request $request

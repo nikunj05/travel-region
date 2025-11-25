@@ -52,6 +52,7 @@ Route::prefix('v1')
         Route::post('blogs/{blog}/comment', [BlogController::class, 'storeComment'])->name('blog.comments.store');
 
         Route::get('bookings', [BookingController::class, 'index'])->name('booking.index');
+        Route::get('bookings/{order}', [BookingController::class, 'show'])->name('booking.show');
         Route::post('bookings', [BookingController::class, 'store'])->name('booking.store');
         Route::post('apply-coupon', [BookingController::class, 'applyCoupon'])->name('booking.apply-coupon');
 
