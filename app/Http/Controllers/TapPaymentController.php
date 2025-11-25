@@ -67,7 +67,7 @@ class TapPaymentController extends Controller
                 "url" => route('tap.webhook'),
             ],
             "redirect" => [
-                "url" => route('tap.webhook'),
+                "url" => env('FRONTEND_URL') . '/en/booking-confirmation/' . $existingBooking->order,
             ],
         ];
 
