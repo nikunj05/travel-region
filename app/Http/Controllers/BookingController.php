@@ -76,4 +76,11 @@ class BookingController extends Controller
 
         return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
     }
+
+    public function downloadPdf($order)
+    {
+        $response = $this->bookingRepository->downloadPdf($order);
+
+        return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
+    }
 }

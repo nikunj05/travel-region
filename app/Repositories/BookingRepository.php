@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BookingRoom;
 use App\Models\Coupon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -142,6 +143,39 @@ class BookingRepository implements BookingInterface
             'message' => __('messages.coupon.valid'),
             'data' => [
                 'booking' => new BookingResource($booking->fresh()),
+            ],
+        ];
+    }
+
+    public function downloadPdf($order)
+    {
+        $booking = Booking::where('order', $order)->firstOrFail();
+
+        // File name & full path
+        $fileName = 'booking-confirmation-' . $booking->id . '.pdf';
+        $filePath = public_path('booking-pdfs/' . $fileName);
+
+        // Create folder if not exists
+        if (!file_exists(public_path('booking-pdfs'))) {
+            mkdir(public_path('booking-pdfs'), 0777, true);
+        }
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.booking-confirmation', [
+            'booking' => $booking
+        ])->setPaper('A4', 'portrait');
+
+        // Save to public folder
+        $pdf->save($filePath);
+
+        // Public URL
+        $publicUrl = url('booking-pdfs/' . $fileName);
+
+        return [
+            'status' => true,
+            'message' => __('messages.booking.pdf.generated'),
+            'data' => [
+                'pdf_url' => $publicUrl,
             ],
         ];
     }
