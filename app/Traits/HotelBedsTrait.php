@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 trait HotelBedsTrait
 {
@@ -457,6 +458,8 @@ trait HotelBedsTrait
 
             return $hotels->json();
         }
+
+        Log::error('HotelBeds Booking Confirmation Failed', $hotels->json());
 
         return [];
     }
