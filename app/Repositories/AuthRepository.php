@@ -115,7 +115,7 @@ class AuthRepository implements AuthInterface
             'created_at' => now()
         ]);
 
-        $resetUrl = env('FRONTEND_URL')."reset-password/$token?email=$user->email";
+        $resetUrl = env('FRONTEND_URL')."/reset-password/$token?email=$user->email";
 
         dispatch(new SendResetPasswordMail($user, $resetUrl));
 
