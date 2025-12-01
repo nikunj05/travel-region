@@ -90,10 +90,18 @@ class BookingController extends Controller
 
     public function cancel($order)
     {
-        $booking = Booking::where('order', $order)->where('status', 'confirmed')->firstOrFail();
+        $booking = Booking::where('order', $order)->firstOrFail();
 
-        $response = $this->cancelBooking($booking);
+        if ($booking->status == 'confirmed') {
+            $this->cancelBooking($booking);
+        } else {
+            $booking->update([
+                'status' => 'cancelled',
+            ]);
+        }
 
-        return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
+        return $this->sendApiResponse(true, __('messages.booking.cancelled'), [
+            'booking' => new BookingResource($booking->fresh()),
+        ]);
     }
 }
