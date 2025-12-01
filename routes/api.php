@@ -54,6 +54,7 @@ Route::prefix('v1')
         Route::get('bookings', [BookingController::class, 'index'])->name('booking.index');
         Route::get('bookings/{order}', [BookingController::class, 'show'])->name('booking.show');
         Route::get('bookings/{order}/pdf', [BookingController::class, 'downloadPdf'])->name('booking.download-pdf');
+        Route::delete('bookings/{order}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
         Route::post('bookings', [BookingController::class, 'store'])->name('booking.store');
         Route::post('apply-coupon', [BookingController::class, 'applyCoupon'])->name('booking.apply-coupon');
 

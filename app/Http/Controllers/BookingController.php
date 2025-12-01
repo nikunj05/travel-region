@@ -7,10 +7,14 @@ use App\Http\Requests\CouponCodeRequest;
 use App\Http\Resources\BookingResource;
 use App\Http\Resources\PaginationResource;
 use App\Interfaces\BookingInterface;
+use App\Models\Booking;
+use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    use HotelBedsTrait;
+
     protected $bookingRepository;
 
     public function __construct(BookingInterface $bookingRepository)
@@ -80,6 +84,15 @@ class BookingController extends Controller
     public function downloadPdf($order)
     {
         $response = $this->bookingRepository->downloadPdf($order);
+
+        return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
+    }
+
+    public function cancel($order)
+    {
+        $booking = Booking::where('order', $order)->where('status', 'confirmed')->firstOrFail();
+
+        $response = $this->cancelBooking($booking);
 
         return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
     }

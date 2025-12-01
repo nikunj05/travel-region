@@ -507,4 +507,32 @@ trait HotelBedsTrait
 
         throw new \Exception(__('messages.catch'));
     }
+
+    public function cancelBooking($booking)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $hotels = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->delete("{$this->baseUrl}/hotel-api/{$this->version}/bookings/{$booking->booking_reference}");
+
+        if ($hotels->successful()) {
+            Booking::where('id', $booking->id)->update([
+                'status' => 'cancelled',
+            ]);
+            return [
+                'status' => true,
+                'message' => __('messages.booking.cancelled'),
+                'data' => $hotels->json(),
+            ];
+        }
+
+        return [
+            'status' => false,
+            'message' => __('messages.catch'),
+            'data' => [],
+        ];
+    }
 }
