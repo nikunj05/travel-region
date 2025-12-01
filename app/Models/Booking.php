@@ -23,6 +23,9 @@ class Booking extends Model
         'status',
         'coupon_id',
         'tap_response',
+        'hotel_name',
+        'hotel_location',
+        'hotel_images'
     ];
 
     protected $casts = [
