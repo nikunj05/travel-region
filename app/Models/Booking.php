@@ -23,6 +23,7 @@ class Booking extends Model
         'status',
         'coupon_id',
         'tap_response',
+        'tap_charge_id',
         'hotel_name',
         'hotel_location',
         'hotel_images'

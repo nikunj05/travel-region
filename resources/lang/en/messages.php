@@ -56,6 +56,7 @@ return [
         'checkout_initiated' => 'Checkout initiated successfully.',
         'checkout_failed' => 'Failed to initiate checkout.',
         'already_paid' => 'This booking has already been paid.',
+        'room_not_available' => 'One or more rooms in your booking are no longer available.',
     ],
     'accommodation_types_fetched' => 'Accommodation types fetched successfully.',
     'coupon' => [

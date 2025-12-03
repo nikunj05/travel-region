@@ -17,13 +17,14 @@ class TapWebhookController extends Controller
         $order = $request->reference ? $request->reference['order'] : null;
         $status = $request->status;
 
-        if ($order && $status == 'AUTHORIZED') {
+        if ($order && $status == 'CAPTURED') {
             $booking = Booking::where('order', $order)->first();
 
             $bookingDetail = BookingDetail::where('booking_id', $booking->id)->where('is_primary', 1)->first();
 
             $booking->update([
                 'status' => 'confirmed',
+                'tap_charge_id' => $request->id,
                 'tap_response' => json_encode($request->all()),
             ]);
 

@@ -77,7 +77,7 @@ class TapPaymentController extends Controller
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                 ])
-                ->post('https://api.tap.company/v2/authorize/', $payload);
+                ->post('https://api.tap.company/v2/charges/', $payload);
 
             if ($response->successful()) {
 

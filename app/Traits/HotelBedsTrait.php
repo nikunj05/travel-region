@@ -457,6 +457,25 @@ trait HotelBedsTrait
             ]);
 
             return $hotels->json();
+        } else {
+
+            $booking = Booking::where('id', $data['booking_id'])->first();
+
+            $booking->update([
+                'status' => 'cancelled',
+            ]);
+
+            Http::withToken(env('TAP_SECRET'))
+                ->acceptJson()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])
+                ->post('https://api.tap.company/v2/refunds', [
+                    'charge_id' => $booking->tap_charge_id,
+                    'amount' => $booking->total_price - $booking->discount_amount,
+                    'currency' => $booking->currency,
+                    'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
+                ]);
         }
 
         Log::error('HotelBeds Booking Confirmation Failed', $hotels->json());
@@ -512,27 +531,50 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $hotels = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Api-key' => $apiKey,
-            'X-Signature' => $this->generateSignature(),
-        ])->delete("{$this->baseUrl}/hotel-api/{$this->version}/bookings/{$booking->booking_reference}");
+        try {
+            $hotels = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Api-key' => $apiKey,
+                'X-Signature' => $this->generateSignature(),
+            ])->delete("{$this->baseUrl}/hotel-api/{$this->version}/bookings/{$booking->booking_reference}");
 
-        if ($hotels->successful()) {
-            Booking::where('id', $booking->id)->update([
-                'status' => 'cancelled',
-            ]);
+            if ($hotels->successful()) {
+                Booking::where('id', $booking->id)->update([
+                    'status' => 'cancelled',
+                ]);
+
+                Http::withToken(env('TAP_SECRET'))
+                    ->acceptJson()
+                    ->withHeaders([
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->post('https://api.tap.company/v2/refunds', [
+                        'charge_id' => $booking->tap_charge_id,
+                        'amount' => $booking->total_price - $booking->discount_amount,
+                        'currency' => $booking->currency,
+                        'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
+                    ]);
+
+                return [
+                    'status' => true,
+                    'message' => __('messages.booking.cancelled'),
+                    'data' => $hotels->json(),
+                ];
+            }
+
             return [
-                'status' => true,
-                'message' => __('messages.booking.cancelled'),
-                'data' => $hotels->json(),
+                'status' => false,
+                'message' => __('messages.catch'),
+                'data' => [],
+            ];
+        } catch (Exception $e) {
+            Log::error('HotelBeds Booking Cancellation Failed', ['error' => $e->getMessage()]);
+
+            return [
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
             ];
         }
-
-        return [
-            'status' => false,
-            'message' => __('messages.catch'),
-            'data' => [],
-        ];
     }
 }
