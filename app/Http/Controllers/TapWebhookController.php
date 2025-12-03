@@ -28,7 +28,12 @@ class TapWebhookController extends Controller
                 'tap_response' => json_encode($request->all()),
             ]);
 
-            $room_rates = $booking->booking_room->pluck('rate_key')->toArray();
+            $room_rates = [];
+            foreach ($booking->booking_room->pluck('rate_key')->toArray() as $rate_key) {
+                $room_rates[] = [
+                    'rateKey' => $rate_key,
+                ];
+            }
 
             $this->bookingConfirmation([
                 'booking_id' => $booking->id,
