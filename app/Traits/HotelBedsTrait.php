@@ -445,7 +445,7 @@ trait HotelBedsTrait
                 'surname' => $data['last_name']
             ],
             'rooms' => $data['rate_keys'],
-            'clientReference' => 'booking-ref-' . $data['order'],
+            'clientReference' => $data['order'],
             'remark' => $data['remark'] ?? null,
             'tolerance' => 2,
         ]);
