@@ -88,6 +88,13 @@ class BookingController extends Controller
         return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
     }
 
+    public function showCancellationPolicies($order)
+    {
+        $response = $this->bookingRepository->showCancellationPolicies($order);
+
+        return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
+    }
+
     public function cancel($order)
     {
         $booking = Booking::where('order', $order)->firstOrFail();

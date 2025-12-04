@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use App\Models\Booking;
+use App\Models\BookingRoom;
+use App\Models\BookingRoomCancellationPolicy;
 use App\Models\FavoriteHotel;
 use App\Models\Setting;
 use App\Models\User;
@@ -521,7 +523,23 @@ trait HotelBedsTrait
         ]);
 
         if ($hotels->successful()) {
-            return $hotels->json();
+            $hotels = $hotels->json();
+
+            foreach ($hotels['hotel']['rooms'] as $room) {
+                foreach ($room['rates'] as $rate) {
+                    $bookingRoom = BookingRoom::where('rate_key', $rate['rateKey'])->first();
+                    foreach ($rate['cancellationPolicies'] as $policy) {
+                        if ($bookingRoom) {
+                            BookingRoomCancellationPolicy::updateOrCreate([
+                                'booking_room_id' => $bookingRoom->id,
+                                'amount' => $policy['amount'],
+                                'from' => $policy['from'],
+                            ]);
+                        }
+                    }
+                }
+            }
+            return $hotels;
         }
 
         throw new \Exception(__('messages.catch'));

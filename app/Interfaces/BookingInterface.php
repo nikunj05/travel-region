@@ -13,4 +13,6 @@ interface BookingInterface
     public function applyCoupon($request);
 
     public function downloadPdf($order);
+
+    public function showCancellationPolicies($order);
 }

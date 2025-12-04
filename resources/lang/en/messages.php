@@ -51,6 +51,7 @@ return [
         'added' => 'Booking created successfully.',
         'show' => 'Booking details fetched successfully.',
         'cancelled' => 'Booking cancelled successfully.',
+        'cancellation-policies-fetched' => 'Cancellation policies fetched successfully.',
     ],
     'payment' => [
         'checkout_initiated' => 'Checkout initiated successfully.',

@@ -7,6 +7,7 @@ use App\Interfaces\BookingInterface;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BookingRoom;
+use App\Models\BookingRoomCancellationPolicy;
 use App\Models\Coupon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -179,6 +180,25 @@ class BookingRepository implements BookingInterface
             'message' => __('messages.booking.pdf.generated'),
             'data' => [
                 'pdf_url' => $publicUrl,
+            ],
+        ];
+    }
+
+    public function showCancellationPolicies($order)
+    {
+        $booking = Booking::where('order', $order)->firstOrFail();
+
+        $bookingRoomCancellationPolicy = BookingRoomCancellationPolicy::whereIn('booking_room_id', function ($query) use ($booking) {
+            $query->select('id')
+                ->from('booking_rooms')
+                ->where('booking_id', $booking->id);
+        })->get();
+
+        return [
+            'status' => true,
+            'message' => __('messages.booking.cancellation-policies-fetched'),
+            'data' => [
+                'cancellation_policies' => $bookingRoomCancellationPolicy,
             ],
         ];
     }
