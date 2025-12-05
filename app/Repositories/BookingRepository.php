@@ -9,12 +9,15 @@ use App\Models\BookingDetail;
 use App\Models\BookingRoom;
 use App\Models\BookingRoomCancellationPolicy;
 use App\Models\Coupon;
+use App\Traits\HotelBedsTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class BookingRepository implements BookingInterface
 {
+    use HotelBedsTrait;
+
     /**
      * Display a listing of the bookings for the authenticated user.
      *
@@ -103,6 +106,8 @@ class BookingRepository implements BookingInterface
                 'booking_id' => $booking->id,
                 'room_code' => $room['room_code'],
                 'rate_key' => $room['rate_key'],
+                'room_name' => $room['room_name'] ?? null,
+                'board_name' => $room['board_name'] ?? null,
             ]);
         }
 

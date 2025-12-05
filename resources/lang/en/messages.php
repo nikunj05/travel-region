@@ -52,6 +52,9 @@ return [
         'show' => 'Booking details fetched successfully.',
         'cancelled' => 'Booking cancelled successfully.',
         'cancellation-policies-fetched' => 'Cancellation policies fetched successfully.',
+        'pdf' => [
+            'generated' => 'Booking confirmation PDF generated successfully.',
+        ]
     ],
     'payment' => [
         'checkout_initiated' => 'Checkout initiated successfully.',

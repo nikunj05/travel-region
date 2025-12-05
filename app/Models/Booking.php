@@ -44,6 +44,11 @@ class Booking extends Model
         return $this->hasMany(BookingDetail::class);
     }
 
+    public function primary_details()
+    {
+        return $this->hasOne(BookingDetail::class)->where('is_primary', 1);
+    }
+
     public function booking_room()
     {
         return $this->hasMany(BookingRoom::class);
