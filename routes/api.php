@@ -42,6 +42,8 @@ Route::prefix('v1')
 
     Route::get('popular-destinations', [PopularDestinationController::class, 'index'])->name('popular-destinations.index');
 
+    Route::get('countries', [AuthController::class, 'countries'])->name('countries');
+
     Route::get('pages', [CmsController::class, 'index'])->name('cms.index');
     Route::get('pages/{slug}', [CmsController::class, 'show'])->name('cms.show');
 

@@ -155,4 +155,25 @@ class AuthController extends Controller
             'user' => new UserResource($user),
         ], 200);
     }
+
+    /**
+     * Get the list of countries.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function countries()
+    {
+        $file = public_path('countries.json');
+
+        if (!file_exists($file)) {
+            return $this->sendApiResponse(false, 'countries.json not found', [], 500);
+        }
+
+        return $this->sendApiResponse(
+            true,
+            'Countries retrieved successfully',
+            ['countries' => json_decode(file_get_contents($file), true)],
+            200
+        );
+    }
 }

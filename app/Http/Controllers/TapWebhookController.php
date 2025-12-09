@@ -28,6 +28,8 @@ class TapWebhookController extends Controller
                 'tap_response' => json_encode($request->all()),
             ]);
 
+            // send mail and confirm booking with hotelbeds
+
             $room_rates = [];
             foreach ($booking->booking_room->pluck('rate_key')->toArray() as $rate_key) {
                 $room_rates[] = [
