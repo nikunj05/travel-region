@@ -8,7 +8,6 @@ use App\Models\BookingDetail;
 use App\Repositories\BookingRepository;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class TapWebhookController extends Controller

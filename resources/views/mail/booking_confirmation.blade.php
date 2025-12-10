@@ -54,22 +54,6 @@
 
 <br />
 
-{{-- ## **{{ __('messages.booking_confirmation.payment_details') }}**
-<table style="width: 100%; border-collapse: collapse; text-align: center;">
-    <tr>
-        <th style="border: 1px solid #ddd; padding: 10px;">{{ __('messages.booking_confirmation.amount_paid') }}</th>
-        <th style="border: 1px solid #ddd; padding: 10px;">{{ __('messages.booking_confirmation.payment_date') }}</th>
-        <th style="border: 1px solid #ddd; padding: 10px;">{{ __('messages.booking_confirmation.payment_method') }}</th>
-    </tr>
-    <tr>
-        <td style="border: 1px solid #ddd; padding: 10px;">
-            {{ $bookingDetails['booking']->currency_name }}{{ $bookingDetails['booking']->total_amount }}
-        </td>
-        <td style="border: 1px solid #ddd; padding: 10px;">{{ $bookingDetails['booking']->booked_date }}</td>
-        <td style="border: 1px solid #ddd; padding: 10px;">{{ __('messages.booking_confirmation.online') }}</td>
-    </tr>
-</table> --}}
-
 <br />
 <p>{{ __('messages.booking_confirmation.footer') }}</p>
 <br />

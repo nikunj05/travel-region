@@ -5,7 +5,6 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 
 class BookingConfirmationMail extends Mailable
 {
@@ -30,11 +29,6 @@ class BookingConfirmationMail extends Mailable
      */
     public function build()
     {
-        // $parsedUrl = parse_url($this->invoicePath);
-        // $this->invoicePath = ltrim($parsedUrl['path'], '/');
-
-        // $file = Storage::disk('public')->get($filePath);
-
         return $this->subject('Booking Confirmation Mail')
             ->markdown('mail.booking_confirmation', [
                 'booking' => $this->booking,
