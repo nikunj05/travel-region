@@ -54,7 +54,7 @@ return [
         'cancellation-policies-fetched' => 'Cancellation policies fetched successfully.',
         'pdf' => [
             'generated' => 'Booking confirmation PDF generated successfully.',
-        ]
+        ],
     ],
     'payment' => [
         'checkout_initiated' => 'Checkout initiated successfully.',
@@ -71,4 +71,24 @@ return [
         'fetched' => 'Popular destinations fetched successfully.',
     ],
     'locations_destinations_fetched' => 'Destinations fetched successfully.',
+    'booking_confirmation' => [
+        'regards' => 'Regards',
+        'title' => 'Booking Confirmation and Payment Receipt',
+        'greeting' => 'Dear',
+        'thank_you' => 'Thank you for your payment! Your booking has been successfully confirmed.',
+        'booking_details' => 'Booking Details',
+        'hotel_name' => 'Hotel Name',
+        'check_in' => 'Check-in',
+        'check_out' => 'Check-out',
+        'guests' => 'Guests',
+        'rooms' => 'Rooms',
+        'adult' => 'Adult',
+        'child' => 'Child',
+        // 'payment_details' => 'Payment Details',
+        // 'amount_paid' => 'Amount Paid',
+        // 'payment_date' => 'Payment Date',
+        // 'payment_method' => 'Payment Method',
+        'online' => 'Online',
+        'footer' => 'We look forward to hosting you. If you have any questions or need further assistance, please feel free to contact us.',
+    ],
 ];

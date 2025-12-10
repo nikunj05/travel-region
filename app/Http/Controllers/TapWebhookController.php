@@ -2,15 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\BookingConfirmationJob;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Repositories\BookingRepository;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class TapWebhookController extends Controller
 {
     use HotelBedsTrait;
+
+	protected $bookingRepository;
+
+    public function __construct(BookingRepository $bookingRepository)
+    {
+        $this->bookingRepository = $bookingRepository;
+    }
 
     public function handle(Request $request)
     {
@@ -29,6 +39,13 @@ class TapWebhookController extends Controller
             ]);
 
             // send mail and confirm booking with hotelbeds
+
+            $booking->fresh();
+
+			$filePath = $this->bookingRepository->downloadPdf($booking->order);
+			$invoicePath = $filePath['data']['pdf_url'];
+
+            dispatch(new BookingConfirmationJob($booking,$invoicePath));
 
             $room_rates = [];
             foreach ($booking->booking_room->pluck('rate_key')->toArray() as $rate_key) {
