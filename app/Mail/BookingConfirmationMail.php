@@ -33,8 +33,9 @@ class BookingConfirmationMail extends Mailable
             ->markdown('mail.booking_confirmation', [
                 'booking' => $this->booking,
             ])
-            ->attachData($this->invoicePath, 'invoice.pdf', [
-                'mime' => 'application/pdf',
-            ]);
+            ->attach($this->invoicePath, [
+				'as' => 'invoice.pdf',
+				'mime' => 'application/pdf',
+			]);
     }
 }
