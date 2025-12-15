@@ -64,14 +64,11 @@ class BookingRepository implements BookingInterface
      */
     public function store($request)
     {
-        $orderId = uniqid();
-
         $booking = Booking::updateOrCreate([
             'user_id' => Auth::id(),
             'hotel_code' => $request->hotel_code,
             'status' => 'pending',
         ], [
-            'order' => 'ord_' . $orderId,
             'check_in' => $request->check_in,
             'check_out' => $request->check_out,
             'hotel_name' => $request->hotel_name,
@@ -83,6 +80,10 @@ class BookingRepository implements BookingInterface
             'nights' => $request->nights,
             'total_price' => $request->total_price,
             'currency' => $request->currency,
+        ]);
+
+        $booking->update([
+            'order' => 'TR_' . Carbon::now()->format('Y') . $booking->id,
         ]);
 
         $booking->details()->delete();
