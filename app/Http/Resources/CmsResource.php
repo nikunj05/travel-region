@@ -25,8 +25,8 @@ class CmsResource extends JsonResource
             "founder_image_url" => $this->founder_image ? url(Storage::url($this->founder_image)) : null,
             "why_we_exist" => $this->why_we_exist ? collect($this->why_we_exist)->map(function ($item) {
                 return [
-                    'title' => $item['title'] ?? null,
-                    'description' => $item['description'] ?? null,
+                    'title' => $item['title'] ? $item['title'][app()->getLocale()] : null,
+                    'description' => $item['description'] ? $item['description'][app()->getLocale()] : null,
                     'icon' => $item['icon'] ?? null,
                     'icon_url' => isset($item['icon']) ? url(Storage::url($item['icon'])) : null,
                 ];
@@ -36,8 +36,8 @@ class CmsResource extends JsonResource
             })->values() : null,
             "few_highlights" => $this->few_highlights ? collect($this->few_highlights)->map(function ($item) {
                 return [
-                    'title' => $item['title'] ?? null,
-                    'description' => $item['description'] ?? null,
+                    'title' => $item['title'] ? $item['title'][app()->getLocale()] : null,
+                    'description' => $item['description'] ? $item['description'][app()->getLocale()] : null,
                     'icon' => $item['icon'] ?? null,
                     'icon_url' => isset($item['icon']) ? url(Storage::url($item['icon'])) : null,
                 ];
