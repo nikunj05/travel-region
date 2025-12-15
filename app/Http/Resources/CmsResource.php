@@ -23,7 +23,7 @@ class CmsResource extends JsonResource
             "about_us" => (bool) $this->about_us,
             "founder_image" => $this->founder_image,
             "founder_image_url" => $this->founder_image ? url(Storage::url($this->founder_image)) : null,
-            "why_we_exist" => $this->why_we_exist ? collect($this->why_we_exist)->map(function ($item) {
+            "why_we_exist" => $this->why_we_exist ? collect($this->why_we_exist)->filter(function ($item) { return $item['title'][app()->getLocale()] && $item['description'][app()->getLocale()]; })->map(function ($item) {
                 return [
                     'title' => $item['title'] ? $item['title'][app()->getLocale()] : null,
                     'description' => $item['description'] ? $item['description'][app()->getLocale()] : null,
@@ -34,7 +34,7 @@ class CmsResource extends JsonResource
             "our_partners" => $this->our_partners ? collect($this->our_partners)->map(function ($item) {
                 return isset($item) ? url(Storage::url($item)) : null;
             })->values() : null,
-            "few_highlights" => $this->few_highlights ? collect($this->few_highlights)->map(function ($item) {
+            "few_highlights" => $this->few_highlights ? collect($this->few_highlights)->filter(function ($item) { return $item['title'][app()->getLocale()] && $item['description'][app()->getLocale()]; })->map(function ($item) {
                 return [
                     'title' => $item['title'] ? $item['title'][app()->getLocale()] : null,
                     'description' => $item['description'] ? $item['description'][app()->getLocale()] : null,
