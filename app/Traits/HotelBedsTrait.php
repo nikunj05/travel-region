@@ -431,7 +431,7 @@ trait HotelBedsTrait
      * Confirm booking with HotelBeds API
      *
      * @param array $data
-     * @return \Illuminate\Http\Client\Response
+     * @return array
      */
     public function bookingConfirmation($data)
     {
@@ -458,7 +458,10 @@ trait HotelBedsTrait
                 'booking_reference' => $hotels->json()['booking']['reference'],
             ]);
 
-            return $hotels->json();
+            return [
+                'status' => true,
+                'data' => $hotels->json()
+            ];
         } else {
 
             $booking = Booking::where('id', $data['booking_id'])->first();

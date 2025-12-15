@@ -37,15 +37,6 @@ class TapWebhookController extends Controller
                 'tap_response' => json_encode($request->all()),
             ]);
 
-            // send mail and confirm booking with hotelbeds
-
-            $booking->fresh();
-
-			$filePath = $this->bookingRepository->downloadPdf($booking->order);
-			$invoicePath = $filePath['data']['pdf_url'];
-
-            dispatch(new BookingConfirmationJob($booking,$invoicePath));
-
             $room_rates = [];
             foreach ($booking->booking_room->pluck('rate_key')->toArray() as $rate_key) {
                 $room_rates[] = [
@@ -53,7 +44,7 @@ class TapWebhookController extends Controller
                 ];
             }
 
-            $this->bookingConfirmation([
+            $bookingConfirmation = $this->bookingConfirmation([
                 'booking_id' => $booking->id,
                 'first_name' => $bookingDetail->first_name,
                 'last_name' => $bookingDetail->last_name,
@@ -61,6 +52,16 @@ class TapWebhookController extends Controller
                 'order' => $booking->order,
                 'remark' => $booking->special_requests,
             ]);
+
+            if ($bookingConfirmation && count($bookingConfirmation)) {
+                // send mail and confirm booking with hotelbeds
+                $booking->fresh();
+
+                $filePath = $this->bookingRepository->downloadPdf($booking->order);
+                $invoicePath = $filePath['data']['pdf_url'];
+
+                dispatch(new BookingConfirmationJob($booking,$invoicePath));
+            }
 
             return response()->json(['status' => 'success'], 200);
         }
