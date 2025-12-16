@@ -12,6 +12,7 @@ class BookingRoom extends Model
         'room_name',
         'board_name',
         'rate_key',
+        'amount',
     ];
 
     public function booking()

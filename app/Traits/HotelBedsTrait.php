@@ -531,6 +531,10 @@ trait HotelBedsTrait
             foreach ($hotels['hotel']['rooms'] as $room) {
                 foreach ($room['rates'] as $rate) {
                     $bookingRoom = BookingRoom::where('rate_key', $rate['rateKey'])->first();
+
+                    $bookingRoom->update([
+                        'amount' => $rate['net'],
+                    ]);
                     foreach ($rate['cancellationPolicies'] as $policy) {
                         if ($bookingRoom) {
                             BookingRoomCancellationPolicy::updateOrCreate([
@@ -564,7 +568,7 @@ trait HotelBedsTrait
                     'status' => 'cancelled',
                 ]);
 
-                // check for cancellation refund amount
+                // Calculate refund amount based on cancellation policies
                 $refundAmount = 0;
                 foreach ($booking->booking_room as $bookingRoom) {
                     $bookingRoomCancellationPolicy = BookingRoomCancellationPolicy::where('booking_room_id', $bookingRoom->id)
@@ -574,6 +578,9 @@ trait HotelBedsTrait
 
                     if ($bookingRoomCancellationPolicy) {
                         $refundAmount += $bookingRoomCancellationPolicy->amount;
+                    } else {
+                        // No policy exists - full refund for this room
+                        $refundAmount += $bookingRoom->amount;
                     }
                 }
 
