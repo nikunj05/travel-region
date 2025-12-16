@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\AuthInterface;
 use App\Jobs\SendResetPasswordMail;
+use App\Jobs\SendWelcomeEmailJob;
 use App\Models\PasswordReset;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
@@ -51,6 +52,9 @@ class AuthRepository implements AuthInterface
         ]);
 
         $user->assignRole('customer');
+
+        // send welcome email can be dispatched here
+        dispatch(new SendWelcomeEmailJob($user));
 
         return $user;
     }
