@@ -32,6 +32,7 @@ class BookingRepository implements BookingInterface
             if ($status = request('status')) {
                 $query->where('status', $status);
             }
+            $query->where('status', '!=', 'pending');
             if ($hotelCode = request('hotel_code')) {
                 $query->where('hotel_code', $hotelCode);
             }
