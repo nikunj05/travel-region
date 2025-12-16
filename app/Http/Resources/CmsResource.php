@@ -18,6 +18,9 @@ class CmsResource extends JsonResource
         return [
             'id' => $this->id,
             "title" => $this->title,
+            "sub_title" => $this->sub_title,
+            "background_image" => $this->background_image,
+            "background_image_url" => $this->background_image ? url(Storage::url($this->background_image)) : null,
             "slug" => $this->slug,
             "content" => $this->content,
             "about_us" => (bool) $this->about_us,
