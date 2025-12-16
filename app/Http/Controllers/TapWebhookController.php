@@ -14,7 +14,7 @@ class TapWebhookController extends Controller
 {
     use HotelBedsTrait;
 
-	protected $bookingRepository;
+    protected $bookingRepository;
 
     public function __construct(BookingRepository $bookingRepository)
     {
@@ -60,7 +60,7 @@ class TapWebhookController extends Controller
                 $filePath = $this->bookingRepository->downloadPdf($booking->order);
                 $invoicePath = $filePath['data']['pdf_url'];
 
-                dispatch(new BookingConfirmationJob($booking,$invoicePath));
+                dispatch(new BookingConfirmationJob($booking, $invoicePath));
             }
 
             return response()->json(['status' => 'success'], 200);

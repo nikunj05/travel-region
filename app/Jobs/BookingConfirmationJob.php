@@ -17,17 +17,17 @@ class BookingConfirmationJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-	public function __construct($booking, $invoicePath)
-	{
-		$this->booking = $booking;
-		$this->invoicePath = $invoicePath;
-	}
+    public function __construct($booking, $invoicePath)
+    {
+        $this->booking = $booking;
+        $this->invoicePath = $invoicePath;
+    }
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        Mail::to($this->booking->primary_details->email)->send(new BookingConfirmationMail($this->booking,$this->invoicePath));
+        Mail::to($this->booking->user->email)->send(new BookingConfirmationMail($this->booking, $this->invoicePath));
     }
 }
