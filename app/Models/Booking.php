@@ -19,6 +19,7 @@ class Booking extends Model
         'nights',
         'total_price',
         'discount_amount',
+        'refunded_amount',
         'currency',
         'status',
         'coupon_id',

@@ -564,17 +564,40 @@ trait HotelBedsTrait
                     'status' => 'cancelled',
                 ]);
 
-                Http::withToken(env('TAP_SECRET'))
-                    ->acceptJson()
-                    ->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])
-                    ->post('https://api.tap.company/v2/refunds', [
-                        'charge_id' => $booking->tap_charge_id,
-                        'amount' => $booking->total_price - $booking->discount_amount,
-                        'currency' => $booking->currency,
-                        'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
-                    ]);
+                // check for cancellation refund amount
+                $refundAmount = 0;
+                foreach ($booking->booking_room as $bookingRoom) {
+                    $bookingRoomCancellationPolicy = BookingRoomCancellationPolicy::where('booking_room_id', $bookingRoom->id)
+                        ->where('from', '<=', now())
+                        ->orderBy('from', 'desc')
+                        ->first();
+
+                    if ($bookingRoomCancellationPolicy) {
+                        $refundAmount += $bookingRoomCancellationPolicy->amount;
+                    }
+                }
+
+                if ($refundAmount > 0) {
+                    $refunds = Http::withToken(env('TAP_SECRET'))
+                        ->acceptJson()
+                        ->withHeaders([
+                            'Content-Type' => 'application/json',
+                        ])
+                        ->post('https://api.tap.company/v2/refunds', [
+                            'charge_id' => $booking->tap_charge_id,
+                            'amount' => $refundAmount,
+                            'currency' => $booking->currency,
+                            'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
+                        ]);
+
+                    if ($refunds->successful()) {
+                        Booking::where('id', $booking->id)->update([
+                            'refunded_amount' => $refundAmount,
+                        ]);
+                    } else {
+                        Log::error('HotelBeds Booking Cancellation Refund Failed', $refunds->json());
+                    }
+                }
 
                 return [
                     'status' => true,
