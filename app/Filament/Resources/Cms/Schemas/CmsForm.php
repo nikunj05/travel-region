@@ -42,6 +42,29 @@ class CmsForm
                     ->columns(12)
                     ->columnSpanFull()
                     ->schema([
+                        TextInput::make('sub_title')
+                            ->label('Sub Title')
+                            ->maxLength(255)
+                            ->columnSpan(6),
+
+                            // next rows, full-width
+                        FileUpload::make('background_image')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('cms/background-images') // stored inside storage/app/public/cms/background-images
+                            ->maxSize(2048) // 2 MB
+                            ->disk('public')
+                            ->visibility('public')
+                            ->downloadable()
+                            ->previewable(true)
+                            ->openable()
+                            ->columnSpan(6),
+                    ]),
+
+                Grid::make()
+                    ->columns(12)
+                    ->columnSpanFull()
+                    ->schema([
                         RichEditor::make('content')
                             ->required()
                             ->translatable()

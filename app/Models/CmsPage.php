@@ -12,6 +12,8 @@ class CmsPage extends Model
     protected $fillable = [
         'slug',
         'title',
+        'sub_title',
+        'background_image',
         'content',
         'about_us',
         'founder_image',
