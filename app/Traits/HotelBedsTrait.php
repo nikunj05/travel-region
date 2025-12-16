@@ -449,7 +449,7 @@ trait HotelBedsTrait
             'rooms' => $data['rate_keys'],
             'clientReference' => $data['order'],
             'remark' => $data['remark'] ?? null,
-            'tolerance' => 2,
+            'tolerance' => 5,
         ]);
 
         if ($hotels->successful()) {
