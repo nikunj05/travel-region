@@ -11,7 +11,7 @@ class BookingConfirmationMail extends Mailable
     use Queueable, SerializesModels;
 
     public $booking;
-	
+
 	public $invoicePath;
 
     /**
@@ -23,13 +23,13 @@ class BookingConfirmationMail extends Mailable
 		$this->invoicePath = $invoicePath;
 	}
 
-    
+
     /**
      * Build the email with an attachment.
      */
     public function build()
     {
-        return $this->subject('Booking Confirmation Mail')
+        return $this->subject('Booking Confirmation')
             ->markdown('mail.booking_confirmation', [
                 'booking' => $this->booking,
             ])
