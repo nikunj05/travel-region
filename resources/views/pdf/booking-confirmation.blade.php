@@ -282,6 +282,26 @@
                                                             {{ $booking_room->board_name }}
                                                         </td>
                                                     </tr>
+
+                                                    <!-- Row 2 -->
+                                                    @if ($booking_room->cancellation_policies->count() > 0)
+                                                        <tr>
+                                                            <td valign="middle"
+                                                                style="vertical-align:middle; font-size:14px; padding-top:8px;">
+                                                                <span style="font-weight:700;">
+                                                                    Cancellation Policy
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        @foreach ($booking_room->cancellation_policies as $cancellation_policy)
+                                                            <tr>
+                                                                <td valign="middle"
+                                                                    style="vertical-align:middle; font-size:14px; padding-top:8px;">
+                                                                    {{ $cancellation_policy->amount }} After {{ \Carbon\Carbon::parse($cancellation_policy->from)->format('d M Y h:i A') }}
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endif
                                                 </table>
                                             </td>
 
