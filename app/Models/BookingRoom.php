@@ -19,4 +19,9 @@ class BookingRoom extends Model
     {
         return $this->belongsTo(Booking::class);
     }
+
+    public function cancellation_policies()
+    {
+        return $this->hasMany(BookingRoomCancellationPolicy::class);
+    }
 }
