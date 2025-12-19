@@ -118,7 +118,7 @@ trait HotelBedsTrait
                     $hotel_category = $hotel['categoryName'] ?? '';
 
                     $minNet = PHP_FLOAT_MAX;
-                    $rateCurrency = 'SAR';
+                    $rateCurrency = 'EUR';
                     $tax_array = [];
 
                     // First pass: find min/max net values and get tax info
@@ -302,7 +302,7 @@ trait HotelBedsTrait
                     // Use reference for the outer loop as well
                     foreach ($availabilityRooms as &$availabilityRoom) {
                         foreach ($availabilityRoom['rates'] as &$rate) {
-                            $rateCurrency = 'SAR';
+                            $rateCurrency = 'EUR';
 
                             if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['currency'])) {
                                 $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
