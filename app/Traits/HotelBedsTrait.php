@@ -101,8 +101,6 @@ trait HotelBedsTrait
             $payload['accommodations'] = explode(',', $request->accommodations);
         }
 
-        Log::info($this->generateSignature());
-
         $availableHotels = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
