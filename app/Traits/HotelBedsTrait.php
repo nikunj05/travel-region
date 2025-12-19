@@ -530,11 +530,33 @@ trait HotelBedsTrait
         throw new \Exception(__('messages.catch'));
     }
 
+    public function bookingDetails($booking_reference)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        try {
+            $hotels = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Api-key' => $apiKey,
+                'X-Signature' => $this->generateSignature(),
+            ])->get("{$this->baseUrl}/hotel-api/{$this->version}/bookings/{$booking_reference}");
+
+            if ($hotels->successful()) {
+                return $hotels->json();
+            }
+        } catch (Exception $e) {
+            Log::error('HotelBeds Booking Details Fetch Failed', ['error' => $e->getMessage()]);
+            throw new Exception($e->getMessage());
+        }
+    }
+
     public function cancelBooking($booking)
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
         try {
+            $hotelDetail = $this->bookingDetails($booking->booking_reference);
+
             $hotels = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Api-key' => $apiKey,
@@ -547,8 +569,8 @@ trait HotelBedsTrait
 
                 Log::info('HotelBeds Booking Cancellation', $cancelled_hotels);
 
-                $refundAmount = $cancelled_hotels['booking']['pendingAmount'];
-                $currency = $cancelled_hotels['booking']['currency'];
+                $refundAmount = $hotelDetail['booking']['hotel']['cancellationAmount'];
+                $currency = $hotelDetail['booking']['hotel']['currency'];
 
                 Log::info('HotelBeds Booking Cancellation', [
                     'booking_reference' => $booking->booking_reference,
