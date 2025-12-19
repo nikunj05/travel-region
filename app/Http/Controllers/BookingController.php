@@ -9,6 +9,7 @@ use App\Http\Resources\PaginationResource;
 use App\Interfaces\BookingInterface;
 use App\Models\Booking;
 use App\Traits\HotelBedsTrait;
+use Exception;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -61,11 +62,17 @@ class BookingController extends Controller
      */
     public function store(BookingRequest $request)
     {
-        $booking = $this->bookingRepository->store($request);
+        try {
+            $booking = $this->bookingRepository->store($request);
 
-        return $this->sendApiResponse(true, __('messages.booking.added'), [
-            'booking' => new BookingResource($booking),
-        ], 201);
+            return $this->sendApiResponse(true, __('messages.booking.added'), [
+                'booking' => new BookingResource($booking),
+            ], 201);
+        } catch (Exception $e) {
+            return $this->sendApiResponse(false, __('messages.booking.room_not_available'), [
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 
     /**

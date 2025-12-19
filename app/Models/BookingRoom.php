@@ -13,6 +13,9 @@ class BookingRoom extends Model
         'board_name',
         'rate_key',
         'amount',
+        'net_amount',
+        'net_currency',
+        'rate_comments',
     ];
 
     public function booking()
