@@ -100,7 +100,11 @@ class BookingController extends Controller
         $booking = Booking::where('order', $order)->firstOrFail();
 
         if ($booking->status == 'confirmed') {
-            $this->cancelBooking($booking);
+            $cancellation = $this->cancelBooking($booking);
+
+            if (!$cancellation['status']) {
+                return $this->sendApiResponse(false, $cancellation['message']);
+            }
         } else {
             $booking->update([
                 'status' => 'cancelled',
