@@ -570,6 +570,12 @@ trait HotelBedsTrait
                 $refundAmount = $cancelled_hotels['booking']['pendingAmount'];
                 $currency = $cancelled_hotels['booking']['currency'];
 
+                Log::info('HotelBeds Booking Cancellation', [
+                    'booking_reference' => $booking->booking_reference,
+                    'refund_amount' => $refundAmount,
+                    'currency' => $currency,
+                ]);
+
                 if ($refundAmount > 0) {
                     $refunds = Http::withToken(env('TAP_SECRET'))
                         ->acceptJson()
