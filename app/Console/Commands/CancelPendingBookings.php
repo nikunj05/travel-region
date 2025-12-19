@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Booking;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CancelPendingBookings extends Command
 {
@@ -45,6 +46,11 @@ class CancelPendingBookings extends Command
             if ($hotels->successful()) {
                 $booking->cancellation_in_progress = false;
                 $booking->save();
+            } else {
+                Log::error('Failed to cancel pending booking', [
+                    'booking_reference' => $booking->booking_reference,
+                    'response' => $hotels->json(),
+                ]);
             }
         }
 
