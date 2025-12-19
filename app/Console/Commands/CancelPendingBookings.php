@@ -36,6 +36,12 @@ class CancelPendingBookings extends Command
         $baseUrl = 'https://api.test.hotelbeds.com';
         $version = '1.0';
 
+        if (!$bookings->count()) {
+            return 0;
+        }
+
+        Log::info('Cancelling pending bookings', ['count' => $bookings->count()]);
+
         foreach ($bookings as $booking) {
             $hotels = Http::withHeaders([
                 'Accept' => 'application/json',
