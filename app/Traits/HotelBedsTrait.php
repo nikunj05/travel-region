@@ -451,6 +451,8 @@ trait HotelBedsTrait
 
         if ($hotels->successful()) {
 
+            Log::info('HotelBeds Booking Confirmation Success', $hotels->json());
+
             Booking::where('id', $data['booking_id'])->update([
                 'booking_reference' => $hotels->json()['booking']['reference'],
             ]);
@@ -556,7 +558,11 @@ trait HotelBedsTrait
 
         try {
             $hotelDetail = $this->bookingDetails($booking->booking_reference);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
 
+        try {
             $hotels = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Api-key' => $apiKey,
@@ -610,7 +616,9 @@ trait HotelBedsTrait
                 ];
             }
 
-            Log::error('HotelBeds Booking Cancellation Failed', $hotels->json());
+            Log::error('HotelBeds Booking Cancellation Failed 1', [
+                'response' => $hotels->json()
+            ]);
 
             return [
                 'status' => false,
@@ -618,7 +626,11 @@ trait HotelBedsTrait
                 'data' => [],
             ];
         } catch (Exception $e) {
-            Log::error('HotelBeds Booking Cancellation Failed', ['error' => $e->getMessage()]);
+            Log::error('HotelBeds Booking Cancellation Failed 2', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
 
             return [
                 'status' => false,

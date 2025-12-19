@@ -133,30 +133,14 @@ trait CurrencyConversion
 
         $commission_amount = ($commission_percentage / 100) * $converted_amount;
 
-        /* Add taxes if any */
-        $tax_amount = 0;
-        $tax_converted_amount = 0;
-        // if (count($taxes)) {
-        //     foreach ($taxes as $tax) {
-        //         $tax_amount += $tax['amount'];
-        //     }
-
-        //     // convert tax amount to expected currency
-        //     if ($tax_amount > 0) {
-        //         $tax_converted_amount = $tax_amount * $exchangeRate;
-        //     }
-        // }
-
         return [
             'original_amount' => $amount,
             'original_currency' => $fromCurrency,
             'converted_currency' => $expectedCurrency,
             'commission_percentage' => $commission_percentage,
-            'tax_amount' => $tax_amount,
             'converted_amount' => $converted_amount,
             'commission_amount' => $commission_amount,
-            'tax_converted_amount' => $tax_converted_amount,
-            'final_amount' => $converted_amount + $commission_amount + $tax_converted_amount
+            'final_amount' => $converted_amount + $commission_amount
         ];
     }
 }
