@@ -153,8 +153,8 @@ class BookingRepository implements BookingInterface
             $prices = $this->calculatePrice($roomAvailability['hotel']['totalNet'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency']);
 
             $booking->update([
-                'total_price' => $prices['converted_currency'],
-                'currency' => $prices['currency'],
+                'total_price' => $prices['final_amount'],
+                'currency' => $prices['converted_currency'],
                 'category' => $roomAvailability['hotel']['categoryName'],
                 'net_total_price' => $roomAvailability['hotel']['totalNet'],
                 'net_currency' => $roomAvailability['hotel']['currency'],
