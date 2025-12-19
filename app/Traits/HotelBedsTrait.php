@@ -578,6 +578,8 @@ trait HotelBedsTrait
                 $refundAmount = $hotelDetail['booking']['pendingAmount'];
                 $currency = $hotelDetail['booking']['currency'];
 
+                $prices = $this->calculatePrice($refundAmount, $hotelDetail['booking']['hotel']['categoryName'], $currency);
+
                 Log::info('HotelBeds Booking Cancellation', [
                     'booking_reference' => $booking->booking_reference,
                     'refund_amount' => $refundAmount,
@@ -592,8 +594,8 @@ trait HotelBedsTrait
                         ])
                         ->post('https://api.tap.company/v2/refunds', [
                             'charge_id' => $booking->tap_charge_id,
-                            'amount' => $refundAmount,
-                            'currency' => $currency,
+                            'amount' => $prices['converted_amount'],
+                            'currency' => $prices['converted_currency'],
                             'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
                         ]);
 
