@@ -136,16 +136,16 @@ trait CurrencyConversion
         /* Add taxes if any */
         $tax_amount = 0;
         $tax_converted_amount = 0;
-        if (count($taxes)) {
-            foreach ($taxes as $tax) {
-                $tax_amount += $tax['amount'];
-            }
+        // if (count($taxes)) {
+        //     foreach ($taxes as $tax) {
+        //         $tax_amount += $tax['amount'];
+        //     }
 
-            // convert tax amount to expected currency
-            if ($tax_amount > 0) {
-                $tax_converted_amount = $tax_amount * $exchangeRate;
-            }
-        }
+        //     // convert tax amount to expected currency
+        //     if ($tax_amount > 0) {
+        //         $tax_converted_amount = $tax_amount * $exchangeRate;
+        //     }
+        // }
 
         return [
             'original_amount' => $amount,

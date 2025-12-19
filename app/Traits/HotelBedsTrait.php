@@ -130,14 +130,13 @@ trait HotelBedsTrait
                                 // Get currency and tax info (assuming it's consistent across rates)
                                 if (empty($tax_array) && isset($rate['taxes']['taxes'][0])) {
                                     $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
-                                    $tax_array = $rate['taxes']['taxes'];
                                 }
                             }
                         }
                     }
 
                     // Only calculate prices twice (for min and max)
-                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency, $tax_array);
+                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency);
 
                     $hotelData[$hotel['code']] = [
                         'code' => $hotel['code'],
@@ -305,13 +304,11 @@ trait HotelBedsTrait
                         foreach ($availabilityRoom['rates'] as &$rate) {
                             $rateCurrency = 'SAR';
 
-                            $tax_array = [];
                             if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['currency'])) {
                                 $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
-                                $tax_array = $rate['taxes']['taxes'];
                             }
 
-                            $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency, $tax_array);
+                            $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency);
 
                             $rate['prices'] = $prices;
                             $rate['net'] = (string) round($prices['final_amount'], 2);
@@ -527,25 +524,6 @@ trait HotelBedsTrait
 
         if ($hotels->successful()) {
             $hotels = $hotels->json();
-
-            foreach ($hotels['hotel']['rooms'] as $room) {
-                foreach ($room['rates'] as $rate) {
-                    $bookingRoom = BookingRoom::where('rate_key', $rate['rateKey'])->first();
-
-                    $bookingRoom->update([
-                        'amount' => $rate['net'],
-                    ]);
-                    foreach ($rate['cancellationPolicies'] as $policy) {
-                        if ($bookingRoom) {
-                            BookingRoomCancellationPolicy::updateOrCreate([
-                                'booking_room_id' => $bookingRoom->id,
-                                'amount' => $policy['amount'],
-                                'from' => $policy['from'],
-                            ]);
-                        }
-                    }
-                }
-            }
             return $hotels;
         }
 

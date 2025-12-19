@@ -23,16 +23,6 @@ class TapPaymentController extends Controller
             return $this->sendApiResponse(false, __('messages.payment.already_paid'), [], 422);
         }
 
-        // check room available or not
-        try {
-            $room_rates = $existingBooking->booking_room->pluck('rate_key')->toArray();
-            $this->checkRoomAvailability($room_rates);
-        } catch (Exception $e) {
-            return $this->sendApiResponse(false, __('messages.payment.room_not_available'), [
-                'error' => $e->getMessage()
-            ], 422);
-        }
-
         $payload = [
             "amount" => $existingBooking->total_price - $existingBooking->discount_amount,
             "currency" => $existingBooking->currency,

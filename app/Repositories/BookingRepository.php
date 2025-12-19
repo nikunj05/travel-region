@@ -12,6 +12,7 @@ use App\Models\Coupon;
 use App\Traits\HotelBedsTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class BookingRepository implements BookingInterface
@@ -111,6 +112,54 @@ class BookingRepository implements BookingInterface
                 'room_name' => $room['room_name'] ?? null,
                 'board_name' => $room['board_name'] ?? null,
             ]);
+        }
+
+        // check room available or not
+        try {
+            $room_rates = [];
+            foreach ($request->room_details as $room_details) {
+                $room_rates[] = $room_details['rate_key'];
+            }
+            $roomAvailability = $this->checkRoomAvailability($room_rates);
+
+            foreach ($roomAvailability['hotel']['rooms'] as $room) {
+                foreach ($room['rates'] as $rate) {
+                    $bookingRoom = BookingRoom::where('booking_id', $booking->id)
+                        ->where('rate_key', $rate['rateKey'])
+                        ->first();
+
+                    $roomPrices = $this->calculatePrice($rate['net'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency']);
+
+                    $bookingRoom->update([
+                        'amount' => $roomPrices['net'],
+                        'net_amount' => $rate['net'],
+                        'net_currency' => $rate['currency'],
+                        'rate_comments' => $rate['rateComments'] ?? null,
+                    ]);
+
+                    foreach ($rate['cancellationPolicies'] as $policy) {
+                        if ($bookingRoom) {
+                            BookingRoomCancellationPolicy::updateOrCreate([
+                                'booking_room_id' => $bookingRoom->id,
+                                'amount' => $policy['amount'],
+                                'from' => $policy['from'],
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            $prices = $this->calculatePrice($roomAvailability['hotel']['totalNet'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency']);
+
+            $booking->update([
+                'total_price' => $prices['converted_currency'],
+                'currency' => $prices['currency'],
+                'category' => $roomAvailability['hotel']['categoryName'],
+                'net_total_price' => $roomAvailability['hotel']['totalNet'],
+                'net_currency' => $roomAvailability['hotel']['currency'],
+            ]);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
 
         return $booking;

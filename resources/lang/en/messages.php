@@ -56,6 +56,7 @@ return [
         'pdf' => [
             'generated' => 'Booking confirmation PDF generated successfully.',
         ],
+        'room_not_available' => 'One or more rooms in your booking are no longer available.',
     ],
     'payment' => [
         'checkout_initiated' => 'Checkout initiated successfully.',
