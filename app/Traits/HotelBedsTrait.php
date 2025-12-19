@@ -101,6 +101,8 @@ trait HotelBedsTrait
             $payload['accommodations'] = explode(',', $request->accommodations);
         }
 
+        Log::info($this->generateSignature());
+
         $availableHotels = Http::withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
@@ -609,6 +611,12 @@ trait HotelBedsTrait
                 'refund_amount' => $refundAmount,
                 'currency' => $currency,
             ]);
+
+            return [
+                'status' => false,
+                'message' => 'Refund amount is zero or invalid',
+                'data' => [],
+            ];
 
         } catch (Exception $e) {
             Log::error('HotelBeds Booking Cancellation Failed 2', [
