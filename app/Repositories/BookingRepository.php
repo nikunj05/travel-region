@@ -134,7 +134,7 @@ class BookingRepository implements BookingInterface
                     $bookingRoom->update([
                         'amount' => $roomPrices['final_amount'],
                         'net_amount' => $rate['net'],
-                        'net_currency' => $rate['currency'],
+                        'net_currency' => $roomAvailability['hotel']['currency'],
                         'rate_comments' => $rate['rateComments'] ?? null,
                     ]);
 
