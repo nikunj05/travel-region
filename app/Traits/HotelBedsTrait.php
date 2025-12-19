@@ -567,6 +567,8 @@ trait HotelBedsTrait
 
                 $cancelled_hotels = $hotels->json();
 
+                Log::info('HotelBeds Booking Cancellation', $cancelled_hotels);
+
                 $refundAmount = $cancelled_hotels['booking']['pendingAmount'];
                 $currency = $cancelled_hotels['booking']['currency'];
 
