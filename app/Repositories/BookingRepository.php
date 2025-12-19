@@ -160,7 +160,11 @@ class BookingRepository implements BookingInterface
                 'net_currency' => $roomAvailability['hotel']['currency'],
             ]);
         } catch (Exception $e) {
-            Log::error('Room Availability Check Failed', ['error' => $e->getMessage()]);
+            Log::error('Room Availability Check Failed', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
             throw new Exception($e->getMessage());
         }
 
