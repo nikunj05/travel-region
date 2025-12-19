@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BookingRepository implements BookingInterface
 {
@@ -159,6 +160,7 @@ class BookingRepository implements BookingInterface
                 'net_currency' => $roomAvailability['hotel']['currency'],
             ]);
         } catch (Exception $e) {
+            Log::error('Room Availability Check Failed', ['error' => $e->getMessage()]);
             throw new Exception($e->getMessage());
         }
 
