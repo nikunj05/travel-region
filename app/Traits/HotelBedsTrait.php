@@ -129,7 +129,7 @@ trait HotelBedsTrait
                                 $minNet = $netValue;
                                 // Get currency and tax info (assuming it's consistent across rates)
                                 if (empty($tax_array) && isset($rate['taxes']['taxes'][0])) {
-                                    $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
+                                    $rateCurrency = $rate['taxes']['taxes'][0]['clientCurrency'];
                                 }
                             }
                         }
@@ -304,8 +304,8 @@ trait HotelBedsTrait
                         foreach ($availabilityRoom['rates'] as &$rate) {
                             $rateCurrency = 'EUR';
 
-                            if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['currency'])) {
-                                $rateCurrency = $rate['taxes']['taxes'][0]['currency'];
+                            if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['clientCurrency'])) {
+                                $rateCurrency = $rate['taxes']['taxes'][0]['clientCurrency'];
                             }
 
                             $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency);
