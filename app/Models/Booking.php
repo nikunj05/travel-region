@@ -27,6 +27,7 @@ class Booking extends Model
         'net_total_price',
         'net_currency',
         'status',
+        'cancellation_in_progress',
         'coupon_id',
         'tap_response',
         'tap_charge_id',
