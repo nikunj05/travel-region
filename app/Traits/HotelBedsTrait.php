@@ -564,6 +564,9 @@ trait HotelBedsTrait
             ])->delete("{$this->baseUrl}/hotel-api/{$this->version}/bookings/{$booking->booking_reference}");
 
             if ($hotels->successful()) {
+
+                Log::info('HotelBeds Booking Cancellation Successful', $hotels->json());
+
                 Booking::where('id', $booking->id)->update([
                     'status' => 'cancelled',
                 ]);
