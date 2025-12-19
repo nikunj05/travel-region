@@ -602,6 +602,8 @@ trait HotelBedsTrait
                 ];
             }
 
+            Log::error('HotelBeds Booking Cancellation Failed', $hotels->json());
+
             return [
                 'status' => false,
                 'message' => __('messages.catch'),
