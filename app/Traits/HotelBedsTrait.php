@@ -565,27 +565,10 @@ trait HotelBedsTrait
 
             if ($hotels->successful()) {
 
-                Log::info('HotelBeds Booking Cancellation Successful', $hotels->json());
+                $cancelled_hotels = $hotels->json();
 
-                Booking::where('id', $booking->id)->update([
-                    'status' => 'cancelled',
-                ]);
-
-                // Calculate refund amount based on cancellation policies
-                $refundAmount = 0;
-                foreach ($booking->booking_room as $bookingRoom) {
-                    $bookingRoomCancellationPolicy = BookingRoomCancellationPolicy::where('booking_room_id', $bookingRoom->id)
-                        ->where('from', '<=', now())
-                        ->orderBy('from', 'desc')
-                        ->first();
-
-                    if ($bookingRoomCancellationPolicy) {
-                        $refundAmount += $bookingRoomCancellationPolicy->amount;
-                    } else {
-                        // No policy exists - full refund for this room
-                        $refundAmount += $bookingRoom->amount;
-                    }
-                }
+                $refundAmount = $cancelled_hotels['booking']['pendingAmount'];
+                $currency = $cancelled_hotels['booking']['currency'];
 
                 if ($refundAmount > 0) {
                     $refunds = Http::withToken(env('TAP_SECRET'))
@@ -596,13 +579,16 @@ trait HotelBedsTrait
                         ->post('https://api.tap.company/v2/refunds', [
                             'charge_id' => $booking->tap_charge_id,
                             'amount' => $refundAmount,
-                            'currency' => $booking->currency,
+                            'currency' => $currency,
                             'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
                         ]);
 
                     if ($refunds->successful()) {
                         Booking::where('id', $booking->id)->update([
+                            'status' => 'cancelled',
                             'refunded_amount' => $refundAmount,
+                            'refunded_currency' => $currency,
+                            'tap_refund_id' => $refunds->json()['id'],
                         ]);
                     } else {
                         Log::error('HotelBeds Booking Cancellation Refund Failed', $refunds->json());

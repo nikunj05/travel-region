@@ -20,6 +20,8 @@ class Booking extends Model
         'total_price',
         'discount_amount',
         'refunded_amount',
+        'refunded_currency',
+        'tap_refund_id',
         'currency',
         'status',
         'coupon_id',
