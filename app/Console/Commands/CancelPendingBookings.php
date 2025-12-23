@@ -31,11 +31,6 @@ class CancelPendingBookings extends Command
         $bookings = Booking::where('cancellation_in_progress', true)
             ->get();
 
-        $apiKey = env('HOTEL_BEDS_API_KEY');
-
-        $baseUrl = 'https://api.test.hotelbeds.com';
-        $version = '1.0';
-
         if (!$bookings->count()) {
             return 0;
         }
@@ -43,34 +38,38 @@ class CancelPendingBookings extends Command
         Log::info('Cancelling pending bookings', ['count' => $bookings->count()]);
 
         foreach ($bookings as $booking) {
-            $hotels = Http::withHeaders([
-                'Accept' => 'application/json',
-                'Api-key' => $apiKey,
-                'X-Signature' => $this->generateSignature(),
-            ])->delete("{$baseUrl}/hotel-api/{$version}/bookings/{$booking->booking_reference}");
-
-            if ($hotels->successful()) {
-                $booking->cancellation_in_progress = false;
-                $booking->save();
-            } else {
-                Log::error('Failed to cancel pending booking', [
-                    'booking_reference' => $booking->booking_reference,
-                    'response' => $hotels->json(),
+            $refunds = Http::withToken(env('TAP_SECRET'))
+                ->acceptJson()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])
+                ->post('https://api.tap.company/v2/refunds', [
+                    'charge_id' => $booking->tap_charge_id,
+                    'amount' => $booking->refunded_amount,
+                    'currency' => $booking->refunded_currency,
+                    'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
                 ]);
+
+            if ($refunds->successful()) {
+
+                Log::info($refunds->json());
+
+                Booking::where('id', $booking->id)->update([
+                    'status' => 'cancelled',
+                    'tap_refund_id' => $refunds->json()['id'],
+                    'cancellation_in_progress' => false,
+                ]);
+
+                return [
+                    'status' => true,
+                    'message' => 'Booking cancelled successfully',
+                    'data' => [],
+                ];
+            } else {
+                Log::error('HotelBeds Booking Cancellation Refund Failed', $refunds->json());
             }
         }
 
         return 0;
-    }
-
-    protected function generateSignature(): string
-    {
-        $apiKey = env('HOTEL_BEDS_API_KEY');
-        $secret = env('HOTEL_BEDS_SECRET');
-
-        $timestamp = time(); // current timestamp in seconds
-        $rawString = $apiKey . $secret . $timestamp;
-
-        return hash('sha256', $rawString);
     }
 }

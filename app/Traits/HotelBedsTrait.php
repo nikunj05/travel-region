@@ -554,6 +554,8 @@ trait HotelBedsTrait
 
     public function cancelBooking($booking)
     {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
         try {
             $hotelDetail = $this->bookingDetails($booking->booking_reference);
         } catch (Exception $e) {
@@ -573,34 +575,26 @@ trait HotelBedsTrait
                     $amountToRefund = $booking->total_price;
                 }
 
-                $refunds = Http::withToken(env('TAP_SECRET'))
-                    ->acceptJson()
-                    ->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])
-                    ->post('https://api.tap.company/v2/refunds', [
-                        'charge_id' => $booking->tap_charge_id,
-                        'amount' => $amountToRefund,
-                        'currency' => $prices['converted_currency'],
-                        'reason' => 'Booking order ' . $booking->order . ' cancelled by user',
-                    ]);
+                $hotels = Http::withHeaders([
+                    'Accept' => 'application/json',
+                    'Api-key' => $apiKey,
+                    'X-Signature' => $this->generateSignature(),
+                ])->delete("{$this->baseUrl}/hotel-api/{$this->version}/bookings/{$booking->booking_reference}");
 
-                if ($refunds->successful()) {
+                if ($hotels->successful()) {
+
                     Booking::where('id', $booking->id)->update([
                         'status' => 'cancelled',
                         'refunded_amount' => $amountToRefund,
                         'refunded_currency' => $prices['converted_currency'],
-                        'tap_refund_id' => $refunds->json()['id'],
                         'cancellation_in_progress' => true,
                     ]);
 
-                    return [
-                        'status' => true,
-                        'message' => 'Booking cancelled successfully',
-                        'data' => [],
-                    ];
                 } else {
-                    Log::error('HotelBeds Booking Cancellation Refund Failed', $refunds->json());
+                    Log::error('Failed to cancel pending booking', [
+                        'booking_reference' => $booking->booking_reference,
+                        'response' => $hotels->json(),
+                    ]);
                 }
             }
 
