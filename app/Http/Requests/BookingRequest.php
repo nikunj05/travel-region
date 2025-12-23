@@ -34,7 +34,7 @@ class BookingRequest extends FormRequest
 
             'room_details' => 'required|array',
             'room_details.*.rate_key' => 'required|string',
-            'room_details.*.room_code' => 'required|string|max:15',
+            'room_details.*.room_code' => 'nullable|string|max:15',
 
             'details' => 'required|array',
             'details.*.price_per_night' => 'required|numeric|min:0',
