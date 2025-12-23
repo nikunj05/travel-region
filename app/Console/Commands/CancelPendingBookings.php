@@ -62,4 +62,15 @@ class CancelPendingBookings extends Command
 
         return 0;
     }
+
+    protected function generateSignature(): string
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+        $secret = env('HOTEL_BEDS_SECRET');
+
+        $timestamp = time(); // current timestamp in seconds
+        $rawString = $apiKey . $secret . $timestamp;
+
+        return hash('sha256', $rawString);
+    }
 }
