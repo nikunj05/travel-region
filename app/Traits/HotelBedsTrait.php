@@ -600,8 +600,8 @@ trait HotelBedsTrait
 
             Log::error('HotelBeds Booking Cancellation Failed 1', [
                 'booking_reference' => $booking->booking_reference,
-                'refund_amount' => $refundAmount,
-                'currency' => $currency,
+                'refund_amount' => $amountToRefund,
+                'currency' => $prices['converted_currency'],
             ]);
 
             return [
