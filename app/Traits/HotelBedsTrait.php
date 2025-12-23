@@ -592,6 +592,12 @@ trait HotelBedsTrait
                         'cancellation_in_progress' => true,
                     ]);
 
+                    return [
+                        'status' => true,
+                        'message' => 'Booking cancelled successfully',
+                        'data' => [],
+                    ];
+
                 } else {
                     Log::error('Failed to cancel pending booking', [
                         'booking_reference' => $booking->booking_reference,
