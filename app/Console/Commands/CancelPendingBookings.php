@@ -35,8 +35,6 @@ class CancelPendingBookings extends Command
             return 0;
         }
 
-        Log::info('Cancelling pending bookings', ['count' => $bookings->count()]);
-
         foreach ($bookings as $booking) {
             $refunds = Http::withToken(env('TAP_SECRET'))
                 ->acceptJson()
@@ -51,8 +49,6 @@ class CancelPendingBookings extends Command
                 ]);
 
             if ($refunds->successful()) {
-
-                Log::info($refunds->json());
 
                 Booking::where('id', $booking->id)->update([
                     'status' => 'cancelled',
