@@ -237,7 +237,7 @@ trait HotelBedsTrait
         $checkOut = $request->check_out ?? Carbon::tomorrow()->addDays(1)->format('Y-m-d');
 
         $rooms = [];
-        if ($request->rooms) {
+        if ($request->rooms && is_array($request->rooms)) {
             foreach ($request->rooms as $room) {
                 $roomData = [
                     'rooms' => 1,
