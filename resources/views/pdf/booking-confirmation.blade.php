@@ -54,6 +54,18 @@
 
                                 <div style="font-size:22px; font-weight:700; margin-bottom:6px;">
                                     {{ $booking->hotel_name }}
+                                    <span style="">
+                                        @php
+                                            $start_count = 0;
+                                            if ($booking->category) {
+                                                $start_count = str_replace([' STARS', ' STAR'], '', $booking->category);
+                                            }
+                                        @endphp
+                                        @for ($i = 0; $i < $start_count; $i++)
+                                            <img src="{{ public_path('images/star.svg') }}" alt="star" width="16"
+                                                height="16" style="object-fit: cover;">
+                                        @endfor
+                                    </span>
                                 </div>
 
                                 <!-- ADDRESS -->
@@ -64,16 +76,9 @@
                                 </div>
 
                                 <!-- Accommodation Type -->
-                                <div style="margin-bottom:24px;">
-                                    <p style="color:#0b343a; font-size:14px; margin:0 0 16px 0;">
+                                <div style="margin-bottom:8px;">
+                                    <p style="color:#0b343a; font-size:14px; margin:0 0 4px 0;">
                                         Accommodation Type: {{ $booking->accommodation_type }}
-                                    </p>
-                                </div>
-
-                                <!-- Category -->
-                                <div style="margin-bottom:24px;">
-                                    <p style="color:#0b343a; font-size:14px; margin:0 0 16px 0;">
-                                        {{ $booking->category }}
                                     </p>
                                 </div>
 
