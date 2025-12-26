@@ -35,6 +35,9 @@
                         <div style="color:#0b343a; font-size:13px;">
                             Booking Id: <strong>{{ $booking->order }}</strong>
                         </div>
+                        <div style="color:#0b343a; font-size:13px;">
+                            Hotel Beds Reference: <strong>{{ $booking->booking_reference }}</strong>
+                        </div>
                         <div style="margin-top:6px; color:#0b343a; font-size:12px;">
                             (Booked on {{ $booking->created_at->format('d M Y, h:i A') }})
                         </div>
@@ -56,10 +59,45 @@
                                 <!-- ADDRESS -->
                                 <div style="margin-bottom:24px;">
                                     <p style="color:#0b343a; font-size:14px; margin:0 0 16px 0;">
-                                        {{ $booking->hotel_location }}
+                                        {{ $booking->address }}
                                     </p>
                                 </div>
 
+                                <!-- Accommodation Type -->
+                                <div style="margin-bottom:24px;">
+                                    <p style="color:#0b343a; font-size:14px; margin:0 0 16px 0;">
+                                        Accommodation Type: {{ $booking->accommodation_type }}
+                                    </p>
+                                </div>
+
+                                <!-- Category -->
+                                <div style="margin-bottom:24px;">
+                                    <p style="color:#0b343a; font-size:14px; margin:0 0 16px 0;">
+                                        {{ $booking->category }}
+                                    </p>
+                                </div>
+
+                                @foreach (json_decode($booking->phone) as $phone)
+                                    @php
+                                        $type = 'Phone';
+                                        if ($phone['phoneType'] == 'PHONEBOOKING') {
+                                            $type = 'Booking Phone';
+                                        } elseif ($phone['phoneType'] == 'PHONEHOTEL') {
+                                            $type = 'Hotel Phone';
+                                        } elseif ($phone['phoneType'] == 'PHONEMANAGEMENT') {
+                                            $type = 'Management Phone';
+                                        } elseif ($phone['phoneType'] == 'PHONEHOTEL') {
+                                            $type = 'Hotel Phone';
+                                        } elseif ($phone['phoneType'] == 'FAXNUMBER') {
+                                            $type = 'Fax Number';
+                                        }
+                                    @endphp
+                                    <div style="margin-bottom:8px;">
+                                        <p style="color:#0b343a; font-size:14px; margin:0 0 4px 0;">
+                                            {{ $type }}: {{ $phone['phoneNumber'] }}
+                                        </p>
+                                    </div>
+                                @endforeach
                             </td>
 
                             <!-- RIGHT SVG -->
