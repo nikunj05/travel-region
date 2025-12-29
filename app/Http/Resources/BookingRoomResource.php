@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Helpers\TextSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,7 +25,7 @@ class BookingRoomResource extends JsonResource
             'amount' => $this->amount,
             'net_amount' => $this->net_amount,
             'net_currency' => $this->net_currency,
-            'rate_comments' => $this->rate_comments,
+            'rate_comments' => TextSanitizer::sanitizeHotelDescription($this->rate_comments),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
