@@ -24,6 +24,9 @@ class CmsResource extends JsonResource
             "slug" => $this->slug,
             "content" => $this->content,
             "about_us" => (bool) $this->about_us,
+            "founder_title" => $this->founder_title,
+            "founder_name" => $this->founder_name,
+            "founder_designation" => $this->founder_designation,
             "founder_image" => $this->founder_image,
             "founder_image_url" => $this->founder_image ? url(Storage::url($this->founder_image)) : null,
             "why_we_exist" => $this->why_we_exist ? collect($this->why_we_exist)->filter(function ($item) { return $item['title'][app()->getLocale()] && $item['description'][app()->getLocale()]; })->map(function ($item) {

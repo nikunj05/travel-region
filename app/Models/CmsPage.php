@@ -17,6 +17,9 @@ class CmsPage extends Model
         'content',
         'about_us',
         'founder_image',
+        'founder_title',
+        'founder_name',
+        'founder_designation',
         'why_we_exist',
         'our_partners',
         'few_highlights',
@@ -27,6 +30,9 @@ class CmsPage extends Model
 
     public $translatable = [
         'content',
+        'founder_title',
+        'founder_name',
+        'founder_designation',
         'why_we_exist',
         'few_highlights',
         'ready_to_explore_title',
@@ -39,5 +45,8 @@ class CmsPage extends Model
         'why_we_exist' => 'array',
         'our_partners' => 'array',
         'few_highlights' => 'array',
+        'founder_title' => 'array',
+        'founder_name' => 'array',
+        'founder_designation' => 'array',
     ];
 }

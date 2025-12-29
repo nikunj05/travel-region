@@ -86,6 +86,12 @@ class CmsForm
                     ->columnSpanFull()
                     ->visible(fn ($get) => $get('about_us'))
                     ->schema([
+                        TextInput::make('founder_title')
+                            ->label('Founder Section Title')
+                            ->maxLength(255)
+                            ->translatable()
+                            ->columnSpan(6),
+
                         // next rows, full-width
                         FileUpload::make('founder_image')
                             ->image()
@@ -97,6 +103,18 @@ class CmsForm
                             ->downloadable()
                             ->previewable(true)
                             ->openable()
+                            ->columnSpan(6),
+
+                        TextInput::make('founder_name')
+                            ->label('Founder Name')
+                            ->maxLength(255)
+                            ->translatable()
+                            ->columnSpan(6),
+
+                        TextInput::make('founder_designation')
+                            ->label('Founder Designation')
+                            ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6),
                     ]),
 
