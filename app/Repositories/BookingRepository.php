@@ -220,7 +220,7 @@ class BookingRepository implements BookingInterface
         ];
     }
 
-    public function downloadPdf($order)
+    public function downloadPdf($order, $language = 'en')
     {
         $booking = Booking::where('order', $order)->firstOrFail();
 
@@ -234,9 +234,15 @@ class BookingRepository implements BookingInterface
         }
 
         // Generate PDF
-        $pdf = Pdf::loadView('pdf.booking-confirmation', [
-            'booking' => $booking
-        ])->setPaper('A4', 'portrait');
+        if ($language === 'ar') {
+            $pdf = Pdf::loadView('pdf.booking-confirmation-ar', [
+                'booking' => $booking
+            ])->setPaper('A4', 'portrait');
+        } else {
+            $pdf = Pdf::loadView('pdf.booking-confirmation', [
+                'booking' => $booking
+            ])->setPaper('A4', 'portrait');
+        }
 
         // Save to public folder
         $pdf->save($filePath);

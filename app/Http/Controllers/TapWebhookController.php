@@ -37,6 +37,8 @@ class TapWebhookController extends Controller
                 'tap_response' => json_encode($request->all()),
             ]);
 
+            $language = $request->metadata['language'] ?? config('app.locale');
+
             $room_rates = [];
             foreach ($booking->booking_room->pluck('rate_key')->toArray() as $rate_key) {
                 $room_rates[] = [
@@ -57,7 +59,7 @@ class TapWebhookController extends Controller
                 // send mail and confirm booking with hotelbeds
                 $booking->fresh();
 
-                $filePath = $this->bookingRepository->downloadPdf($booking->order);
+                $filePath = $this->bookingRepository->downloadPdf($booking->order, $language);
                 $invoicePath = $filePath['data']['pdf_url'];
 
                 dispatch(new BookingConfirmationJob($booking, $invoicePath));

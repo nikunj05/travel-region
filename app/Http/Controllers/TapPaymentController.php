@@ -36,6 +36,7 @@ class TapPaymentController extends Controller
             "metadata" => [
                 "booking_id" => $existingBooking->id,
                 "hotel_code" => $existingBooking->hotel_code,
+                "language" => $request->header('Accept-Language', config('app.locale')),
             ],
             "reference" => [
                 "transaction" => "txn_" . $existingBooking->order,
