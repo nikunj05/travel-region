@@ -62,7 +62,7 @@ class TapWebhookController extends Controller
                 $filePath = $this->bookingRepository->downloadPdf($booking->order, $language);
                 $invoicePath = $filePath['data']['pdf_url'];
 
-                dispatch(new BookingConfirmationJob($booking, $invoicePath));
+                dispatch(new BookingConfirmationJob($booking, $invoicePath, $language));
             }
 
             return response()->json(['status' => 'success'], 200);

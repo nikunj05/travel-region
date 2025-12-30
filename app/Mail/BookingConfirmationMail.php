@@ -13,14 +13,16 @@ class BookingConfirmationMail extends Mailable
     public $booking;
 
 	public $invoicePath;
+    public $language;
 
     /**
      * Create a new message instance.
      */
-	public function __construct($booking, $invoicePath)
+	public function __construct($booking, $invoicePath, $language)
 	{
 		$this->booking = $booking;
 		$this->invoicePath = $invoicePath;
+		$this->language = $language;
 	}
 
 
@@ -32,6 +34,7 @@ class BookingConfirmationMail extends Mailable
         return $this->subject('Booking Confirmation')
             ->markdown('mail.booking_confirmation', [
                 'booking' => $this->booking,
+                'language' => $this->language,
             ])
             ->attach($this->invoicePath, [
 				'as' => 'invoice.pdf',
