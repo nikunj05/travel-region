@@ -125,15 +125,15 @@
                                         @php
                                             $type = 'Phone';
                                             if ($phone->phoneType == 'PHONEBOOKING') {
-                                                $type = 'Booking Phone';
+                                                $type = 'رقم هاتف الحجز';
                                             } elseif ($phone->phoneType == 'PHONEHOTEL') {
-                                                $type = 'Hotel Phone';
+                                                $type = 'هاتف الفندق';
                                             } elseif ($phone->phoneType == 'PHONEMANAGEMENT') {
-                                                $type = 'Management Phone';
+                                                $type = 'هاتف الإدارة';
                                             } elseif ($phone->phoneType == 'PHONEHOTEL') {
-                                                $type = 'Hotel Phone';
+                                                $type = 'هاتف الفندق';
                                             } elseif ($phone->phoneType == 'FAXNUMBER') {
-                                                $type = 'Fax Number';
+                                                $type = 'رقم الفاكس';
                                             }
                                         @endphp
                                         <div style="margin-bottom:8px;">
