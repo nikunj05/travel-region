@@ -137,7 +137,7 @@ trait HotelBedsTrait
                     }
 
                     // Only calculate prices twice (for min and max)
-                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency);
+                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency, [], $hotel['code']);
 
                     $hotelData[$hotel['code']] = [
                         'code' => $hotel['code'],
@@ -341,7 +341,7 @@ trait HotelBedsTrait
                                 $rateCurrency = $rate['taxes']['taxes'][0]['clientCurrency'];
                             }
 
-                            $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency);
+                            $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency, [], $hotel_content['code']);
 
                             $rate['prices'] = $prices;
                             $rate['net'] = (string) round($prices['final_amount'], 2);
@@ -599,7 +599,7 @@ trait HotelBedsTrait
             $refundAmount = $hotelDetail['booking']['pendingAmount'];
             $currency = $hotelDetail['booking']['currency'];
 
-            $prices = $this->calculatePrice($refundAmount, $hotelDetail['booking']['hotel']['categoryName'], $currency);
+            $prices = $this->calculatePrice($refundAmount, $hotelDetail['booking']['hotel']['categoryName'], $currency, [], $hotelDetail['booking']['hotel']['code']);
 
             // reduce decimal points to 2
             $amountToRefund = round($prices['converted_amount'], 2);

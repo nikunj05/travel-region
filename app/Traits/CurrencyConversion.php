@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\MarkupHotel;
 use App\Models\RateExchange;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -116,7 +117,7 @@ trait CurrencyConversion
      * @param array $taxes
      * @return array
      */
-    public function calculatePrice($amount, $category, $fromCurrency, $taxes = [])
+    public function calculatePrice($amount, $category, $fromCurrency, $taxes = [], $hotel_code = null)
     {
         $expectedCurrency = 'SAR';
 
@@ -130,6 +131,15 @@ trait CurrencyConversion
         $commission_percentage = $this->getCommissionRate($category);
 
         $converted_amount = $amount * $exchangeRate;
+
+        // get markup percentage for the hotel
+        if ($hotel_code) {
+            $markup_percentage = MarkupHotel::where('hotel_code', $hotel_code)->first();
+
+            if ($markup_percentage) {
+                $commission_percentage = $markup_percentage->markup_percentage;
+            }
+        }
 
         $commission_amount = ($commission_percentage / 100) * $converted_amount;
 

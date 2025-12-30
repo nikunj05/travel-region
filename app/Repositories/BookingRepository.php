@@ -136,7 +136,7 @@ class BookingRepository implements BookingInterface
                         ->where('rate_key', $rate['rateKey'])
                         ->first();
 
-                    $roomPrices = $this->calculatePrice($rate['net'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency']);
+                    $roomPrices = $this->calculatePrice($rate['net'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency'], [], $roomAvailability['hotel']['code']);
 
                     $bookingRoom->update([
                         'amount' => $roomPrices['final_amount'],
@@ -157,7 +157,7 @@ class BookingRepository implements BookingInterface
                 }
             }
 
-            $prices = $this->calculatePrice($roomAvailability['hotel']['totalNet'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency']);
+            $prices = $this->calculatePrice($roomAvailability['hotel']['totalNet'], $roomAvailability['hotel']['categoryName'], $roomAvailability['hotel']['currency'], [], $roomAvailability['hotel']['code']);
 
             $booking->update([
                 'total_price' => $prices['final_amount'],
