@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\BookingRoom;
 use App\Models\BookingRoomCancellationPolicy;
 use App\Models\FavoriteHotel;
+use App\Models\FeaturedHotel;
 use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
@@ -194,6 +195,38 @@ trait HotelBedsTrait
                         $finalHotels[] = $hotel;
                     }
                 }
+
+                // feature hotels should be at the top
+                $featuredHotelCodes = FeaturedHotel::pluck('hotel_code')->toArray();
+
+                // Add featured field to each hotel
+                foreach ($finalHotels as &$hotel) {
+                    $hotel['featured'] = in_array($hotel['code'], $featuredHotelCodes);
+                }
+                unset($hotel); // Break the reference
+
+                usort($finalHotels, function ($a, $b) use ($featuredHotelCodes) {
+                    $aIndex = array_search($a['code'], $featuredHotelCodes);
+                    $bIndex = array_search($b['code'], $featuredHotelCodes);
+
+                    // If both are featured, sort by their position in the featured list
+                    if ($aIndex !== false && $bIndex !== false) {
+                        return $aIndex - $bIndex;
+                    }
+
+                    // If only $a is featured, it should come first
+                    if ($aIndex !== false) {
+                        return -1;
+                    }
+
+                    // If only $b is featured, it should come first
+                    if ($bIndex !== false) {
+                        return 1;
+                    }
+
+                    // If neither is featured, maintain original order
+                    return 0;
+                });
 
                 return [
                     'hotels' => $finalHotels,
