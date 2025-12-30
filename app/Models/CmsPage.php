@@ -30,6 +30,7 @@ class CmsPage extends Model
 
     public $translatable = [
         'content',
+        'title',
         'founder_title',
         'founder_name',
         'founder_designation',
@@ -40,6 +41,7 @@ class CmsPage extends Model
     ];
 
     protected $casts = [
+        'title' => 'array',
         'content' => 'array',
         'about_us' => 'boolean',
         'why_we_exist' => 'array',

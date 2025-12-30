@@ -24,11 +24,18 @@ class CmsForm
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
+                            ->translatable()
                             ->columnSpan(6)
                             ->live(onBlur: true) // generates slug when user leaves the field
-                            ->afterStateUpdated(fn ($state, callable $set) =>
-                                $set('slug', Str::slug($state))
-                            ),
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                // Get the full translatable array
+                                $titleData = $get('title');
+
+                                // Generate slug from English version only
+                                if (is_array($titleData) && !empty($titleData['en'])) {
+                                    $set('slug', Str::slug($titleData['en']));
+                                }
+                            }),
 
                         TextInput::make('slug')
                             ->label('Slug')
