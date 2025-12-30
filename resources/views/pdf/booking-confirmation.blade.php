@@ -82,27 +82,29 @@
                                     </p>
                                 </div>
 
-                                @foreach (json_decode($booking->phone) as $phone)
-                                    @php
-                                        $type = 'Phone';
-                                        if ($phone->phoneType == 'PHONEBOOKING') {
-                                            $type = 'Booking Phone';
-                                        } elseif ($phone->phoneType == 'PHONEHOTEL') {
-                                            $type = 'Hotel Phone';
-                                        } elseif ($phone->phoneType == 'PHONEMANAGEMENT') {
-                                            $type = 'Management Phone';
-                                        } elseif ($phone->phoneType == 'PHONEHOTEL') {
-                                            $type = 'Hotel Phone';
-                                        } elseif ($phone->phoneType == 'FAXNUMBER') {
-                                            $type = 'Fax Number';
-                                        }
-                                    @endphp
-                                    <div style="margin-bottom:8px;">
-                                        <p style="color:#0b343a; font-size:14px; margin:0 0 4px 0;">
-                                            {{ $type }}: {{ $phone->phoneNumber }}
-                                        </p>
-                                    </div>
-                                @endforeach
+                                @if ($booking->phone)
+                                    @foreach (json_decode($booking->phone) as $phone)
+                                        @php
+                                            $type = 'Phone';
+                                            if ($phone->phoneType == 'PHONEBOOKING') {
+                                                $type = 'Booking Phone';
+                                            } elseif ($phone->phoneType == 'PHONEHOTEL') {
+                                                $type = 'Hotel Phone';
+                                            } elseif ($phone->phoneType == 'PHONEMANAGEMENT') {
+                                                $type = 'Management Phone';
+                                            } elseif ($phone->phoneType == 'PHONEHOTEL') {
+                                                $type = 'Hotel Phone';
+                                            } elseif ($phone->phoneType == 'FAXNUMBER') {
+                                                $type = 'Fax Number';
+                                            }
+                                        @endphp
+                                        <div style="margin-bottom:8px;">
+                                            <p style="color:#0b343a; font-size:14px; margin:0 0 4px 0;">
+                                                {{ $type }}: {{ $phone->phoneNumber }}
+                                            </p>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </td>
 
                             <!-- RIGHT SVG -->

@@ -12,7 +12,7 @@ interface BookingInterface
 
     public function applyCoupon($request);
 
-    public function downloadPdf($order);
+    public function downloadPdf($order, $language);
 
     public function showCancellationPolicies($order);
 }
