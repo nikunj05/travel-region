@@ -132,13 +132,11 @@ class CmsForm
                         TextInput::make('title')
                             ->label('Title')
                             ->maxLength(255)
-                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('description')
                             ->label('Description')
                             ->maxLength(2048)
-                            ->translatable()
                             ->columnSpan(6),
 
                         FileUpload::make('icon')
@@ -155,7 +153,8 @@ class CmsForm
                             ->columnSpan(12),
                     ])
                     ->collapsible()
-                    ->addActionLabel('Add More'),
+                    ->addActionLabel('Add More')
+                    ->translatable(),
 
                 Grid::make()
                     ->columns(12)
@@ -184,13 +183,11 @@ class CmsForm
                         TextInput::make('title')
                             ->label('Title')
                             ->maxLength(255)
-                            ->translatable()
                             ->columnSpan(6),
 
                         TextInput::make('description')
                             ->label('Description')
                             ->maxLength(2048)
-                            ->translatable()
                             ->columnSpan(6),
 
                         FileUpload::make('icon')
@@ -207,7 +204,8 @@ class CmsForm
                             ->columnSpan(12),
                     ])
                     ->collapsible()
-                    ->addActionLabel('Add More'),
+                    ->addActionLabel('Add More')
+                    ->translatable(),
 
                 Grid::make()
                     ->columns(12)
