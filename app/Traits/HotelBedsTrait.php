@@ -197,34 +197,33 @@ trait HotelBedsTrait
                 }
 
                 // feature hotels should be at the top
-                $featuredHotelCodes = FeaturedHotel::pluck('hotel_code')->toArray();
+                $featuredHotelCodes = FeaturedHotel::orderBy('show_tag', 'desc')->pluck('show_tag', 'hotel_code')->toArray();
 
                 // Add featured field to each hotel
-                foreach ($finalHotels as &$hotel) {
-                    $hotel['featured'] = in_array($hotel['code'], $featuredHotelCodes);
+                foreach ($finalHotels as $key => &$hotel) {
+                    $hotel['featured'] = array_key_exists($hotel['code'], $featuredHotelCodes);
+                    $hotel['show_tag'] = isset($featuredHotelCodes[$hotel['code']]) && $featuredHotelCodes[$hotel['code']] ? true : false;
                 }
                 unset($hotel); // Break the reference
 
-                usort($finalHotels, function ($a, $b) use ($featuredHotelCodes) {
-                    $aIndex = array_search($a['code'], $featuredHotelCodes);
-                    $bIndex = array_search($b['code'], $featuredHotelCodes);
+                usort($finalHotels, function ($a, $b) {
+                    // Priority 1: featured = true AND show_tag = true
+                    $aPriority1 = $a['featured'] && $a['show_tag'];
+                    $bPriority1 = $b['featured'] && $b['show_tag'];
 
-                    // If both are featured, sort by their position in the featured list
-                    if ($aIndex !== false && $bIndex !== false) {
-                        return $aIndex - $bIndex;
+                    if ($aPriority1 !== $bPriority1) {
+                        return $bPriority1 ? 1 : -1;
                     }
 
-                    // If only $a is featured, it should come first
-                    if ($aIndex !== false) {
-                        return -1;
+                    // Priority 2: featured = true AND show_tag = false
+                    $aPriority2 = $a['featured'] && !$a['show_tag'];
+                    $bPriority2 = $b['featured'] && !$b['show_tag'];
+
+                    if ($aPriority2 !== $bPriority2) {
+                        return $bPriority2 ? 1 : -1;
                     }
 
-                    // If only $b is featured, it should come first
-                    if ($bIndex !== false) {
-                        return 1;
-                    }
-
-                    // If neither is featured, maintain original order
+                    // Priority 3: rest of the hotels (not featured)
                     return 0;
                 });
 

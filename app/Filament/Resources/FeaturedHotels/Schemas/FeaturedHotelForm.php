@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FeaturedHotels\Schemas;
 
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -16,6 +17,10 @@ class FeaturedHotelForm
                     ->numeric()
                     ->required()
                     ->maxLength(255)
+                    ->columnSpan(6),
+
+                Checkbox::make('show_tag')
+                    ->label('Show Tag')
                     ->columnSpan(6),
             ]);
     }

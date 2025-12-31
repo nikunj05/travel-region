@@ -18,6 +18,8 @@ class FeaturedHotelsTable
             ->query(FeaturedHotel::latest())
             ->columns([
                 TextColumn::make('hotel_code')->searchable()->label('Hotel Code'),
+                TextColumn::make('show_tag')->label('Show Tag')
+                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
             ])
             ->filters([
                 //

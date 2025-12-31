@@ -9,5 +9,6 @@ class FeaturedHotel extends Model
     protected $fillable = [
         'hotel_code',
         'hotel_name',
+        'show_tag',
     ];
 }
