@@ -137,7 +137,7 @@ trait HotelBedsTrait
                     }
 
                     // Only calculate prices twice (for min and max)
-                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency, $hotel['code'], $hotel['city']['content']);
+                    $minPrices = $this->calculatePrice($minNet, $hotel_category, $rateCurrency, $hotel['code'], $hotel['destinationName']);
 
                     $hotelData[$hotel['code']] = [
                         'code' => $hotel['code'],
