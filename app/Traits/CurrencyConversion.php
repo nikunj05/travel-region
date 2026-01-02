@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\CommissionByCity;
 use App\Models\MarkupHotel;
 use App\Models\RateExchange;
 use App\Models\Setting;
@@ -114,10 +115,11 @@ trait CurrencyConversion
      * @param float $amount
      * @param string $category
      * @param string $fromCurrency
-     * @param array $taxes
+     * @param string|null $hotel_code
+     * @param string|null $city
      * @return array
      */
-    public function calculatePrice($amount, $category, $fromCurrency, $taxes = [], $hotel_code = null)
+    public function calculatePrice($amount, $category, $fromCurrency, $hotel_code = null, $city = null)
     {
         $expectedCurrency = 'SAR';
 
@@ -138,6 +140,15 @@ trait CurrencyConversion
 
             if ($markup_percentage) {
                 $commission_percentage += $markup_percentage->markup_percentage;
+            }
+        }
+
+        // Calculate commission by city
+        if ($city) {
+            $commission_by_city = CommissionByCity::where('city', $city)->first();
+
+            if ($commission_by_city) {
+                $commission_percentage += $commission_by_city->commission_percentage;
             }
         }
 
