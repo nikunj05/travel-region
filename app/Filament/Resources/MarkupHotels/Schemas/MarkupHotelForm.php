@@ -16,16 +16,14 @@ class MarkupHotelForm
                     ->numeric()
                     ->minValue(0)
                     ->required()
-                    ->maxLength(255)
                     ->columnSpan(6),
 
                 TextInput::make('markup_percentage')
                     ->label('Markup %')
-                    ->numeric()
-                    ->minValue(0)
+                    ->integer()
+                    ->minValue(-100)
                     ->maxValue(100)
                     ->required()
-                    ->maxLength(255)
                     ->columnSpan(6),
             ]);
     }
