@@ -140,6 +140,7 @@ class BookingRepository implements BookingInterface
 
                     $bookingRoom->update([
                         'amount' => $roomPrices['final_amount'],
+                        'rate_class' => $rate['rateClass'] ?? null,
                         'net_amount' => $rate['net'],
                         'net_currency' => $roomAvailability['hotel']['currency'],
                         'rate_comments' => $rate['rateComments'] ?? null,
@@ -266,6 +267,7 @@ class BookingRepository implements BookingInterface
         $bookingRoomCancellationPolicy = BookingRoomCancellationPolicy::whereIn('booking_room_id', function ($query) use ($booking) {
             $query->select('id')
                 ->from('booking_rooms')
+                ->where('rate_class', '!=', 'NRF')
                 ->where('booking_id', $booking->id);
         })->get();
 

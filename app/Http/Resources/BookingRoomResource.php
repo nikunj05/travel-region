@@ -20,6 +20,7 @@ class BookingRoomResource extends JsonResource
             'booking_id' => $this->booking_id,
             'room_code' => $this->room_code,
             'rate_key' => $this->rate_key,
+            'rate_class' => $this->rate_class,
             'room_name' => $this->room_name,
             'board_name' => $this->board_name,
             'amount' => $this->amount,

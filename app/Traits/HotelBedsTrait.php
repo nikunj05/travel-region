@@ -598,6 +598,25 @@ trait HotelBedsTrait
             $refundAmount = $hotelDetail['booking']['pendingAmount'];
             $currency = $hotelDetail['booking']['currency'];
 
+            $bookingRoomNRF = BookingRoom::where('booking_id', $booking->id)
+                ->where('rate_class', 'NRF')
+                ->exists();
+
+            if ($bookingRoomNRF) {
+                Booking::where('id', $booking->id)->update([
+                    'status' => 'cancelled',
+                    'refunded_amount' => 0,
+                    'refunded_currency' => null,
+                    'cancellation_in_progress' => true,
+                ]);
+
+                return [
+                    'status' => true,
+                    'message' => 'Booking cancelled successfully',
+                    'data' => [],
+                ];
+            }
+
             $prices = $this->calculatePrice($refundAmount, $hotelDetail['booking']['hotel']['categoryName'], $currency, [], $hotelDetail['booking']['hotel']['code']);
 
             // reduce decimal points to 2

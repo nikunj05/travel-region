@@ -12,6 +12,7 @@ class BookingRoom extends Model
         'room_name',
         'board_name',
         'rate_key',
+        'rate_class',
         'amount',
         'net_amount',
         'net_currency',
