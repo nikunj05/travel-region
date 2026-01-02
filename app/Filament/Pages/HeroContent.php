@@ -48,15 +48,18 @@ class HeroContent extends Page
                     Section::make('Home Page Hero Content')
                         ->schema([
                             TextInput::make('home_title')
-                                ->columnSpan(12)
+                                ->columnSpan(6)
                                 ->translatable()
                                 ->label('Hero Title'),
 
                             TextInput::make('home_subtitle')
-                                ->columnSpan(12)
+                                ->columnSpan(6)
                                 ->translatable()
                                 ->label('Hero Subtitle'),
+                        ]),
 
+                    Section::make('Home Page Hero Images')
+                        ->schema([
                             FileUpload::make('home_hero_image')
                                 ->label('Hero Image English')
                                 ->image()
@@ -72,6 +75,58 @@ class HeroContent extends Page
 
                             FileUpload::make('home_hero_image_ar')
                                 ->label('Hero Image Arabic')
+                                ->image()
+                                ->imageEditor()
+                                ->directory('hero-content')
+                                ->maxSize(10048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(12),
+
+                            FileUpload::make('home_hero_image_tablet')
+                                ->label('Hero Image For Tablet English')
+                                ->image()
+                                ->imageEditor()
+                                ->directory('hero-content')
+                                ->maxSize(10048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(12),
+
+                            FileUpload::make('home_hero_image_tablet_ar')
+                                ->label('Hero Image For Tablet Arabic')
+                                ->image()
+                                ->imageEditor()
+                                ->directory('hero-content')
+                                ->maxSize(10048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(12),
+
+                            FileUpload::make('home_hero_image_mobile')
+                                ->label('Hero Image For Mobile English')
+                                ->image()
+                                ->imageEditor()
+                                ->directory('hero-content')
+                                ->maxSize(10048)
+                                ->disk('public')
+                                ->visibility('public')
+                                ->downloadable()
+                                ->previewable(true)
+                                ->openable()
+                                ->columnSpan(12),
+
+                            FileUpload::make('home_hero_image_mobile_ar')
+                                ->label('Hero Image For Mobile Arabic')
                                 ->image()
                                 ->imageEditor()
                                 ->directory('hero-content')

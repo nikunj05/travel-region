@@ -16,12 +16,18 @@ class SettingResource extends JsonResource
     public function toArray(Request $request): array
     {
         $hero_image = null;
+        $hero_image_tablet = null;
+        $hero_image_mobile = null;
         if (app()->getLocale() == 'ar') {
             $hero_image = $this->home_hero_image_ar ? url(Storage::url($this->home_hero_image_ar)) : null;
+            $hero_image_tablet = $this->home_hero_image_tablet_ar ? url(Storage::url($this->home_hero_image_tablet_ar)) : null;
+            $hero_image_mobile = $this->home_hero_image_mobile_ar ? url(Storage::url($this->home_hero_image_mobile_ar)) : null;
         }
 
         if (app()->getLocale() == 'en') {
             $hero_image = $this->home_hero_image ? url(Storage::url($this->home_hero_image)) : null;
+            $hero_image_tablet = $this->home_hero_image_tablet ? url(Storage::url($this->home_hero_image_tablet)) : null;
+            $hero_image_mobile = $this->home_hero_image_mobile ? url(Storage::url($this->home_hero_image_mobile)) : null;
         }
 
         return [
@@ -39,6 +45,8 @@ class SettingResource extends JsonResource
             'home_title' => $this->home_title,
             'home_subtitle' => $this->home_subtitle,
             'home_hero_image' => $hero_image,
+            'home_hero_image_tablet' => $hero_image_tablet,
+            'home_hero_image_mobile' => $hero_image_mobile,
             'social_media_links' => collect($this->social_media_links)->map(function ($socialMedia) {
                 return [
                     'title' => $socialMedia['title'],
