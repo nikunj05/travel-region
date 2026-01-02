@@ -71,7 +71,7 @@ class BookingRepository implements BookingInterface
         try {
             $hotel_details = $this->getHotelDetails($request, $request->hotel_code);
 
-            $address = $hotel_details['hotel']['address']['street'] . ', ' . $hotel_details['hotel']['city']['content'] . ', ' . $hotel_details['hotel']['postalCode'];
+            $address = $hotel_details['hotel']['address']['street'] . ', ' . $hotel_details['hotel']['city']['content'] . ', ' . ($hotel_details['hotel']['postalCode'] ?? '');
 
             $booking = Booking::updateOrCreate([
                 'user_id' => Auth::id(),
