@@ -137,7 +137,7 @@ trait CurrencyConversion
             $markup_percentage = MarkupHotel::where('hotel_code', $hotel_code)->first();
 
             if ($markup_percentage) {
-                $commission_percentage = $markup_percentage->markup_percentage;
+                $commission_percentage += $markup_percentage->markup_percentage;
             }
         }
 
