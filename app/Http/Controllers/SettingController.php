@@ -7,6 +7,7 @@ use App\Http\Requests\UserSettingRequest;
 use App\Http\Resources\SettingResource;
 use App\Http\Resources\UserSettingResource;
 use App\Interfaces\AuthInterface;
+use App\Jobs\ContactUsJob;
 use App\Models\NotificationPreference;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -94,5 +95,25 @@ class SettingController extends Controller
         return $this->sendApiResponse(true, __('messages.user-settings.updated'), [
             'user_settings' => new UserSettingResource($user),
         ]);
+    }
+
+    /**
+     * Handle the contact us form submission.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function contactUs(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'message' => 'required|string',
+        ]);
+
+        // Here you can handle the contact us form submission,
+        dispatch(new ContactUsJob($request->name, $request->email, $request->message));
+
+        return $this->sendApiResponse(true, __('messages.contact-us.submitted'), []);
     }
 }

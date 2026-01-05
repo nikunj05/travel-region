@@ -47,6 +47,8 @@ Route::prefix('v1')
     Route::get('pages', [CmsController::class, 'index'])->name('cms.index');
     Route::get('pages/{slug}', [CmsController::class, 'show'])->name('cms.show');
 
+    Route::post('contact-us', [SettingController::class, 'contactUs'])->name('contact-us.store');
+
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');

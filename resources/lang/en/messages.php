@@ -89,4 +89,7 @@ return [
         'online' => 'Online',
         'footer' => 'We look forward to hosting you. If you have any questions or need further assistance, please feel free to contact us.',
     ],
+    'contact-us' => [
+        'submitted' => 'Thank you for contacting us. We have received your message and will get back to you shortly.',
+    ],
 ];
