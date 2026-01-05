@@ -667,7 +667,7 @@ trait HotelBedsTrait
                 ];
             }
 
-            $prices = $this->calculatePrice($refundAmount, $hotelDetail['booking']['hotel']['categoryName'], $currency, $hotelDetail['booking']['hotel']['code'], $hotelDetail['city']['content']);
+            $prices = $this->calculatePrice($refundAmount, $hotelDetail['booking']['hotel']['categoryName'], $currency, $hotelDetail['booking']['hotel']['code'], $hotelDetail['booking']['hotel']['city']['content']);
 
             // reduce decimal points to 2
             $amountToRefund = round($prices['converted_amount'], 2);
