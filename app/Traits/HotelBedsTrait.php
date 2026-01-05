@@ -427,6 +427,11 @@ trait HotelBedsTrait
             }
         }
 
+        // Sort the filtered rates by net price
+        $filteredRates = collect($filteredRates)->sortBy(function ($rate) {
+            return (float) $rate['net'];
+        })->values()->toArray();
+
         return $filteredRates;
     }
 
