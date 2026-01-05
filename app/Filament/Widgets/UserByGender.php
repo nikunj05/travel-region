@@ -17,6 +17,7 @@ class UserByGender extends ChartWidget
             'week' => 'Last 7 days',
             'month' => 'Last 30 days',
             'year' => 'This year',
+            'previous_year' => 'Previous year',
         ];
     }
 
@@ -38,6 +39,8 @@ class UserByGender extends ChartWidget
                     $query->whereBetween('created_at', [now()->subDays(29)->startOfDay(), now()]);
                 } elseif ($activeFilter === 'year') {
                     $query->whereYear('created_at', now()->year);
+                } elseif ($activeFilter === 'previous_year') {
+                    $query->whereYear('created_at', now()->subYear()->year);
                 }
             })
             ->groupBy('gender')

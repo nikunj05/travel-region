@@ -17,6 +17,7 @@ class UserRegistrationByMonth extends ChartWidget
             'week' => 'Last 7 days',
             'month' => 'Last 30 days',
             'year' => 'This year',
+            'previous_year' => 'Previous year',
         ];
     }
 
@@ -55,6 +56,18 @@ class UserRegistrationByMonth extends ChartWidget
                     ->groupBy('date')
                     ->orderBy('date')
                     ->pluck('count', 'date')
+                    ->toArray();
+
+                $labels = array_keys($userCount);
+                $data = array_values($userCount);
+                break;
+
+            case 'previous_year':
+                $userCount = User::selectRaw('MONTH(created_at) as month_number, MONTHNAME(created_at) as month_name, COUNT(*) as count')
+                    ->whereYear('created_at', now()->subYear()->year)
+                    ->groupBy('month_number', 'month_name')
+                    ->orderBy('month_number')
+                    ->pluck('count', 'month_name')
                     ->toArray();
 
                 $labels = array_keys($userCount);
