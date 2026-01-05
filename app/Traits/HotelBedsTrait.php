@@ -347,6 +347,9 @@ trait HotelBedsTrait
                             $rate['currency'] = $prices['converted_currency'];
                         }
                         unset($rate); // Unset the inner loop reference
+
+                        // Filter rates: group by boardCode, keep only lowest price for refundable and non-refundable
+                        $availabilityRoom['rates'] = $this->filterRatesByBoardCode($availabilityRoom['rates']);
                     }
                     unset($availabilityRoom); // Unset the outer loop reference
 
@@ -383,6 +386,48 @@ trait HotelBedsTrait
         }
 
         throw new \Exception(__('messages.catch'));
+    }
+
+    /**
+     * Filter rates by boardCode, keeping only the lowest price for refundable and non-refundable options
+     */
+    private function filterRatesByBoardCode(array $rates): array
+    {
+        // Group rates by boardCode
+        $groupedRates = collect($rates)->groupBy('boardCode');
+
+        $filteredRates = [];
+
+        foreach ($groupedRates as $boardCode => $boardRates) {
+            // Separate into refundable and non-refundable
+            $nonRefundable = $boardRates->filter(function ($rate) {
+                return isset($rate['rateClass']) && $rate['rateClass'] === 'NRF';
+            });
+
+            $refundable = $boardRates->filter(function ($rate) {
+                return !isset($rate['rateClass']) || $rate['rateClass'] !== 'NRF';
+            });
+
+            // Get the lowest price non-refundable rate
+            if ($nonRefundable->isNotEmpty()) {
+                $lowestNonRefundable = $nonRefundable->sortBy(function ($rate) {
+                    return (float) $rate['net'];
+                })->first();
+
+                $filteredRates[] = $lowestNonRefundable;
+            }
+
+            // Get the lowest price refundable rate
+            if ($refundable->isNotEmpty()) {
+                $lowestRefundable = $refundable->sortBy(function ($rate) {
+                    return (float) $rate['net'];
+                })->first();
+
+                $filteredRates[] = $lowestRefundable;
+            }
+        }
+
+        return $filteredRates;
     }
 
     /**
