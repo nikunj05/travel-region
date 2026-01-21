@@ -11,7 +11,7 @@ class PopularDestinationController extends Controller
     /**
      * Display a listing of the FAQs.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {

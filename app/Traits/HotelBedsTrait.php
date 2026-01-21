@@ -21,6 +21,7 @@ trait HotelBedsTrait
 
     protected $baseUrl = 'https://api.test.hotelbeds.com';
     protected $version = '1.0';
+    protected $apiMappingEntity = 2716;
 
     /**
      * Generate HotelBeds API signature
@@ -42,7 +43,7 @@ trait HotelBedsTrait
      * Make HotelBeds API request
      *
      * @param Request $request
-     * @return \Illuminate\Http\Client\Response
+     * @return \Illuminate\Http\Client\Response | array
      */
     protected function checkHotelAvailability($request)
     {
@@ -296,6 +297,7 @@ trait HotelBedsTrait
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
+            'Api-Mapping-Entity' => $this->apiMappingEntity,
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
             'language' => strtoupper($language)
         ]);
@@ -450,6 +452,7 @@ trait HotelBedsTrait
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
+            'Api-Mapping-Entity' => $this->apiMappingEntity,
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/types/accommodations", [
             'language' => strtoupper($language)
         ]);
@@ -490,6 +493,7 @@ trait HotelBedsTrait
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
+            'Api-Mapping-Entity' => $this->apiMappingEntity,
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels", [
             'language' => strtoupper($language),
             'codes' => implode(',', $hotelCodes),
@@ -583,6 +587,7 @@ trait HotelBedsTrait
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
+            'Api-Mapping-Entity' => $this->apiMappingEntity,
         ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/locations/destinations");
 
         if ($locations->successful()) {
