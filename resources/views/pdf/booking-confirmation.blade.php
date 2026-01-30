@@ -13,10 +13,31 @@
             margin: 0;
             padding: 20px;
         }
+
+        @page {
+            margin: 40px 20px; /* top | sides | bottom */
+        }
+
+        /* Footer positioned at the bottom of each page */
+        #pdf-footer {
+            position: fixed;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
     </style>
 </head>
 
 <body style="margin:0;padding:0;box-sizing:border-box;">
+    <div id="pdf-footer">
+        Payable through <strong>{{ $booking->supplier_name }}</strong>, acting as agent for the service operating company, details of which can be provided upon request. VAT: <strong>{{ $booking->vat_number }}</strong> Reference: <strong>{{ $booking->booking_reference }}</strong>
+    </div>
     <div style="display:flex; justify-content:center; padding:0px 0; font-family:Poppins, sans-serif;">
         <div style="width:100%; max-width:95%; background:white; padding:15px; "> <!-- width:794px -->
 
@@ -36,7 +57,7 @@
                             Booking Id: <strong>{{ $booking->order }}</strong>
                         </div>
                         <div style="color:#0b343a; font-size:13px;">
-                            Hotel Beds Reference: <strong>{{ $booking->booking_reference }}</strong>
+                            Hotel Beds Reference: <strong style="color:#445d94;">{{ $booking->booking_reference }}</strong>
                         </div>
                         <div style="margin-top:6px; color:#0b343a; font-size:12px;">
                             (Booked on {{ $booking->created_at->format('d M Y, h:i A') }})
@@ -213,8 +234,8 @@
                             </tr>
 
                             <!-- ROW 3 — Room Details -->
-                            <tr style="border-bottom:1px solid #dbc8b6;">
-                                <td valign="top" style="padding:15px 10px;">
+                            <tr>
+                                <td valign="top" style="padding:15px 10px;" colspan="3">
                                     <table>
                                         <tr>
                                             <td valign="top">
@@ -229,125 +250,83 @@
                                         </tr>
                                     </table>
                                 </td>
-
-                                <td colspan="2" valign="top" style="padding:15px 10px 0px;">
-                                    <div style="font-size:16px; font-weight:700; margin-bottom:8px;">
-                                        {{-- Premier Deluxe Room --}}
-                                    </div>
-                                </td>
                             </tr>
 
-                        </table>
-                        <table width="100%" cellspacing="0" cellpadding="0"
-                            style="border-collapse: collapse;
-                                table-layout: fixed;
-                                width: 100%;
-                                max-width: 100%;
-                                margin: 0;
-                                padding: 0;">
-
-                            <tr style="border-bottom:1px solid #dbc8b6;">
-                                <td valign="top" style="padding:12px 10px;">
-                                    <span style="font-size:15px; font-weight:700; margin-left:0px;">Sub Total</span>
-                                </td>
-
-                                <td></td>
-
-                                <td valign="middle" align="right" style="padding:12px 10px;">
-                                    <span style="font-size:16px; font-weight:700;">
-                                        {{ $booking->currency }}
-                                        {{ $booking->total_price }}
-                                    </span>
-                                </td>
-                            </tr>
-
-                            <!-- ROW: SECURITY AMOUNT -->
-                            <tr style="border-bottom:1px solid #dbc8b6;">
-                                <td valign="top" style="padding:12px 10px;">
-                                    <span style="font-size:15px; font-weight:700; margin-left:0px;">Discount</span>
-                                </td>
-
-                                <td></td>
-
-                                <td valign="middle" align="right" style="padding:12px 10px;">
-                                    <span style="font-size:16px; font-weight:700;">
-                                        {{ $booking->currency }} {{ $booking->discount_amount }}
-                                    </span>
-                                </td>
-                            </tr>
-
-                            <!-- FINAL AMOUNT ROW -->
-                            <tr style="background:#f6fffb; border-top:2px solid #156874; margin-bottom:12px;">
-                                <td valign="middle" style="padding:14px 10px;">
-                                    <span style="font-size:17px; font-weight:700; color:#156874;">
-                                        Total Amount
-                                    </span>
-                                </td>
-
-                                <td></td>
-
-                                <td valign="middle" align="right" style="padding:14px 10px;">
-                                    <span style="font-size:19px; font-weight:700; color:#156874;">
-                                        {{ $booking->currency }}
-                                        {{ $booking->total_price - $booking->discount_amount }}
-                                    </span>
-                                </td>
-                            </tr>
                         </table>
                     </div>
 
                 </div>
 
                 <div>
-                    <h4 style="font-size: 18px; font-weight: 700; margin: 15px 0 15px;">Rooms</h4>
+                    <h4 style="font-size: 18px; font-weight: 700; margin: 15px 0 8px 0;">Rooms</h4>
 
                     @foreach ($booking->booking_room as $booking_room)
-                        <table width="100%" cellspacing="0" cellpadding="0"
-                            style="border:1px solid #dbc8b6; border-radius:0px; margin-top:24px; overflow:hidden;">
+                        <div style="border: 1px solid #dbc8b6; border-radius: 6px; margin-bottom: 24px; padding:0;">
+                        <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                             <tr>
                                 <td style="padding:15px 15px 24px; ">
 
                                     <table width="100%" cellspacing="0" cellpadding="0"
                                         style="border-collapse:collapse;">
                                         <tr>
-
-                                            <!-- LEFT CONTENT -->
-                                            <td valign="top" style="padding-right:12px;">
+                                            <td valign="top" style="padding-right:12px; width: 50%;">
                                                 <h4 style="font-size:16px; font-weight:700; margin:9px 0 15px;">
                                                     {{ $booking_room->room_name }}
                                                 </h4>
+                                            </td>
+                                            <td valign="top" style="padding-right:12px; width: 50%;">
+                                                <h4 style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                    {{ ucwords(strtolower($booking_room->board_name)) }}
+                                                </h4>
+                                            </td>
+                                        </tr>
+                                        <tr>
 
-                                                <table cellspacing="0" cellpadding="0"
-                                                    style="border-collapse:collapse;">
+                                            <!-- LEFT CONTENT -->
+                                            <td valign="top" style="padding-right:12px;width: 100%;" colspan="2">
 
-                                                    <!-- Row 1 -->
-                                                    <tr>
-                                                        <td valign="middle"
-                                                            style="vertical-align:middle; font-size:14px;">
-                                                            {{ $booking_room->board_name }}
-                                                        </td>
-                                                    </tr>
-
-                                                    <!-- Row 2 -->
-                                                    @if ($booking_room->cancellation_policies->count() > 0)
+                                                @if ($booking_room->cancellation_policies->count() > 0)
+                                                    <table cellspacing="0" cellpadding="0"
+                                                        style="border-collapse:collapse;width: 100%;">
                                                         <tr>
                                                             <td valign="middle"
-                                                                style="vertical-align:middle; font-size:14px; padding-top:8px;">
+                                                                style="vertical-align:middle; font-size:14px; padding-top: 15px; width: 100%;">
                                                                 <span style="font-weight:700;">
-                                                                    Cancellation Policy
+                                                                    Cancellation Policy:
                                                                 </span>
                                                             </td>
                                                         </tr>
                                                         @foreach ($booking_room->cancellation_policies as $cancellation_policy)
                                                             <tr>
                                                                 <td valign="middle"
-                                                                    style="vertical-align:middle; font-size:14px; padding-top:8px;">
-                                                                    {{ $cancellation_policy->amount }} After {{ \Carbon\Carbon::parse($cancellation_policy->from)->format('d M Y h:i A') }}
+                                                                    style="vertical-align:middle; font-size:14px; padding-top: 10px; width: 100%;">
+                                                                    {{ \Carbon\Carbon::parse($cancellation_policy->from)->format('d M Y h:i A') }}
                                                                 </td>
                                                             </tr>
                                                         @endforeach
-                                                    @endif
-                                                </table>
+                                                    </table>
+                                                @endif
+
+                                                @if ($booking_room->rate_comments)
+                                                    <div style="border:1px solid #dbc8b6; border-radius:6px; margin-top:12px;">
+                                                        <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                                                            <tr>
+                                                                <td valign="middle"
+                                                                    style="vertical-align:middle; font-size:14px; padding: 15px 15px 0 15px; width: 100%;">
+                                                                    <span style="font-weight:700;">
+                                                                        Rate Comment:
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="middle"
+                                                                    style="vertical-align:middle; font-size:14px; padding: 10px 15px 15px 15px; width: 100%;">
+                                                                    {{ $booking_room->rate_comments }}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                @endif
                                             </td>
 
                                         </tr>
@@ -356,6 +335,7 @@
                                 </td>
                             </tr>
                         </table>
+                        </div>
                     @endforeach
                 </div>
 

@@ -539,13 +539,20 @@ trait HotelBedsTrait
 
             Log::info('HotelBeds Booking Confirmation Success', $hotels->json());
 
+            $hotelBooking = $hotels->json();
+
+            $supplierName = $hotelBooking['booking']['hotel']['supplier']['name'];
+            $vatNumber = $hotelBooking['booking']['hotel']['supplier']['vatNumber'];
+
             Booking::where('id', $data['booking_id'])->update([
-                'booking_reference' => $hotels->json()['booking']['reference'],
+                'booking_reference' => $hotelBooking['booking']['reference'],
+                'supplier_name' => $supplierName,
+                'vat_number' => $vatNumber
             ]);
 
             return [
                 'status' => true,
-                'data' => $hotels->json()
+                'data' => $hotelBooking
             ];
         } else {
 

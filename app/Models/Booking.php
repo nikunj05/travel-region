@@ -15,6 +15,8 @@ class Booking extends Model
         'phone',
         'order',
         'booking_reference',
+        'supplier_name',
+        'vat_number',
         'check_in',
         'check_out',
         'rooms',
