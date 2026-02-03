@@ -102,6 +102,7 @@ class BookingRepository implements BookingInterface
             foreach ($request->details as $detail) {
                 BookingDetail::create([
                     'booking_id' => $booking->id,
+                    'room_code' => $detail['room_code'] ?? null,
                     'price_per_night' => $detail['price_per_night'],
                     'first_name' => $detail['first_name'],
                     'last_name' => $detail['last_name'],
