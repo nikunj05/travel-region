@@ -269,17 +269,27 @@
                                     <table width="100%" cellspacing="0" cellpadding="0"
                                         style="border-collapse:collapse;">
                                         <tr>
-                                            <td valign="top" style="padding-right:12px; width: 50%;">
-                                                <h4 style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                            <td valign="top" style="padding-right:12px; width: 50%;" colspan="2">
+                                                <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
                                                     {{ $booking_room->room_name }}
-                                                </h4>
-                                            </td>
-                                            <td valign="top" style="padding-right:12px; width: 50%;">
-                                                <h4 style="font-size:16px; font-weight:400; margin:9px 0 15px;">
-                                                    {{ ucwords(strtolower($booking_room->board_name)) }}
-                                                </h4>
+                                                </span>
+                                                <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                    ({{ ucwords(strtolower($booking_room->board_name)) }})
+                                                </span>
                                             </td>
                                         </tr>
+                                        @if ($booking_room->guest)
+                                            <tr>
+                                                <td valign="top" style="padding-right:12px; padding-top: 12px; width: 50%;" colspan="2">
+                                                    <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                        Guest Name:
+                                                    </span>
+                                                    <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                        {{ $booking_room->guest->first_name }} {{ $booking_room->guest->last_name }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endif
                                         <tr>
 
                                             <!-- LEFT CONTENT -->

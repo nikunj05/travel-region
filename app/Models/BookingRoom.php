@@ -28,4 +28,9 @@ class BookingRoom extends Model
     {
         return $this->hasMany(BookingRoomCancellationPolicy::class);
     }
+
+    public function guest()
+    {
+        return $this->belongsTo(BookingDetail::class, 'room_code', 'room_code');
+    }
 }
