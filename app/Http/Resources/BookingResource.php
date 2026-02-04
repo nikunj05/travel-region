@@ -32,6 +32,8 @@ class BookingResource extends JsonResource
             'currency' => $this->currency,
             'order' => $this->order,
             'status' => $this->status,
+            'special_requests' => $this->special_requests,
+            'child_age' => $this->child_age ? json_decode($this->child_age) : null,
             'coupon_id' => $this->coupon_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

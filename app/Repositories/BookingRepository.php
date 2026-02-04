@@ -89,6 +89,7 @@ class BookingRepository implements BookingInterface
                 'rooms' => $request->rooms,
                 'adults' => $request->adults,
                 'children' => $request->children ?? 0,
+                'child_age' => $request->child_age_data ? json_encode($request->child_age_data) : null,
                 'nights' => $request->nights,
                 'total_price' => $request->total_price,
                 'currency' => $request->currency,

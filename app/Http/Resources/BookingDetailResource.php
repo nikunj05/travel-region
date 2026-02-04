@@ -23,6 +23,7 @@ class BookingDetailResource extends JsonResource
             'email' => $this->email,
             'country' => $this->country,
             'country_code' => $this->country_code,
+            'room_code' => $this->room_code,
             'phone' => $this->phone,
             'is_primary' => $this->is_primary,
             'created_at' => $this->created_at,
