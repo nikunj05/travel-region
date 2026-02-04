@@ -93,6 +93,7 @@ class BookingRepository implements BookingInterface
                 'nights' => $request->nights,
                 'total_price' => $request->total_price,
                 'currency' => $request->currency,
+                'special_requests' => $request->special_requests,
             ]);
 
             $booking->update([
