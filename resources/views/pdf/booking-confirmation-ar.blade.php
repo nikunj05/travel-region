@@ -15,10 +15,31 @@
             direction: rtl;
             text-align: right;
         }
+
+        @page {
+            margin: 40px 20px; /* top | sides | bottom */
+        }
+
+        /* Footer positioned at the bottom of each page */
+        #pdf-footer {
+            position: fixed;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
     </style>
 </head>
 
 <body style="margin: 0; padding: 0; box-sizing: border-box; direction: rtl">
+    <div id="pdf-footer">
+        Payable through <strong>{{ $booking->supplier_name }}</strong>, acting as agent for the service operating company, details of which can be provided upon request. VAT: <strong>{{ $booking->vat_number }}</strong> Reference: <strong>{{ $booking->booking_reference }}</strong>
+    </div>
     <div
         style="display: flex;justify-content: center;padding: 0px 0;font-family: DejaVu Sans, sans-serif;direction: rtl;">
         <div
