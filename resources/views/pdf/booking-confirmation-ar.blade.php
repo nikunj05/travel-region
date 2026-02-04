@@ -245,7 +245,7 @@
                             </tr>
 
                             <!-- ================= ROW 3 ================= -->
-                            <tr style="border-bottom: 1px solid #d1d5dc">
+                            <tr>
                                 <!-- ROOM COUNT (LEFT) -->
                                 <td colspan="2" valign="top" style="padding:15px 10px 0px;">
                                     <div style="font-size:16px; font-weight:700; margin-bottom:8px;">
@@ -269,77 +269,6 @@
                             </tr>
                         </table>
 
-                        <!-- ================= PRICE TABLE ================= -->
-                        <table width="100%" cellspacing="0" cellpadding="0"
-                            style="
-                    border-collapse: collapse;
-                    table-layout: fixed;
-                    margin-top: 10px;">
-                            <!-- SUB TOTAL -->
-                            <tr style="border-bottom: 1px solid #d1d5dc">
-                                <td align="left"
-                                    style="
-                        padding: 12px 10px;
-                        font-size: 16px;
-                        font-weight: 700;">
-                                    {{ $booking->currency }} {{ $booking->total_price }}
-                                </td>
-                                <td width="20"></td>
-                                <td align="right"
-                                    style="
-                        padding: 12px 10px;
-                        font-size: 15px;
-                        font-weight: 700;
-                        ">
-                                    المجموع الفرعي
-                                </td>
-                            </tr>
-
-                            <!-- DISCOUNT -->
-                            <tr style="border-bottom: 1px solid #d1d5dc">
-                                <td align="left"
-                                    style="
-                        padding: 12px 10px;
-                        font-size: 16px;
-                        font-weight: 700;
-                        ">
-                                    {{ $booking->currency }} {{ $booking->discount_amount }}
-                                </td>
-                                <td width="20"></td>
-                                <td align="right"
-                                    style="
-                        padding: 12px 10px;
-                        font-size: 15px;
-                        font-weight: 700;
-                        ">
-                                    تخفيض
-                                </td>
-                            </tr>
-
-                            <!-- TOTAL -->
-                            <tr style="background: #f6fffb; border-top: 2px solid #156874">
-                                <td align="left"
-                                    style="
-                        padding: 14px 10px;
-                        font-size: 19px;
-                        font-weight: 700;
-                        color: #156874;
-                        ">
-                                    {{ $booking->currency }}
-                                    {{ $booking->total_price - $booking->discount_amount }}
-                                </td>
-                                <td width="20"></td>
-                                <td align="right"
-                                    style="
-                        padding: 14px 10px;
-                        font-size: 17px;
-                        font-weight: 700;
-                        color: #156874;
-                        ">
-                                    المبلغ الإجمالي
-                                </td>
-                            </tr>
-                        </table>
                     </div>
                 </div>
 
@@ -375,16 +304,28 @@
                                 margin: 9px 0 15px;
                                 text-align: right;
                             ">
-                                                    {{ $booking_room->room_name }}
+                                                    <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                        {{ $booking_room->room_name }}
+                                                    </span>
+                                                    <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                        ({{ ucwords(strtolower($booking_room->board_name)) }})
+                                                    </span>
                                                 </div>
 
                                                 <!-- DETAILS -->
                                                 <table width="100%" cellspacing="0" cellpadding="0" align="right">
-                                                    <tr>
-                                                        <td align="right" style="font-size: 14px">
-                                                            {{ $booking_room->board_name }}
-                                                        </td>
-                                                    </tr>
+                                                    @if ($booking_room->guest)
+                                                        <tr>
+                                                            <td align="right" style="font-size: 14px">
+                                                                <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                                    Guest Name:
+                                                                </span>
+                                                                <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                                    {{ $booking_room->guest->first_name }} {{ $booking_room->guest->last_name }}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
 
                                                     @if ($booking_room->cancellation_policies->count() > 0)
                                                         <tr>
@@ -400,6 +341,20 @@
                                                                 </td>
                                                             </tr>
                                                         @endforeach
+                                                    @endif
+
+                                                    @if ($booking_room->rate_comments)
+                                                        <tr>
+                                                            <td align="right" style="font-size: 14px; padding-top: 8px">
+                                                                <strong>ملاحظات</strong>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td align="right" style="font-size: 14px; padding-top: 8px">
+                                                                {{ $booking_room->rate_comments }}
+                                                            </td>
+                                                        </tr>
                                                     @endif
                                                 </table>
                                             </td>
