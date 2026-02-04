@@ -207,6 +207,13 @@
                                                 <div style="font-size:13px; margin-top:4px;">
                                                     ({{ $booking->adults }} Adults & {{ $booking->children }}
                                                     Children)
+                                                    @if($booking->child_age)
+                                                        <br>
+                                                        <strong>Child Ages:</strong>
+                                                        @foreach(json_decode($booking->child_age) as $age)
+                                                            {{ $age }}@if(!$loop->last), @endif
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
