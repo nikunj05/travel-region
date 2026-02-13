@@ -86,6 +86,10 @@ trait CurrencyConversion
     {
         $setting = Setting::first();
 
+        if (!$setting) {
+            return 0; // Default to 0% if settings are not found
+        }
+
         switch ($category) {
             case '5 STARS':
                 $commission_percentage = $setting->five_star_commission;

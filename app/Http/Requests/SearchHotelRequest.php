@@ -24,11 +24,8 @@ class SearchHotelRequest extends FormRequest
         return [
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
-            // 'rooms' => 'required|integer|min:1',
-            // 'adults' => 'required|integer|min:1',
-            // 'children' => 'nullable|integer|min:0',
-            'latitude' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|numeric|between:-180,180',
+            'destination_code' => 'required_without:hotel_code|string', // hotel_code or destination_code required,
+            'hotel_code' => 'required_without:destination_code|string', // hotel_code or destination_code required,
             'language' => 'required|string|in:eng,ara',
             'star_rating' => 'nullable|integer|between:1,5',
             'min_price' => 'nullable|numeric|min:0',

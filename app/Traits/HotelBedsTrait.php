@@ -7,6 +7,7 @@ use App\Models\BookingRoom;
 use App\Models\BookingRoomCancellationPolicy;
 use App\Models\FavoriteHotel;
 use App\Models\FeaturedHotel;
+use App\Models\Hotel;
 use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
@@ -49,6 +50,16 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
+        $destinationCode = $request->destination_code;
+
+        if ($destinationCode) {
+            $hotelCodes = Hotel::where('destination_code', $destinationCode)
+                ->pluck('code')
+                ->toArray();
+        } else {
+            $hotelCodes = [$request->hotel_code];
+        }
+
         $rooms = [];
         foreach ($request->rooms as $room) {
             $roomData = [
@@ -77,11 +88,8 @@ trait HotelBedsTrait
                 'checkOut' => $request->check_out
             ],
             'occupancies' => $rooms,
-            'geolocation' => [
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'radius' => 50,
-                'unit' => 'km'
+            'hotels' => [
+                'hotel' => $hotelCodes
             ],
             'language' => strtolower($request->language),
         ];
