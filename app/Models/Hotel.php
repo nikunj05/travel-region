@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Hotel extends Model
+{
+    protected $fillable = [
+        'code',
+        'name',
+        'longitude',
+        'latitude',
+        'destination_code',
+        'category_code',
+        'category_group_code',
+        'accommodation_type_code',
+        'city',
+        'status',
+    ];
+}
