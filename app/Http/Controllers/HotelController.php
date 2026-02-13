@@ -6,6 +6,7 @@ use App\Http\Requests\FavoriteHotelRequest;
 use App\Http\Requests\SearchHotelRequest;
 use App\Models\Destination;
 use App\Models\FavoriteHotel;
+use App\Models\Hotel;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
 
@@ -135,11 +136,23 @@ class HotelController extends Controller
             $destinations = $destinations->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $destinations = $destinations->get();
+        $destinations = $destinations
+            ->limit(10)
+            ->get();
+
+        $hotels = Hotel::query();
+
+        if ($request->has('search')) {
+            $hotels = $hotels->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $hotels = $hotels
+            ->limit(10)
+            ->get();
 
         return $this->sendApiResponse(true, __('messages.locations_destinations_fetched'), [
             'destinations' => $destinations,
-            'hotels' => []
+            'hotels' => $hotels
         ]);
     }
 }
