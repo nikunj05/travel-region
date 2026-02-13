@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FavoriteHotelRequest;
 use App\Http\Requests\SearchHotelRequest;
+use App\Models\Destination;
 use App\Models\FavoriteHotel;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
@@ -128,10 +129,17 @@ class HotelController extends Controller
      */
     public function locationsDestinations(Request $request)
     {
-        $response = $this->getLocationsAndDestinations($request);
+        $destinations = Destination::query();
+
+        if ($request->has('search')) {
+            $destinations = $destinations->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $destinations = $destinations->get();
 
         return $this->sendApiResponse(true, __('messages.locations_destinations_fetched'), [
-            'destinations' => $response['destinations']
+            'destinations' => $destinations,
+            'hotels' => []
         ]);
     }
 }
