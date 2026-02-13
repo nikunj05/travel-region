@@ -140,7 +140,7 @@ class HotelController extends Controller
             ->limit(10)
             ->get();
 
-        $hotels = Hotel::query();
+        $hotels = Hotel::where('status', 1);
 
         if ($request->has('search')) {
             $hotels = $hotels->where('name', 'like', '%' . $request->search . '%');
