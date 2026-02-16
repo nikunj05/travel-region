@@ -94,6 +94,7 @@ trait HotelBedsTrait
                 'hotel' => $hotelCodes
             ],
             'language' => strtolower($request->language),
+            'sourceMarket' => 'SA'
         ];
 
         if ($request->has('star_rating')) {
