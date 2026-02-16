@@ -31,4 +31,9 @@ class PopularDestination extends Model
             }
         });
     }
+
+    public function destination()
+    {
+        return $this->belongsTo(Destination::class, 'location', 'code');
+    }
 }

@@ -17,12 +17,10 @@ class PopularDestinationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'location' => $this->location,
+            'code' => $this->location,
+            'location' => $this->destination ? $this->destination->name : $this->location,
             'image' => $this->image,
             'full_image_url' => $this->image ? url(Storage::url($this->image)) : null,
-            'city' => $this->location,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
             'hotel_count' => $this->hotel_count,
             'hotel_min_price' => $this->hotel_min_price,
         ];

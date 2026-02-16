@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\PopularDestinations\Schemas;
 
 use App\Forms\Components\MapboxLocation;
+use App\Models\Destination;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -18,20 +20,12 @@ class PopularDestinationForm
                     ->columns(12)
                     ->columnSpanFull()
                     ->schema([
-                        MapboxLocation::make('location')
+                        Select::make('location')
                             ->label('Search Location')
                             ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                // if (is_array($state)) {
-                                //     $set('latitude', $state['latitude'] ?? null);
-                                //     $set('longitude', $state['longitude'] ?? null);
-                                //     $set('city', $state['city'] ?? null);
-                                //     $set('state', $state['state'] ?? null);
-                                //     $set('country', $state['country'] ?? null);
-                                // }
-                            })
-                            ->columnSpanFull(),
+                            ->options(Destination::all()->pluck('name', 'code'))
+                            ->searchable()
+                            ->columnSpan(6)
                     ]),
 
                 Grid::make()
@@ -50,21 +44,6 @@ class PopularDestinationForm
                             ->previewable(true)
                             ->openable()
                             ->columnSpan(6),
-                    ]),
-
-                Grid::make()
-                    ->columns(12)
-                    ->columnSpanFull()
-                    ->schema([
-                        TextInput::make('latitude')
-                            ->columnSpan(6)
-                            ->readOnly()
-                            ->dehydrated(true),
-
-                        TextInput::make('longitude')
-                            ->columnSpan(6)
-                            ->readOnly()
-                            ->dehydrated(true),
                     ]),
 
                 Grid::make()

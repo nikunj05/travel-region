@@ -15,7 +15,10 @@ class PopularDestinationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('location')->searchable()->label('Location'),
+                TextColumn::make('destination.name')
+                    ->label('Location')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
