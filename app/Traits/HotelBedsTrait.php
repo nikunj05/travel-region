@@ -55,6 +55,7 @@ trait HotelBedsTrait
         if ($destinationCode) {
             $hotelCodes = Hotel::where('destination_code', $destinationCode)
                 ->where('status', 1)
+                ->limit(2000)
                 ->pluck('code')
                 ->toArray();
         } else {
