@@ -29,7 +29,8 @@ class HotelController extends Controller
                 'hotels' => $response['hotels'],
                 'checkIn' => $response['checkIn'],
                 'total' => count($response['hotels']),
-                'checkOut' => $response['checkOut']
+                'checkOut' => $response['checkOut'],
+                'zones' => $response['zones'],
             ]);
 
         } catch (\Exception $e) {

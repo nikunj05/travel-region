@@ -124,10 +124,16 @@ trait HotelBedsTrait
         if ($availableHotels->successful()) {
             $hotelData = [];
             $codes = [];
+            $zones = [];
 
             if (isset($availableHotels['hotels']['hotels'])) {
                 foreach ($availableHotels['hotels']['hotels'] as $hotel) {
                     $codes[] = $hotel['code'];
+
+                    $zones[$hotel['zoneCode']] = [
+                        'code' => $hotel['zoneCode'],
+                        'name' => $hotel['zoneName'],
+                    ];
 
                     $hotel_category = $hotel['categoryName'] ?? '';
 
@@ -244,14 +250,16 @@ trait HotelBedsTrait
                     'hotels' => $finalHotels,
                     'checkIn' => $request->check_in,
                     'checkOut' => $request->check_out,
-                    'total' => $availableHotels['hotels']['total']
+                    'total' => $availableHotels['hotels']['total'],
+                    'zones' => $zones,
                 ];
             } else {
                 return [
                     'hotels' => [],
                     'checkIn' => $request->check_in,
                     'checkOut' => $request->check_out,
-                    'total' => $availableHotels['hotels']['total']
+                    'total' => $availableHotels['hotels']['total'],
+                    'zones' => $zones
                 ];
             }
         } else {
