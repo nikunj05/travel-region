@@ -347,6 +347,14 @@ trait HotelBedsTrait
 
                     // Use reference for the outer loop as well
                     foreach ($availabilityRooms as &$availabilityRoom) {
+
+                        /* Remove rate with packaging: true */
+                        if (isset($availabilityRoom['rates']) && is_array($availabilityRoom['rates'])) {
+                            $availabilityRoom['rates'] = array_filter($availabilityRoom['rates'], function ($rate) {
+                                return !isset($rate['packaging']) || $rate['packaging'] === false;
+                            });
+                        }
+
                         foreach ($availabilityRoom['rates'] as &$rate) {
                             $rateCurrency = 'EUR';
 
