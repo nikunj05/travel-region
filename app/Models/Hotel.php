@@ -16,6 +16,8 @@ class Hotel extends Model
         'category_group_code',
         'accommodation_type_code',
         'city',
+        'zone_code',
+        'chain_code',
         'status',
     ];
 }

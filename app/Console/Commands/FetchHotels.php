@@ -163,6 +163,8 @@ class FetchHotels extends Command
                 'category_group_code' => $hotel['categoryGroupCode'] ?? null,
                 'accommodation_type_code' => $hotel['accommodationTypeCode'] ?? null,
                 'city' => $hotel['city']['content'] ?? null,
+                'zone_code' => $hotel['zoneCode'] ?? null,
+                'chain_code' => $hotel['chainCode'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ], $data['hotels']);
@@ -176,6 +178,9 @@ class FetchHotels extends Command
                 'category_group_code',
                 'accommodation_type_code',
                 'city',
+                'zone_code',
+                'chain_code',
+                'created_at',
                 'updated_at',
             ]);
 
