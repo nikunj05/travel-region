@@ -4,11 +4,10 @@ namespace App\Traits;
 
 use App\Models\Booking;
 use App\Models\BookingRoom;
-use App\Models\BookingRoomCancellationPolicy;
+use App\Models\Facility;
 use App\Models\FavoriteHotel;
 use App\Models\FeaturedHotel;
 use App\Models\Hotel;
-use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -125,6 +124,7 @@ trait HotelBedsTrait
             $hotelData = [];
             $codes = [];
             $zones = [];
+            $facilities = [];
 
             if (isset($availableHotels['hotels']['hotels'])) {
                 foreach ($availableHotels['hotels']['hotels'] as $hotel) {
@@ -198,6 +198,11 @@ trait HotelBedsTrait
                     if (isset($content['code'])) {
                         $contentByCode[$content['code']] = $content;
                     }
+                    if (isset($content['facilities']) && is_array($content['facilities'])) {
+                        foreach ($content['facilities'] as $facility) {
+                            $facilities[] = $facility['facilityCode'];
+                        }
+                    }
                 }
 
                 // Merge data in the original order from $codes
@@ -246,12 +251,21 @@ trait HotelBedsTrait
                     return 0;
                 });
 
+                $facilities = Facility::whereIn('code', $facilities)->get()->toArray();
+
                 return [
                     'hotels' => $finalHotels,
                     'checkIn' => $request->check_in,
                     'checkOut' => $request->check_out,
                     'total' => $availableHotels['hotels']['total'],
                     'zones' => $zones,
+                    'facilities' => array_map(function ($facility) {
+                        return [
+                            'code' => $facility['code'],
+                            'facility_group_code' => $facility['facility_group_code'],
+                            'name' => $facility['name'],
+                        ];
+                    }, $facilities)
                 ];
             } else {
                 return [
@@ -259,7 +273,8 @@ trait HotelBedsTrait
                     'checkIn' => $request->check_in,
                     'checkOut' => $request->check_out,
                     'total' => $availableHotels['hotels']['total'],
-                    'zones' => $zones
+                    'zones' => [],
+                    'facilities' => []
                 ];
             }
         } else {
