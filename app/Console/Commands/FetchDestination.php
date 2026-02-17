@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Destination;
+use App\Models\Zone;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -166,6 +167,29 @@ class FetchDestination extends Command
                 'name',
                 'country_code',
                 'iso_code',
+                'updated_at',
+            ]);
+
+            // insert zones for each destination
+            $zoneData = [];
+            foreach ($data['destinations'] as $destination) {
+                if (!empty($destination['zones'])) {
+                    foreach ($destination['zones'] as $zone) {
+                        $zoneData[] = [
+                            'destination_code' => $destination['code'],
+                            'code' => $zone['zoneCode'],
+                            'name' => $zone['name'] ?? null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+            }
+
+            Zone::truncate();
+            Zone::upsert($zoneData, ['code'], [
+                'destination_code',
+                'name',
                 'updated_at',
             ]);
 
