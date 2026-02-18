@@ -40,6 +40,182 @@ trait HotelBedsTrait
     }
 
     /**
+     * Get available hotels from HotelBeds API.
+     *
+     * @param Request $request
+     * @return array
+     * @throws \Exception
+     */
+    protected function checkHotelAvailabilityNew($request)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $destinationCode = $request->destination_code;
+
+        if ($destinationCode) {
+            $localHotels = Hotel::where('destination_code', $destinationCode)
+                ->with(['first_image', 'facilities'])
+                ->where('status', 1)
+                ->limit(2000)
+                ->get();
+        } else {
+            $localHotels = Hotel::where('code', $request->hotel_code)
+                ->with(['first_image', 'facilities'])
+                ->where('status', 1)
+                ->get();
+        }
+
+        $rooms = [];
+        foreach ($request->rooms as $room) {
+            $roomData = [
+                'rooms' => 1,
+                'adults' => $room['adults'],
+                'children' => $room['children'] ?? 0,
+            ];
+
+            if (isset($room['childrenAges']) && count($room['childrenAges']) > 0) {
+                $paxes = [];
+                foreach ($room['childrenAges'] as $childAge) {
+                    $paxes[] = [
+                        'type' => 'CH',
+                        'age' => $childAge
+                    ];
+                }
+                $roomData['paxes'] = $paxes;
+            }
+
+            $rooms[] = $roomData;
+        }
+
+        // sourceMarket
+        $payload = [
+            'stay' => [
+                'checkIn' => $request->check_in,
+                'checkOut' => $request->check_out
+            ],
+            'occupancies' => $rooms,
+            'hotels' => [
+                'hotel' => $localHotels->pluck('code')->toArray(),
+            ],
+            'language' => strtolower($request->language),
+            'sourceMarket' => 'SA'
+        ];
+
+        if ($request->has('star_rating')) {
+            $payload['filter']['minCategory'] = $request->star_rating;
+            $payload['filter']['maxCategory'] = $request->star_rating;
+        }
+
+        if ($request->has('min_price')) {
+            $payload['filter']['minRate'] = $request->min_price;
+        }
+
+        if ($request->has('max_price')) {
+            $payload['filter']['maxRate'] = $request->max_price;
+        }
+
+        if ($request->has('accommodations')) {
+            $payload['accommodations'] = explode(',', $request->accommodations);
+        }
+
+        $availableHotels = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", $payload);
+
+        if ($availableHotels->successful()) {
+            $zones = [];
+            $facilities = [];
+
+            if (isset($availableHotels['hotels']['hotels'])) {
+                // Extract to a plain array before modifying
+                $hotelsData = $availableHotels['hotels']['hotels'];
+
+                foreach ($hotelsData as &$hotel) {
+                    if (!isset($zones[$hotel['zoneCode']])) {
+                        $zones[$hotel['zoneCode']] = [
+                            'code' => $hotel['zoneCode'],
+                            'name' => $hotel['zoneName'],
+                            'count' => 0,
+                        ];
+                    }
+                    $zones[$hotel['zoneCode']]['count']++;
+
+                    $minPrices = $this->calculatePrice($hotel['minRate'], $hotel['categoryCode'], $hotel['currency']);
+
+                    $hotel['minRate'] = $minPrices['final_amount'];
+                    $hotel['currency'] = $minPrices['converted_currency'];
+
+                    $localHotel = $localHotels->where('code', $hotel['code'])->first();
+                    $hotel['accommodationTypeCode'] = $localHotel ? $localHotel->accommodation_type_code : null;
+                    $hotel['address'] = ["content" => $localHotel ? $localHotel->address : null];
+                    $hotel['city'] = ["content" => $localHotel ? $localHotel->city : null];
+                    $hotel['images'] = [
+                        [
+                            "path" => $localHotel ? $localHotel->first_image->path : null,
+                            "imageTypeCode" => $localHotel ? $localHotel->first_image->image_type_code : null,
+                        ]
+                    ];
+                    $hotel['facilities'] = $localHotel ? $localHotel->facilities->map(function ($facility) {
+                        return [
+                            'facilityCode' => $facility->facility_code,
+                            'facilityGroupCode' => $facility->facility_group_code,
+                        ];
+                    })->toArray() : [];
+                }
+                unset($hotel);
+
+                $facilityCounts = $facilities; // associative: [code => count]
+
+                $facilities = Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])
+                    ->whereIn('code', array_keys($facilityCounts))
+                    ->get()
+                    ->toArray();
+
+                // Sort zones by count descending
+                usort($zones, fn($a, $b) => $b['count'] <=> $a['count']);
+
+                // Sort facilities by count descending
+                usort($facilities, fn($a, $b) => ($facilityCounts[$b['code']] ?? 0) <=> ($facilityCounts[$a['code']] ?? 0));
+
+                return [
+                    'hotels' => $hotelsData,
+                    'checkIn' => $request->check_in,
+                    'checkOut' => $request->check_out,
+                    'total' => $availableHotels['hotels']['total'],
+                    'zones' => $zones,
+                    'facilities' => array_map(function ($facility) use ($facilityCounts) {
+                        return [
+                            'code' => $facility['code'],
+                            'facility_group_code' => $facility['facility_group_code'],
+                            'name' => $facility['name'],
+                            'count' => $facilityCounts[$facility['code']] ?? 0,
+                        ];
+                    }, $facilities)
+                ];
+            } else {
+                return [
+                    'hotels' => [],
+                    'checkIn' => $request->check_in,
+                    'checkOut' => $request->check_out,
+                    'total' => $availableHotels['hotels']['total'],
+                    'zones' => [],
+                    'facilities' => []
+                ];
+            }
+        } else {
+            if (isset($availableHotels['error']) && is_array($availableHotels['error']) && isset($availableHotels['error']['message'])) {
+                throw new \Exception($availableHotels['error']['message']);
+            }
+            if (isset($availableHotels['error']) && $availableHotels['error']) {
+                throw new \Exception($availableHotels['error']);
+            }
+            throw new \Exception(__('messages.catch'));
+        }
+    }
+
+    /**
      * Make HotelBeds API request
      *
      * @param Request $request

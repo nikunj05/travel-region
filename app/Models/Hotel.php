@@ -21,4 +21,14 @@ class Hotel extends Model
         'chain_code',
         'status',
     ];
+
+    public function first_image()
+    {
+        return $this->hasOne(HotelImage::class, 'hotel_code', 'code');
+    }
+
+    public function facilities()
+    {
+        return $this->hasMany(HotelFacility::class, 'hotel_code', 'code');
+    }
 }
