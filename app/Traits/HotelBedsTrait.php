@@ -166,6 +166,37 @@ trait HotelBedsTrait
                 }
                 unset($hotel);
 
+                // feature hotels should be at the top
+                $featuredHotelCodes = FeaturedHotel::orderBy('show_tag', 'desc')->pluck('show_tag', 'hotel_code')->toArray();
+
+                // Add featured field to each hotel
+                foreach ($hotelsData as $key => &$hotel) {
+                    $hotel['featured'] = array_key_exists($hotel['code'], $featuredHotelCodes);
+                    $hotel['show_tag'] = isset($featuredHotelCodes[$hotel['code']]) && $featuredHotelCodes[$hotel['code']] ? true : false;
+                }
+                unset($hotel); // Break the reference
+
+                usort($hotelsData, function ($a, $b) {
+                    // Priority 1: featured = true AND show_tag = true
+                    $aPriority1 = $a['featured'] && $a['show_tag'];
+                    $bPriority1 = $b['featured'] && $b['show_tag'];
+
+                    if ($aPriority1 !== $bPriority1) {
+                        return $bPriority1 ? 1 : -1;
+                    }
+
+                    // Priority 2: featured = true AND show_tag = false
+                    $aPriority2 = $a['featured'] && !$a['show_tag'];
+                    $bPriority2 = $b['featured'] && !$b['show_tag'];
+
+                    if ($aPriority2 !== $bPriority2) {
+                        return $bPriority2 ? 1 : -1;
+                    }
+
+                    // Priority 3: rest of the hotels (not featured)
+                    return 0;
+                });
+
                 $facilityCounts = $facilities; // associative: [code => count]
 
                 $facilities = Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])

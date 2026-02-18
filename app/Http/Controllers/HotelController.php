@@ -23,7 +23,7 @@ class HotelController extends Controller
     public function index(SearchHotelRequest $request)
     {
         try {
-            $response = $this->checkHotelAvailability($request);
+            $response = $this->checkHotelAvailabilityNew($request);
 
             return $this->sendApiResponse(true, __('messages.hotel.fetched'), $response);
 
