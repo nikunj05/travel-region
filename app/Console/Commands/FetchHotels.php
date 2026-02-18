@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Hotel;
+use App\Models\HotelFacility;
+use App\Models\HotelImage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -128,6 +130,12 @@ class FetchHotels extends Command
             $this->info('Hotels table truncated.');
         }
 
+        HotelImage::truncate();
+        $this->info('Hotel images table truncated.');
+
+        HotelFacility::truncate();
+        $this->info('Hotel facilities table truncated.');
+
         $total = null;
         $currentFrom = $from;
         $currentTo = $to;
@@ -183,6 +191,47 @@ class FetchHotels extends Command
                 'created_at',
                 'updated_at',
             ]);
+
+            $imageData = [];
+            $facilityData = [];
+            foreach ($data['hotels'] as $hotel) {
+                if (!empty($hotel['images'])) {
+                    foreach ($hotel['images'] as $image) {
+                        $imageData[] = [
+                            'hotel_code' => $hotel['code'],
+                            'path' => $image['path'],
+                            'image_type_code' => $image['imageTypeCode'] ?? null,
+                            'order' => $image['order'] ?? null,
+                            'visual_order' => $image['visualOrder'] ?? null,
+                            'characteristic_code' => $image['characteristicCode'] ?? null,
+                            'room_code' => $image['roomCode'] ?? null,
+                            'room_type' => $image['roomType'] ?? null,
+                        ];
+                    }
+                }
+
+                if (!empty($hotel['facilities'])) {
+                    foreach ($hotel['facilities'] as $facility) {
+                        $facilityData[] = [
+                            'hotel_code' => $hotel['code'],
+                            'facility_code' => $facility['facilityCode'] ?? null,
+                            'facility_group_code' => $facility['facilityGroupCode'] ?? null,
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($imageData)) {
+                foreach (array_chunk($imageData, 1000) as $chunk) {
+                    HotelImage::insertOrIgnore($chunk);
+                }
+            }
+
+            if (!empty($facilityData)) {
+                foreach (array_chunk($facilityData, 1000) as $facilityChunk) {
+                    HotelFacility::insertOrIgnore($facilityChunk);
+                }
+            }
 
             $hotelCount += count($hotelData);
             $this->info("Fetched hotels {$currentFrom}-{$currentTo} ({$hotelCount}/{$total} total)");

@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('characteristic_code')->nullable();
             $table->string('room_code')->nullable();
             $table->string('room_type')->nullable();
-            $table->timestamps();
         });
     }
 
