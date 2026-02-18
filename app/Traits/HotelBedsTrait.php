@@ -163,6 +163,16 @@ trait HotelBedsTrait
                             'facilityGroupCode' => $facility->facility_group_code,
                         ];
                     })->toArray() : [];
+
+                    if ($localHotel && $localHotel->facilities) {
+                        foreach ($localHotel->facilities as $facility) {
+                            $code = $facility->facility_code;
+                            if (!isset($facilities[$code])) {
+                                $facilities[$code] = 0;
+                            }
+                            $facilities[$code]++;
+                        }
+                    }
                 }
                 unset($hotel);
 
