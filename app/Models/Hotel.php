@@ -16,6 +16,7 @@ class Hotel extends Model
         'category_group_code',
         'accommodation_type_code',
         'city',
+        'address',
         'zone_code',
         'chain_code',
         'status',
