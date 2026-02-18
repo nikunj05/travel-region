@@ -130,10 +130,14 @@ trait HotelBedsTrait
                 foreach ($availableHotels['hotels']['hotels'] as $hotel) {
                     $codes[] = $hotel['code'];
 
-                    $zones[$hotel['zoneCode']] = [
-                        'code' => $hotel['zoneCode'],
-                        'name' => $hotel['zoneName'],
-                    ];
+                    if (!isset($zones[$hotel['zoneCode']])) {
+                        $zones[$hotel['zoneCode']] = [
+                            'code' => $hotel['zoneCode'],
+                            'name' => $hotel['zoneName'],
+                            'count' => 0,
+                        ];
+                    }
+                    $zones[$hotel['zoneCode']]['count']++;
 
                     $hotel_category = $hotel['categoryName'] ?? '';
 
@@ -200,7 +204,11 @@ trait HotelBedsTrait
                     }
                     if (isset($content['facilities']) && is_array($content['facilities'])) {
                         foreach ($content['facilities'] as $facility) {
-                            $facilities[] = $facility['facilityCode'];
+                            $code = $facility['facilityCode'];
+                            if (!isset($facilities[$code])) {
+                                $facilities[$code] = 0;
+                            }
+                            $facilities[$code]++;
                         }
                     }
                 }
@@ -251,7 +259,18 @@ trait HotelBedsTrait
                     return 0;
                 });
 
-                $facilities = Facility::whereIn('code', $facilities)->get()->toArray();
+                $facilityCounts = $facilities; // associative: [code => count]
+
+                $facilities = Facility::whereNotIn('name', ['1', 'LGTBIQ friendly', 'LGBTQ friendly'])
+                    ->whereIn('code', array_keys($facilityCounts))
+                    ->get()
+                    ->toArray();
+
+                // Sort zones by count descending
+                usort($zones, fn($a, $b) => $b['count'] <=> $a['count']);
+
+                // Sort facilities by count descending
+                usort($facilities, fn($a, $b) => ($facilityCounts[$b['code']] ?? 0) <=> ($facilityCounts[$a['code']] ?? 0));
 
                 return [
                     'hotels' => $finalHotels,
@@ -259,11 +278,12 @@ trait HotelBedsTrait
                     'checkOut' => $request->check_out,
                     'total' => $availableHotels['hotels']['total'],
                     'zones' => $zones,
-                    'facilities' => array_map(function ($facility) {
+                    'facilities' => array_map(function ($facility) use ($facilityCounts) {
                         return [
                             'code' => $facility['code'],
                             'facility_group_code' => $facility['facility_group_code'],
                             'name' => $facility['name'],
+                            'count' => $facilityCounts[$facility['code']] ?? 0,
                         ];
                     }, $facilities)
                 ];
