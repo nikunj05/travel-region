@@ -12,6 +12,8 @@ use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -49,213 +51,222 @@ trait HotelBedsTrait
     protected function checkHotelAvailabilityNew($request)
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
-
         $destinationCode = $request->destination_code;
+        $cacheTtl = 60 * 60 * 6; // 6 hours — adjust as needed
+
+        // 1. Build base query
+        $hotelQuery = Hotel::where('status', 1)
+            ->select(['code', 'accommodation_type_code', 'address', 'city']);
 
         if ($destinationCode) {
-            $localHotels = Hotel::where('destination_code', $destinationCode)
-                ->with(['first_image', 'facilities'])
-                ->where('status', 1)
-                ->limit(2000)
-                ->get();
+            $hotelQuery->where('destination_code', $destinationCode)->limit(2000);
         } else {
-            $localHotels = Hotel::where('code', $request->hotel_code)
-                ->with(['first_image', 'facilities'])
-                ->where('status', 1)
-                ->get();
+            $hotelQuery->where('code', $request->hotel_code);
         }
 
+        // 2. Cache hotel codes (used for API payload)
+        $hotelCodesCacheKey = $destinationCode
+            ? "hotel_codes_dest_{$destinationCode}"
+            : "hotel_codes_single_{$request->hotel_code}";
+
+        $hotelCodes = Cache::rememberForever($hotelCodesCacheKey, function () use ($hotelQuery) {
+            return (clone $hotelQuery)->pluck('code')->toArray();
+        });
+
+        // 3. Cache local hotels map (keyed by code for O(1) lookup)
+        $localHotelsMapCacheKey = $destinationCode
+            ? "local_hotels_map_dest_{$destinationCode}"
+            : "local_hotels_map_single_{$request->hotel_code}";
+
+        $localHotelsMap = Cache::rememberForever($localHotelsMapCacheKey, function () use ($hotelQuery) {
+            return (clone $hotelQuery)->get()->keyBy('code')->toArray();
+        });
+
+        // 4. Cache first images keyed by hotel code
+        $firstImagesCacheKey = $destinationCode
+            ? "hotel_images_dest_{$destinationCode}"
+            : "hotel_images_single_{$request->hotel_code}";
+
+        $firstImages = Cache::rememberForever($firstImagesCacheKey, function () use ($hotelCodes) {
+            return DB::table('hotel_images')
+                ->whereIn('hotel_code', $hotelCodes)
+                ->select(['hotel_code', 'path', 'image_type_code'])
+                ->get()
+                ->keyBy('hotel_code');
+        });
+
+        // 5. Cache facilities grouped by hotel code
+        $facilitiesCacheKey = $destinationCode
+            ? "hotel_facilities_dest_{$destinationCode}"
+            : "hotel_facilities_single_{$request->hotel_code}";
+
+        $facilitiesByHotel = Cache::rememberForever($facilitiesCacheKey, function () use ($hotelCodes) {
+            return DB::table('hotel_facilities')
+                ->whereIn('hotel_code', $hotelCodes)
+                ->select(['hotel_code', 'facility_code', 'facility_group_code'])
+                ->get()
+                ->groupBy('hotel_code');
+        });
+
+        // 6. Cache featured hotels (changes rarely)
+        $featuredHotelCodes = Cache::rememberForever('featured_hotel_codes', function () {
+            return FeaturedHotel::orderBy('show_tag', 'desc')
+                ->pluck('show_tag', 'hotel_code')
+                ->toArray();
+        });
+
+        // 7. Build rooms payload (no DB involved, no caching needed)
         $rooms = [];
         foreach ($request->rooms as $room) {
             $roomData = [
-                'rooms' => 1,
-                'adults' => $room['adults'],
+                'rooms'    => 1,
+                'adults'   => $room['adults'],
                 'children' => $room['children'] ?? 0,
             ];
-
-            if (isset($room['childrenAges']) && count($room['childrenAges']) > 0) {
-                $paxes = [];
-                foreach ($room['childrenAges'] as $childAge) {
-                    $paxes[] = [
-                        'type' => 'CH',
-                        'age' => $childAge
-                    ];
-                }
-                $roomData['paxes'] = $paxes;
+            if (!empty($room['childrenAges'])) {
+                $roomData['paxes'] = array_map(
+                    fn($age) => ['type' => 'CH', 'age' => $age],
+                    $room['childrenAges']
+                );
             }
-
             $rooms[] = $roomData;
         }
 
-        // sourceMarket
         $payload = [
-            'stay' => [
-                'checkIn' => $request->check_in,
-                'checkOut' => $request->check_out
-            ],
-            'occupancies' => $rooms,
-            'hotels' => [
-                'hotel' => $localHotels->pluck('code')->toArray(),
-            ],
-            'language' => strtolower($request->language),
-            'sourceMarket' => 'SA'
+            'stay'         => ['checkIn' => $request->check_in, 'checkOut' => $request->check_out],
+            'occupancies'  => $rooms,
+            'hotels'       => ['hotel' => $hotelCodes],
+            'language'     => strtolower($request->language),
+            'sourceMarket' => 'SA',
         ];
 
         if ($request->has('star_rating')) {
             $payload['filter']['minCategory'] = $request->star_rating;
             $payload['filter']['maxCategory'] = $request->star_rating;
         }
+        if ($request->has('min_price'))      $payload['filter']['minRate'] = $request->min_price;
+        if ($request->has('max_price'))      $payload['filter']['maxRate'] = $request->max_price;
+        if ($request->has('accommodations')) $payload['accommodations'] = explode(',', $request->accommodations);
 
-        if ($request->has('min_price')) {
-            $payload['filter']['minRate'] = $request->min_price;
-        }
-
-        if ($request->has('max_price')) {
-            $payload['filter']['maxRate'] = $request->max_price;
-        }
-
-        if ($request->has('accommodations')) {
-            $payload['accommodations'] = explode(',', $request->accommodations);
-        }
-
+        // 8. External API call (not cached — real-time availability)
         $availableHotels = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Api-key' => $apiKey,
+            'Accept'      => 'application/json',
+            'Api-key'     => $apiKey,
             'X-Signature' => $this->generateSignature(),
         ])->post("{$this->baseUrl}/hotel-api/{$this->version}/hotels", $payload);
 
-        if ($availableHotels->successful()) {
-            $zones = [];
-            $facilities = [];
-
-            if (isset($availableHotels['hotels']['hotels'])) {
-                // Extract to a plain array before modifying
-                $hotelsData = $availableHotels['hotels']['hotels'];
-
-                // feature hotels should be at the top
-                $featuredHotelCodes = FeaturedHotel::orderBy('show_tag', 'desc')
-                    ->pluck('show_tag', 'hotel_code')
-                    ->toArray();
-
-                foreach ($hotelsData as &$hotel) {
-                    if (!isset($zones[$hotel['zoneCode']])) {
-                        $zones[$hotel['zoneCode']] = [
-                            'code' => $hotel['zoneCode'],
-                            'name' => $hotel['zoneName'],
-                            'count' => 0,
-                        ];
-                    }
-                    $zones[$hotel['zoneCode']]['count']++;
-
-                    $minPrices = $this->calculatePrice($hotel['minRate'], $hotel['categoryCode'], $hotel['currency']);
-
-                    $hotel['minRate'] = $minPrices['final_amount'];
-                    $hotel['currency'] = $minPrices['converted_currency'];
-
-                    $localHotel = $localHotels->where('code', $hotel['code'])->first();
-                    $hotel['accommodationTypeCode'] = $localHotel ? $localHotel->accommodation_type_code : null;
-                    $hotel['address'] = ["content" => $localHotel ? $localHotel->address : null];
-                    $hotel['city'] = ["content" => $localHotel ? $localHotel->city : null];
-                    $hotel['images'] = [
-                        [
-                            "path" => $localHotel ? $localHotel->first_image->path : null,
-                            "imageTypeCode" => $localHotel ? $localHotel->first_image->image_type_code : null,
-                        ]
-                    ];
-                    $hotel['facilities'] = $localHotel ? $localHotel->facilities->map(function ($facility) {
-                        return [
-                            'facilityCode' => $facility->facility_code,
-                            'facilityGroupCode' => $facility->facility_group_code,
-                        ];
-                    })->toArray() : [];
-
-                    if ($localHotel && $localHotel->facilities) {
-                        foreach ($localHotel->facilities as $facility) {
-                            $code = $facility->facility_code;
-                            if (!isset($facilities[$code])) {
-                                $facilities[$code] = 0;
-                            }
-                            $facilities[$code]++;
-                        }
-                    }
-                }
-                unset($hotel);
-
-                // Add featured field to each hotel
-                foreach ($hotelsData as $key => &$hotel) {
-                    $hotel['featured'] = array_key_exists($hotel['code'], $featuredHotelCodes);
-                    $hotel['show_tag'] = isset($featuredHotelCodes[$hotel['code']]) && $featuredHotelCodes[$hotel['code']] ? true : false;
-                }
-                unset($hotel); // Break the reference
-
-                usort($hotelsData, function ($a, $b) {
-                    // Priority 1: featured = true AND show_tag = true
-                    $aPriority1 = $a['featured'] && $a['show_tag'];
-                    $bPriority1 = $b['featured'] && $b['show_tag'];
-
-                    if ($aPriority1 !== $bPriority1) {
-                        return $bPriority1 ? 1 : -1;
-                    }
-
-                    // Priority 2: featured = true AND show_tag = false
-                    $aPriority2 = $a['featured'] && !$a['show_tag'];
-                    $bPriority2 = $b['featured'] && !$b['show_tag'];
-
-                    if ($aPriority2 !== $bPriority2) {
-                        return $bPriority2 ? 1 : -1;
-                    }
-
-                    // Priority 3: rest of the hotels (not featured)
-                    return 0;
-                });
-
-                $facilityCounts = $facilities; // associative: [code => count]
-
-                $facilities = Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])
-                    ->whereIn('code', array_keys($facilityCounts))
-                    ->get()
-                    ->toArray();
-
-                // Sort zones by count descending
-                usort($zones, fn($a, $b) => $b['count'] <=> $a['count']);
-
-                // Sort facilities by count descending
-                usort($facilities, fn($a, $b) => ($facilityCounts[$b['code']] ?? 0) <=> ($facilityCounts[$a['code']] ?? 0));
-
-                return [
-                    'hotels' => $hotelsData,
-                    'checkIn' => $request->check_in,
-                    'checkOut' => $request->check_out,
-                    'total' => $availableHotels['hotels']['total'],
-                    'zones' => $zones,
-                    'facilities' => array_map(function ($facility) use ($facilityCounts) {
-                        return [
-                            'code' => $facility['code'],
-                            'facility_group_code' => $facility['facility_group_code'],
-                            'name' => $facility['name'],
-                            'count' => $facilityCounts[$facility['code']] ?? 0,
-                        ];
-                    }, $facilities)
-                ];
-            } else {
-                return [
-                    'hotels' => [],
-                    'checkIn' => $request->check_in,
-                    'checkOut' => $request->check_out,
-                    'total' => $availableHotels['hotels']['total'],
-                    'zones' => [],
-                    'facilities' => []
-                ];
-            }
-        } else {
-            if (isset($availableHotels['error']) && is_array($availableHotels['error']) && isset($availableHotels['error']['message'])) {
-                throw new \Exception($availableHotels['error']['message']);
-            }
-            if (isset($availableHotels['error']) && $availableHotels['error']) {
-                throw new \Exception($availableHotels['error']);
-            }
-            throw new \Exception(__('messages.catch'));
+        if (!$availableHotels->successful()) {
+            $error = $availableHotels['error'] ?? null;
+            throw new \Exception(
+                is_array($error) ? ($error['message'] ?? __('messages.catch')) : ($error ?: __('messages.catch'))
+            );
         }
+
+        if (empty($availableHotels['hotels']['hotels'])) {
+            return [
+                'hotels'     => [],
+                'checkIn'    => $request->check_in,
+                'checkOut'   => $request->check_out,
+                'total'      => $availableHotels['hotels']['total'] ?? 0,
+                'zones'      => [],
+                'facilities' => [],
+            ];
+        }
+
+        $hotelsData     = $availableHotels['hotels']['hotels'];
+        $zones          = [];
+        $facilityCounts = [];
+
+        // 9. Single loop over API results
+        foreach ($hotelsData as &$hotel) {
+            $code = $hotel['code'];
+
+            // Zones
+            if (!isset($zones[$hotel['zoneCode']])) {
+                $zones[$hotel['zoneCode']] = [
+                    'code'  => $hotel['zoneCode'],
+                    'name'  => $hotel['zoneName'],
+                    'count' => 0,
+                ];
+            }
+            $zones[$hotel['zoneCode']]['count']++;
+
+            // Price
+            $minPrices         = $this->calculatePrice($hotel['minRate'], $hotel['categoryCode'], $hotel['currency']);
+            $hotel['minRate']  = $minPrices['final_amount'];
+            $hotel['currency'] = $minPrices['converted_currency'];
+
+            // O(1) lookups from cached data
+            $localHotel      = $localHotelsMap[$code] ?? null;
+            $image           = $firstImages[$code] ?? null;
+            $hotelFacilities = $facilitiesByHotel[$code] ?? collect();
+
+            $hotel['accommodationTypeCode'] = $localHotel['accommodation_type_code'] ?? null;
+            $hotel['address']               = ['content' => $localHotel['address'] ?? null];
+            $hotel['city']                  = ['content' => $localHotel['city'] ?? null];
+            $hotel['images']                = [[
+                'path'          => $image->path ?? null,
+                'imageTypeCode' => $image->image_type_code ?? null,
+            ]];
+
+            $hotel['facilities'] = $hotelFacilities->map(fn($f) => [
+                'facilityCode'      => $f->facility_code,
+                'facilityGroupCode' => $f->facility_group_code,
+            ])->values()->toArray();
+
+            foreach ($hotelFacilities as $facility) {
+                $facilityCounts[$facility->facility_code] =
+                    ($facilityCounts[$facility->facility_code] ?? 0) + 1;
+            }
+
+            // Featured — resolved from cached map
+            $hotel['featured'] = isset($featuredHotelCodes[$code]);
+            $hotel['show_tag'] = !empty($featuredHotelCodes[$code]);
+        }
+        unset($hotel);
+
+        // 10. Sort: show_tag > featured > rest
+        usort($hotelsData, function ($a, $b) {
+            $aPriority1 = $a['featured'] && $a['show_tag'];
+            $bPriority1 = $b['featured'] && $b['show_tag'];
+            if ($aPriority1 !== $bPriority1) return $bPriority1 ? 1 : -1;
+
+            $aPriority2 = $a['featured'] && !$a['show_tag'];
+            $bPriority2 = $b['featured'] && !$b['show_tag'];
+            if ($aPriority2 !== $bPriority2) return $bPriority2 ? 1 : -1;
+
+            return 0;
+        });
+
+        // 11. Cache facility label lookups (static master data, rarely changes)
+        $facilityLabelsCacheKey = 'facility_labels_' . md5(implode(',', array_keys($facilityCounts)));
+
+        $facilitiesData = Cache::rememberForever($facilityLabelsCacheKey, function () use ($facilityCounts) {
+            return Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])
+                ->whereIn('code', array_keys($facilityCounts))
+                ->select(['code', 'facility_group_code', 'name'])
+                ->get()
+                ->toArray();
+        });
+
+        usort($zones, fn($a, $b) => $b['count'] <=> $a['count']);
+        usort($facilitiesData, fn($a, $b) =>
+            ($facilityCounts[$b['code']] ?? 0) <=> ($facilityCounts[$a['code']] ?? 0)
+        );
+
+        return [
+            'hotels'     => $hotelsData,
+            'checkIn'    => $request->check_in,
+            'checkOut'   => $request->check_out,
+            'total'      => $availableHotels['hotels']['total'],
+            'zones'      => array_values($zones),
+            'facilities' => array_map(fn($f) => [
+                'code'               => $f['code'],
+                'facility_group_code' => $f['facility_group_code'],
+                'name'               => $f['name'],
+                'count'              => $facilityCounts[$f['code']] ?? 0,
+            ], $facilitiesData),
+        ];
     }
 
     /**
