@@ -559,7 +559,7 @@ trait HotelBedsTrait
      *
      * @param Request $request
      * @param string $hotelCode
-     * @return \Illuminate\Http\Client\Response
+     * @return \Illuminate\Http\Client\Response | array
      */
     public function getHotelDetails($request, string $hotelCode)
     {
@@ -774,7 +774,7 @@ trait HotelBedsTrait
      *
      * @param Request $request
      * @param User $user
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection | array
      */
     public function getFavoriteHotels(Request $request, User $user)
     {
@@ -792,7 +792,7 @@ trait HotelBedsTrait
      * @param int $page
      * @param int $perPage
      * @param string $language
-     * @return void
+     * @return array
      */
     public function hotelContentApiUsingCodes($hotelCodes, $page, $perPage, $language)
     {
@@ -893,7 +893,7 @@ trait HotelBedsTrait
      * Get locations and destinations
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Client\Response
+     * @return \Illuminate\Http\Client\Response | array
      */
     public function getLocationsAndDestinations($request)
     {
