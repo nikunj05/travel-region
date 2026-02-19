@@ -52,7 +52,6 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
         $destinationCode = $request->destination_code;
-        $cacheTtl = 60 * 60 * 6; // 6 hours — adjust as needed
 
         // 1. Build base query
         $hotelQuery = Hotel::where('status', 1)
@@ -193,7 +192,7 @@ trait HotelBedsTrait
 
             // Price
             $minPrices         = $this->calculatePrice($hotel['minRate'], $hotel['categoryCode'], $hotel['currency']);
-            $hotel['minRate']  = $minPrices['final_amount'];
+            $hotel['minRate']  = (string) round($minPrices['final_amount'], 2);
             $hotel['currency'] = $minPrices['converted_currency'];
 
             // O(1) lookups from cached data
