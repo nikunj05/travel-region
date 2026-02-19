@@ -147,6 +147,13 @@ trait HotelBedsTrait
         if ($request->has('max_price'))      $payload['filter']['maxRate'] = $request->max_price;
         if ($request->has('accommodations')) $payload['accommodations'] = explode(',', $request->accommodations);
 
+        if ($request->has('boards')) {
+            $payload['boards'] = [
+                'board' => explode(',', $request->boards),
+                'included' => true
+            ];
+        }
+
         // 8. External API call (not cached — real-time availability)
         $availableHotels = Http::withHeaders([
             'Accept'      => 'application/json',

@@ -92,4 +92,5 @@ return [
     'contact-us' => [
         'submitted' => 'Thank you for contacting us. We have received your message and will get back to you shortly.',
     ],
+    'board_types_fetched' => 'Board types fetched successfully.',
 ];

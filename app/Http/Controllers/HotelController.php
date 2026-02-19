@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FavoriteHotelRequest;
 use App\Http\Requests\SearchHotelRequest;
+use App\Models\Board;
 use App\Models\Destination;
 use App\Models\FavoriteHotel;
 use App\Models\Hotel;
@@ -148,6 +149,20 @@ class HotelController extends Controller
         return $this->sendApiResponse(true, __('messages.locations_destinations_fetched'), [
             'destinations' => $destinations,
             'hotels' => $hotels
+        ]);
+    }
+
+    /**
+     * Get board types from HotelBeds API.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function boards()
+    {
+        $boards = Board::all();
+
+        return $this->sendApiResponse(true, __('messages.board_types_fetched'), [
+            'board_types' => $boards
         ]);
     }
 }
