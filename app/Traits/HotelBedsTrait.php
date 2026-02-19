@@ -237,19 +237,23 @@ trait HotelBedsTrait
             return 0;
         });
 
-        // 11. Cache facility label lookups (static master data, rarely changes)
-        $facilityLabelsCacheKey = 'facility_labels_' . md5(implode(',', array_keys($facilityCounts)));
-
-        $facilitiesData = Cache::rememberForever($facilityLabelsCacheKey, function () use ($facilityCounts) {
-            return Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])
-                ->whereIn('code', array_keys($facilityCounts))
+        $hotelFacilitiesData = Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])
+                ->whereIn('name', ['24-hour reception','Minibar','Internet access','Gym','Valet parking','Restaurant','Spa centre','Outdoor swimming pool','Wheelchair-accessible'])
                 ->select(['code', 'facility_group_code', 'name'])
                 ->get()
                 ->toArray();
-        });
+
+        $roomFacilitiesData = Facility::whereNotIn('name', ['1', '4', 'LGTBIQ friendly', 'LGBTQ friendly'])
+                ->whereIn('name', ['bathroom','Shower','TV','Safe box','Connecting rooms','Hot tub','Private pool'])
+                ->select(['code', 'facility_group_code', 'name'])
+                ->get()
+                ->toArray();
 
         usort($zones, fn($a, $b) => $b['count'] <=> $a['count']);
-        usort($facilitiesData, fn($a, $b) =>
+        usort($hotelFacilitiesData, fn($a, $b) =>
+            ($facilityCounts[$b['code']] ?? 0) <=> ($facilityCounts[$a['code']] ?? 0)
+        );
+        usort($roomFacilitiesData, fn($a, $b) =>
             ($facilityCounts[$b['code']] ?? 0) <=> ($facilityCounts[$a['code']] ?? 0)
         );
 
@@ -260,11 +264,17 @@ trait HotelBedsTrait
             'total'      => $availableHotels['hotels']['total'],
             'zones'      => array_values($zones),
             'facilities' => array_map(fn($f) => [
-                'code'               => $f['code'],
+                'code' => $f['code'],
                 'facility_group_code' => $f['facility_group_code'],
-                'name'               => $f['name'],
-                'count'              => $facilityCounts[$f['code']] ?? 0,
-            ], $facilitiesData),
+                'name' => $f['name'],
+                'count' => $facilityCounts[$f['code']] ?? 0,
+            ], $hotelFacilitiesData),
+            'roomFacilities' => array_map(fn($f) => [
+                'code' => $f['code'],
+                'facility_group_code' => $f['facility_group_code'],
+                'name' => $f['name'],
+                'count' => $facilityCounts[$f['code']] ?? 0,
+            ], $roomFacilitiesData)
         ];
     }
 
