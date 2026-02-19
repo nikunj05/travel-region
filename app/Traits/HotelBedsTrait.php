@@ -132,6 +132,11 @@ trait HotelBedsTrait
                 // Extract to a plain array before modifying
                 $hotelsData = $availableHotels['hotels']['hotels'];
 
+                // feature hotels should be at the top
+                $featuredHotelCodes = FeaturedHotel::orderBy('show_tag', 'desc')
+                    ->pluck('show_tag', 'hotel_code')
+                    ->toArray();
+
                 foreach ($hotelsData as &$hotel) {
                     if (!isset($zones[$hotel['zoneCode']])) {
                         $zones[$hotel['zoneCode']] = [
@@ -175,9 +180,6 @@ trait HotelBedsTrait
                     }
                 }
                 unset($hotel);
-
-                // feature hotels should be at the top
-                $featuredHotelCodes = FeaturedHotel::orderBy('show_tag', 'desc')->pluck('show_tag', 'hotel_code')->toArray();
 
                 // Add featured field to each hotel
                 foreach ($hotelsData as $key => &$hotel) {
