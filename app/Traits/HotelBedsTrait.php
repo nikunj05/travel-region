@@ -108,11 +108,9 @@ trait HotelBedsTrait
         });
 
         // 6. Cache featured hotels (changes rarely)
-        $featuredHotelCodes = Cache::rememberForever('featured_hotel_codes', function () {
-            return FeaturedHotel::orderBy('show_tag', 'desc')
+        $featuredHotelCodes = FeaturedHotel::orderBy('show_tag', 'desc')
                 ->pluck('show_tag', 'hotel_code')
                 ->toArray();
-        });
 
         // 7. Build rooms payload (no DB involved, no caching needed)
         $rooms = [];
