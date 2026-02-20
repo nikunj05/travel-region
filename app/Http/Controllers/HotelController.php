@@ -159,7 +159,7 @@ class HotelController extends Controller
      */
     public function boards()
     {
-        $boards = Board::all();
+        $boards = Board::whereIn('name', ['BED AND BREAKFAST', 'FULL BOARD', 'HALF BOARD', 'ROOM ONLY'])->get();
 
         return $this->sendApiResponse(true, __('messages.board_types_fetched'), [
             'board_types' => $boards
