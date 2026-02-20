@@ -129,6 +129,17 @@ trait HotelBedsTrait
             $rooms[] = $roomData;
         }
 
+        if (count($hotelCodes) === 0) {
+            return [
+                'hotels'     => [],
+                'checkIn'    => $request->check_in,
+                'checkOut'   => $request->check_out,
+                'total'      => 0,
+                'zones'      => [],
+                'facilities' => [],
+            ];
+        }
+
         $payload = [
             'stay'         => ['checkIn' => $request->check_in, 'checkOut' => $request->check_out],
             'occupancies'  => $rooms,
