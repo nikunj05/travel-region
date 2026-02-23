@@ -899,6 +899,60 @@ trait HotelBedsTrait
     }
 
     /**
+     * Reconfirm a booking with HotelBeds API
+     *
+     * @param string $booking_reference
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function bookingReconfirmation($booking_reference)
+    {
+        $apiKey = env('HOTEL_BEDS_API_KEY');
+
+        $hotels = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Api-key' => $apiKey,
+            'X-Signature' => $this->generateSignature(),
+        ])->get("{$this->baseUrl}/hotel-api/{$this->version}/bookings/reconfirmations", [
+            'from' => 1,
+            'to' => 10,
+            'references' => $booking_reference
+        ]);
+
+        if ($hotels->successful()) {
+
+            $hotelBooking = $hotels->json();
+
+            if (isset($hotelBooking) && $hotelBooking) {
+                foreach ($hotelBooking['bookings'] as $booking) {
+                    if (isset($booking['hotel']) && $booking['hotel']) {
+                        foreach ($booking['hotel'] as $hotel) {
+                            if (isset($hotel['rooms']) && $hotel['rooms']) {
+                                foreach ($hotel['rooms'] as $room) {
+                                    BookingRoom::where('room_code', $room['code'])
+                                        ->update([
+                                            'supplier_confirmation_code' => isset($room[0]) && isset($room[0]['supplierConfirmationCode']) ? $room[0]['supplierConfirmationCode'] : null,
+                                        ]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return [
+                'status' => true,
+                'data' => $hotelBooking
+            ];
+        }
+
+        Log::error('HotelBeds Booking Reconfirmation Failed', $hotels->json());
+
+        return [];
+    }
+
+    /**
      * Get locations and destinations
      *
      * @param \Illuminate\Http\Request $request

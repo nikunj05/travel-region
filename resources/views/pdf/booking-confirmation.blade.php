@@ -297,6 +297,18 @@
                                                 </td>
                                             </tr>
                                         @endif
+                                        @if ($booking_room->supplier_confirmation_code)
+                                            <tr>
+                                                <td valign="top" style="padding-right:12px; padding-top: 12px; width: 50%;" colspan="2">
+                                                    <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                        Supplier Confirmation Code:
+                                                    </span>
+                                                    <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                        {{ $booking_room->supplier_confirmation_code }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endif
                                         <tr>
 
                                             <!-- LEFT CONTENT -->
