@@ -30,6 +30,7 @@ Route::prefix('v1')
         Route::get('/boards', [HotelController::class, 'boards'])->name('hotels.boards');
         Route::post('/{hotelCode}/details', [HotelController::class, 'show'])->name('hotels.details');
         Route::get('/accommodation-types', [HotelController::class, 'accommodationTypes'])->name('hotels.accommodation-types');
+        Route::get('/export-excel', [HotelController::class, 'exportExcel'])->name('hotels.export-excel');
     });
 
     Route::get('blog-categories', [BlogController::class, 'categories'])->name('blog.categories');
