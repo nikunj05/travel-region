@@ -20,6 +20,7 @@ class HotelsExport implements FromCollection, WithHeadings, WithMapping, ShouldA
         return Hotel::select([
             'id',
             'code',
+            'status'
         ])->orderBy('id', 'asc')->get();
     }
 
@@ -29,8 +30,9 @@ class HotelsExport implements FromCollection, WithHeadings, WithMapping, ShouldA
     public function headings(): array
     {
         return [
-            'Internal ID',
-            'Hotel Code',
+            'Client Hotel Code',
+            'Hotelbeds Hotel Code',
+            'IsActive'
         ];
     }
 
@@ -42,6 +44,7 @@ class HotelsExport implements FromCollection, WithHeadings, WithMapping, ShouldA
         return [
             $hotel->id,
             $hotel->code,
+            $hotel->status ? 1 : 0,
         ];
     }
 
