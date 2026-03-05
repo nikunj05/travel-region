@@ -171,7 +171,11 @@ trait HotelBedsTrait
         }
 
         // 8. External API call (not cached — real-time availability)
-        $availableHotels = Http::withHeaders([
+        $availableHotels = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept'      => 'application/json',
             'Api-key'     => $apiKey,
             'X-Signature' => $this->generateSignature(),
