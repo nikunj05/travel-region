@@ -380,7 +380,11 @@ trait HotelBedsTrait
             $payload['accommodations'] = explode(',', $request->accommodations);
         }
 
-        $availableHotels = Http::withHeaders([
+        $availableHotels = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -614,7 +618,11 @@ trait HotelBedsTrait
             }
         }
 
-        $response = Http::withHeaders([
+        $response = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -627,7 +635,11 @@ trait HotelBedsTrait
 
             $hotel_content = $response->json()['hotel'];
 
-            $availableHotels = Http::withHeaders([
+            $availableHotels = Http::withOptions([
+                'cert' => storage_path('certs/travelregions_sa.crt'),
+                'ssl_key' => storage_path('certs/privateKey.txt'),
+                'verify' => storage_path('certs/ca.crt'),
+            ])->withHeaders([
                 'Accept' => 'application/json',
                 'Api-key' => $apiKey,
                 'X-Signature' => $this->generateSignature(),
@@ -777,7 +789,11 @@ trait HotelBedsTrait
 
         $language = $request->language ?? 'eng';
 
-        $response = Http::withHeaders([
+        $response = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -818,7 +834,11 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $hotels = Http::withHeaders([
+        $hotels = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -849,7 +869,11 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $hotels = Http::withHeaders([
+        $hotels = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -921,7 +945,11 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $hotels = Http::withHeaders([
+        $hotels = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -973,7 +1001,11 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $locations = Http::withHeaders([
+        $locations = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -991,7 +1023,11 @@ trait HotelBedsTrait
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
-        $hotels = Http::withHeaders([
+        $hotels = Http::withOptions([
+            'cert' => storage_path('certs/travelregions_sa.crt'),
+            'ssl_key' => storage_path('certs/privateKey.txt'),
+            'verify' => storage_path('certs/ca.crt'),
+        ])->withHeaders([
             'Accept' => 'application/json',
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
@@ -1014,7 +1050,11 @@ trait HotelBedsTrait
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
         try {
-            $hotels = Http::withHeaders([
+            $hotels = Http::withOptions([
+                'cert' => storage_path('certs/travelregions_sa.crt'),
+                'ssl_key' => storage_path('certs/privateKey.txt'),
+                'verify' => storage_path('certs/ca.crt'),
+            ])->withHeaders([
                 'Accept' => 'application/json',
                 'Api-key' => $apiKey,
                 'X-Signature' => $this->generateSignature(),
@@ -1073,7 +1113,11 @@ trait HotelBedsTrait
                     $amountToRefund = $booking->total_price;
                 }
 
-                $hotels = Http::withHeaders([
+                $hotels = Http::withOptions([
+                    'cert' => storage_path('certs/travelregions_sa.crt'),
+                    'ssl_key' => storage_path('certs/privateKey.txt'),
+                    'verify' => storage_path('certs/ca.crt'),
+                ])->withHeaders([
                     'Accept' => 'application/json',
                     'Api-key' => $apiKey,
                     'X-Signature' => $this->generateSignature(),
