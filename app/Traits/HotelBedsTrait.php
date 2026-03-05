@@ -666,6 +666,8 @@ trait HotelBedsTrait
                 if (isset($availableHotels->json()['hotels']['hotels']) && isset($availableHotels->json()['hotels']['hotels'][0]['rooms'])) {
                     $availabilityRooms = $availableHotels->json()['hotels']['hotels'][0]['rooms'];
 
+                    $rateCurrency = $availableHotels->json()['hotels']['hotels'][0]['currency'];
+
                     // Use reference for the outer loop as well
                     foreach ($availabilityRooms as &$availabilityRoom) {
 
@@ -677,11 +679,6 @@ trait HotelBedsTrait
                         }
 
                         foreach ($availabilityRoom['rates'] as &$rate) {
-                            $rateCurrency = 'EUR';
-
-                            if (isset($rate['taxes']) && isset($rate['taxes']['taxes']) && isset($rate['taxes']['taxes'][0]['clientCurrency'])) {
-                                $rateCurrency = $rate['taxes']['taxes'][0]['clientCurrency'];
-                            }
 
                             $prices = $this->calculatePrice($rate['net'], $hotel_category, $rateCurrency, $hotel_content['code'], $hotel_content['city']['content']);
 
