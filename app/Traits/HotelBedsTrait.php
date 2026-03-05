@@ -21,9 +21,16 @@ trait HotelBedsTrait
 {
     use CurrencyConversion;
 
-    protected $baseUrl = 'https://api.test.hotelbeds.com';
+    protected $baseUrl;
+    protected $contentApiUrl;
     protected $version = '1.0';
     protected $apiMappingEntity = 2716;
+
+    function __construct()
+    {
+        $this->baseUrl = env('HOTEL_BEDS_BASE_URL');
+        $this->contentApiUrl = env('HOTEL_BEDS_CONTENT_API_URL');
+    }
 
     /**
      * Generate HotelBeds API signature
@@ -608,7 +615,7 @@ trait HotelBedsTrait
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
             'Api-Mapping-Entity' => $this->apiMappingEntity,
-        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
+        ])->get("{$this->contentApiUrl}/hotel-content-api/{$this->version}/hotels/{$hotelCode}/details", [
             'language' => strtoupper($language)
         ]);
 
@@ -771,7 +778,7 @@ trait HotelBedsTrait
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
             'Api-Mapping-Entity' => $this->apiMappingEntity,
-        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/types/accommodations", [
+        ])->get("{$this->contentApiUrl}/hotel-content-api/{$this->version}/types/accommodations", [
             'language' => strtoupper($language)
         ]);
 
@@ -812,7 +819,7 @@ trait HotelBedsTrait
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
             'Api-Mapping-Entity' => $this->apiMappingEntity,
-        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/hotels", [
+        ])->get("{$this->contentApiUrl}/hotel-content-api/{$this->version}/hotels", [
             'language' => strtoupper($language),
             'codes' => implode(',', $hotelCodes),
             'from' => ($page - 1) * $perPage,
@@ -967,7 +974,7 @@ trait HotelBedsTrait
             'Api-key' => $apiKey,
             'X-Signature' => $this->generateSignature(),
             'Api-Mapping-Entity' => $this->apiMappingEntity,
-        ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/locations/destinations");
+        ])->get("{$this->contentApiUrl}/hotel-content-api/{$this->version}/locations/destinations");
 
         if ($locations->successful()) {
             return $locations->json();
