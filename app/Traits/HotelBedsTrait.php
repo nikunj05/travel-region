@@ -217,8 +217,29 @@ trait HotelBedsTrait
             }
             $zones[$hotel['zoneCode']]['count']++;
 
-            // Price
-            $minPrices         = $this->calculatePrice($hotel['minRate'], $hotel['categoryName'], $hotel['currency']);
+            // Price - calculate minimum from actual room rates, excluding packaging rates
+            $minRate = null;
+            if (isset($hotel['rooms']) && is_array($hotel['rooms'])) {
+                $allRates = [];
+                foreach ($hotel['rooms'] as $room) {
+                    if (isset($room['rates']) && is_array($room['rates'])) {
+                        // Filter out packaging rates
+                        $nonPackagingRates = array_filter($room['rates'], function ($rate) {
+                            return !isset($rate['packaging']) || $rate['packaging'] === false;
+                        });
+                        foreach ($nonPackagingRates as $rate) {
+                            if (isset($rate['net'])) {
+                                $allRates[] = (float) $rate['net'];
+                            }
+                        }
+                    }
+                }
+                $minRate = !empty($allRates) ? min($allRates) : $hotel['minRate'];
+            } else {
+                $minRate = $hotel['minRate'];
+            }
+
+            $minPrices         = $this->calculatePrice($minRate, $hotel['categoryName'], $hotel['currency']);
             $hotel['minRate']  = (string) round($minPrices['final_amount'], 2);
             $hotel['currency'] = $minPrices['converted_currency'];
 
