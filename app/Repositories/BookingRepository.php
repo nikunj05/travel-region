@@ -237,7 +237,9 @@ class BookingRepository implements BookingInterface
             mkdir(public_path('booking-pdfs'), 0777, true);
         }
 
-        $this->bookingReconfirmation($booking->booking_reference);
+        if ($booking->booking_reference) {
+            $this->bookingReconfirmation($booking->booking_reference);
+        }
 
         // Generate PDF
         if ($language === 'ar') {
