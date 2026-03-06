@@ -218,7 +218,7 @@ trait HotelBedsTrait
             $zones[$hotel['zoneCode']]['count']++;
 
             // Price
-            $minPrices         = $this->calculatePrice($hotel['minRate'], $hotel['categoryCode'], $hotel['currency']);
+            $minPrices         = $this->calculatePrice($hotel['minRate'], $hotel['categoryName'], $hotel['currency']);
             $hotel['minRate']  = (string) round($minPrices['final_amount'], 2);
             $hotel['currency'] = $minPrices['converted_currency'];
 
