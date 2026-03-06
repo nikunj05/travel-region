@@ -55,7 +55,7 @@ class TapWebhookController extends Controller
                 'remark' => $booking->special_requests,
             ]);
 
-            if ($bookingConfirmation && count($bookingConfirmation)) {
+            if ($bookingConfirmation && isset($bookingConfirmation['status']) && $bookingConfirmation['status'] === true) {
                 // send mail and confirm booking with hotelbeds
                 $booking->fresh();
 
@@ -63,6 +63,16 @@ class TapWebhookController extends Controller
                 $invoicePath = $filePath['data']['pdf_url'];
 
                 dispatch(new BookingConfirmationJob($booking, $invoicePath, $language));
+            } elseif (isset($bookingConfirmation['status']) && $bookingConfirmation['status'] === false) {
+                Log::error('Tap Webhook: HotelBeds booking confirmation failed', [
+                    'order' => $booking->order,
+                    'error' => $bookingConfirmation['error'] ?? 'Unknown error'
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Booking confirmation failed: ' . ($bookingConfirmation['error'] ?? 'Unknown error')
+                ], 500);
             }
 
             return response()->json(['status' => 'success'], 200);

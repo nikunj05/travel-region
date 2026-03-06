@@ -28,8 +28,20 @@ trait HotelBedsTrait
 
     function __construct()
     {
-        $this->baseUrl = env('HOTEL_BEDS_BASE_URL');
-        $this->contentApiUrl = env('HOTEL_BEDS_CONTENT_API_URL');
+        $this->initializeUrls();
+    }
+
+    /**
+     * Initialize the URLs from environment variables
+     */
+    private function initializeUrls()
+    {
+        if (empty($this->baseUrl)) {
+            $this->baseUrl = env('HOTEL_BEDS_BASE_URL');
+        }
+        if (empty($this->contentApiUrl)) {
+            $this->contentApiUrl = env('HOTEL_BEDS_CONTENT_API_URL');
+        }
     }
 
     /**
@@ -57,6 +69,9 @@ trait HotelBedsTrait
      */
     protected function checkHotelAvailabilityNew($request)
     {
+        // Ensure URLs are initialized
+        $this->initializeUrls();
+
         $apiKey = env('HOTEL_BEDS_API_KEY');
         $destinationCode = $request->destination_code;
 
@@ -885,26 +900,58 @@ trait HotelBedsTrait
      */
     public function bookingConfirmation($data)
     {
-        $apiKey = env('HOTEL_BEDS_API_KEY');
+        try {
+            // Ensure URLs are initialized
+            $this->initializeUrls();
 
-        $hotels = Http::withOptions([
-            'cert' => storage_path('certs/travelregions_sa.crt'),
-            'ssl_key' => storage_path('certs/privateKey.txt'),
-            'verify' => storage_path('certs/ca.crt'),
-        ])->withHeaders([
-            'Accept' => 'application/json',
-            'Api-key' => $apiKey,
-            'X-Signature' => $this->generateSignature(),
-        ])->post("{$this->baseUrl}/hotel-api/{$this->version}/bookings", [
-            'holder' => [
-                'name' => $data['first_name'],
-                'surname' => $data['last_name']
-            ],
-            'rooms' => $data['rate_keys'],
-            'clientReference' => $data['order'],
-            'remark' => $data['remark'] ?? null,
-            'tolerance' => 5,
-        ]);
+            $apiKey = env('HOTEL_BEDS_API_KEY');
+            $url = "{$this->baseUrl}/hotel-api/{$this->version}/bookings";
+
+            $hotels = Http::withOptions([
+                'cert' => storage_path('certs/travelregions_sa.crt'),
+                'ssl_key' => storage_path('certs/privateKey.txt'),
+                'verify' => storage_path('certs/ca.crt'),
+            ])->withHeaders([
+                'Accept' => 'application/json',
+                'Api-key' => $apiKey,
+                'X-Signature' => $this->generateSignature(),
+            ])->post($url, [
+                'holder' => [
+                    'name' => $data['first_name'],
+                    'surname' => $data['last_name']
+                ],
+                'rooms' => $data['rate_keys'],
+                'clientReference' => $data['order'],
+                'remark' => $data['remark'] ?? null,
+                'tolerance' => 5,
+            ]);
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::error('HotelBeds Booking Confirmation Connection Failed', [
+                'error' => $e->getMessage(),
+                'url' => $url ?? 'URL not set',
+                'baseUrl' => $this->baseUrl ?? 'BaseURL not set',
+                'order' => $data['order'] ?? 'N/A',
+                'booking_id' => $data['booking_id'] ?? 'N/A'
+            ]);
+
+            return [
+                'status' => false,
+                'error' => 'Connection failed: ' . $e->getMessage()
+            ];
+        } catch (\Exception $e) {
+            Log::error('HotelBeds Booking Confirmation Exception', [
+                'error' => $e->getMessage(),
+                'url' => $url ?? 'URL not set',
+                'baseUrl' => $this->baseUrl ?? 'BaseURL not set',
+                'order' => $data['order'] ?? 'N/A',
+                'booking_id' => $data['booking_id'] ?? 'N/A'
+            ]);
+
+            return [
+                'status' => false,
+                'error' => 'Unexpected error: ' . $e->getMessage()
+            ];
+        }
 
         if ($hotels->successful()) {
 
