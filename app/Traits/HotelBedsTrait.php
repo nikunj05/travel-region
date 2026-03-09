@@ -1112,6 +1112,9 @@ trait HotelBedsTrait
 
     public function bookingDetails($booking_reference)
     {
+        // Ensure URLs are initialized
+        $this->initializeUrls();
+
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
         try {
@@ -1136,6 +1139,9 @@ trait HotelBedsTrait
 
     public function cancelBooking($booking)
     {
+        // Ensure URLs are initialized
+        $this->initializeUrls();
+
         $apiKey = env('HOTEL_BEDS_API_KEY');
 
         try {
