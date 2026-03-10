@@ -93,10 +93,13 @@ trait HotelBedsTrait
             });
         }
 
+        // Create star rating suffix for cache keys
+        $starRatingSuffix = $request->has('star_rating') ? '_stars_' . str_replace(',', '_', $request->star_rating) : '';
+
         // 2. Cache hotel codes (used for API payload)
         $hotelCodesCacheKey = $destinationCode
-            ? "hotel_codes_dest_{$destinationCode}"
-            : "hotel_codes_single_{$request->hotel_code}";
+            ? "hotel_codes_dest_{$destinationCode}{$starRatingSuffix}"
+            : "hotel_codes_single_{$request->hotel_code}{$starRatingSuffix}";
 
         $hotelCodes = Cache::rememberForever($hotelCodesCacheKey, function () use ($hotelQuery) {
             return (clone $hotelQuery)->pluck('code')->toArray();
@@ -104,8 +107,8 @@ trait HotelBedsTrait
 
         // 3. Cache local hotels map (keyed by code for O(1) lookup)
         $localHotelsMapCacheKey = $destinationCode
-            ? "local_hotels_map_dest_{$destinationCode}"
-            : "local_hotels_map_single_{$request->hotel_code}";
+            ? "local_hotels_map_dest_{$destinationCode}{$starRatingSuffix}"
+            : "local_hotels_map_single_{$request->hotel_code}{$starRatingSuffix}";
 
         $localHotelsMap = Cache::rememberForever($localHotelsMapCacheKey, function () use ($hotelQuery) {
             return (clone $hotelQuery)->get()->keyBy('code')->toArray();
@@ -113,8 +116,8 @@ trait HotelBedsTrait
 
         // 4. Cache first images keyed by hotel code
         $firstImagesCacheKey = $destinationCode
-            ? "hotel_images_dest_{$destinationCode}"
-            : "hotel_images_single_{$request->hotel_code}";
+            ? "hotel_images_dest_{$destinationCode}{$starRatingSuffix}"
+            : "hotel_images_single_{$request->hotel_code}{$starRatingSuffix}";
 
         $firstImages = Cache::rememberForever($firstImagesCacheKey, function () use ($hotelCodes) {
             return DB::table('hotel_images')
@@ -126,8 +129,8 @@ trait HotelBedsTrait
 
         // 5. Cache facilities grouped by hotel code
         $facilitiesCacheKey = $destinationCode
-            ? "hotel_facilities_dest_{$destinationCode}"
-            : "hotel_facilities_single_{$request->hotel_code}";
+            ? "hotel_facilities_dest_{$destinationCode}{$starRatingSuffix}"
+            : "hotel_facilities_single_{$request->hotel_code}{$starRatingSuffix}";
 
         $facilitiesByHotel = Cache::rememberForever($facilitiesCacheKey, function () use ($hotelCodes) {
             return DB::table('hotel_facilities')
