@@ -165,7 +165,7 @@ trait CurrencyConversion
             'commission_percentage' => $commission_percentage,
             'converted_amount' => $converted_amount,
             'commission_amount' => $commission_amount,
-            'final_amount' => $converted_amount + $commission_amount
+            'final_amount' => round($converted_amount + $commission_amount)
         ];
     }
 }
