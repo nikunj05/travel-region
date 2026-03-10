@@ -27,7 +27,7 @@ class SearchHotelRequest extends FormRequest
             'destination_code' => 'required_without:hotel_code|string', // hotel_code or destination_code required,
             'hotel_code' => 'required_without:destination_code|string', // hotel_code or destination_code required,
             'language' => 'required|string|in:eng,ara',
-            'star_rating' => 'nullable|integer|between:1,5',
+            'star_rating' => 'nullable',
             'min_price' => 'nullable|numeric|min:0',
             'max_price' => 'nullable|numeric|min:0',
             'rooms' => 'required|array',
