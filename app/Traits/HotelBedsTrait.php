@@ -93,26 +93,17 @@ trait HotelBedsTrait
             });
         }
 
+        if ($request->has('featured')) {
+            $hotelIds = FeaturedHotel::pluck('hotel_code')->toArray();
+            $hotelQuery->whereIn('code', $hotelIds);
+        }
+
         // Create star rating suffix for cache keys
         $starRatingSuffix = $request->has('star_rating') ? '_stars_' . str_replace(',', '_', $request->star_rating) : '';
 
-        // 2. Cache hotel codes (used for API payload)
-        $hotelCodesCacheKey = $destinationCode
-            ? "hotel_codes_dest_{$destinationCode}{$starRatingSuffix}"
-            : "hotel_codes_single_{$request->hotel_code}{$starRatingSuffix}";
+        $hotelCodes = (clone $hotelQuery)->pluck('code')->toArray();
 
-        $hotelCodes = Cache::rememberForever($hotelCodesCacheKey, function () use ($hotelQuery) {
-            return (clone $hotelQuery)->pluck('code')->toArray();
-        });
-
-        // 3. Cache local hotels map (keyed by code for O(1) lookup)
-        $localHotelsMapCacheKey = $destinationCode
-            ? "local_hotels_map_dest_{$destinationCode}{$starRatingSuffix}"
-            : "local_hotels_map_single_{$request->hotel_code}{$starRatingSuffix}";
-
-        $localHotelsMap = Cache::rememberForever($localHotelsMapCacheKey, function () use ($hotelQuery) {
-            return (clone $hotelQuery)->get()->keyBy('code')->toArray();
-        });
+        $localHotelsMap = (clone $hotelQuery)->get()->keyBy('code')->toArray();
 
         // 4. Cache first images keyed by hotel code
         $firstImagesCacheKey = $destinationCode
