@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\HotelsExport;
 use App\Http\Requests\FavoriteHotelRequest;
 use App\Http\Requests\SearchHotelRequest;
+use App\Http\Resources\DestinationResource;
 use App\Models\Board;
 use App\Models\Destination;
 use App\Models\FavoriteHotel;
@@ -131,7 +132,10 @@ class HotelController extends Controller
         $destinations = Destination::query();
 
         if ($request->has('search')) {
-            $destinations = $destinations->where('name', 'like', '%' . $request->search . '%');
+            $destinations = $destinations->where(function($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('name_ar', 'like', '%' . $request->search . '%');
+            });
         }
 
         $destinations = $destinations
@@ -149,7 +153,7 @@ class HotelController extends Controller
             ->get();
 
         return $this->sendApiResponse(true, __('messages.locations_destinations_fetched'), [
-            'destinations' => $destinations,
+            'destinations' => DestinationResource::collection($destinations),
             'hotels' => $hotels
         ]);
     }
@@ -185,17 +189,17 @@ class HotelController extends Controller
             // Generate unique filename with timestamp
             $fileName = 'hotels_export_' . date('Y_m_d_His') . '.xlsx';
             $filePath = 'exports/' . $fileName;
-            
+
             // Store in storage/app/public using Laravel's public disk
             $result = Excel::store(new HotelsExport, $filePath, 'public');
-            
+
             if (!$result) {
                 return $this->sendApiResponse(false, 'Excel store operation failed', [], 500);
             }
 
             // Get the full path for verification
             $fullPath = storage_path('app/public/' . $filePath);
-            
+
             // Check if file was created successfully
             if (!file_exists($fullPath)) {
                 return $this->sendApiResponse(false, 'Failed to create Excel file', [
@@ -206,7 +210,7 @@ class HotelController extends Controller
             }
 
             $fileSize = filesize($fullPath);
-            
+
             // Generate the public URL (assumes storage link is created)
             $downloadUrl = asset('storage/' . $filePath);
 
