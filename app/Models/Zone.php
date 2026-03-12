@@ -10,5 +10,6 @@ class Zone extends Model
         'destination_code',
         'code',
         'name',
+        'name_ar',
     ];
 }

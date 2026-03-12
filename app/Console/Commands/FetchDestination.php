@@ -26,7 +26,7 @@ class FetchDestination extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Fetch destinations from HotelBeds API in both English and Arabic languages';
 
     /**
      * Generate HotelBeds API signature
@@ -45,7 +45,7 @@ class FetchDestination extends Command
     /**
      * Fetch destinations from API with retry logic
      */
-    protected function fetchDestinationWithRetry(int $from, int $to, int $maxRetries = 3): ?array
+    protected function fetchDestinationWithRetry(int $from, int $to, int $maxRetries = 3, $language = 'ENG'): ?array
     {
         $apiKey = env('HOTEL_BEDS_API_KEY');
         $retries = 0;
@@ -60,6 +60,7 @@ class FetchDestination extends Command
                 ])->get("{$this->baseUrl}/hotel-content-api/{$this->version}/locations/destinations", [
                     'from' => $from,
                     'to' => $to,
+                    'language' => strtoupper($language),
                 ]);
 
                 if ($response->successful()) {
@@ -124,6 +125,7 @@ class FetchDestination extends Command
 
         if ($shouldTruncate) {
             Destination::truncate();
+            Zone::truncate();
             $this->info('Destinations table truncated.');
         }
 
@@ -135,7 +137,7 @@ class FetchDestination extends Command
 
         // Fetch all destinations in batches until we reach the total
         while (is_null($total) || $currentFrom <= $total) {
-            $data = $this->fetchDestinationWithRetry($currentFrom, $currentTo);
+            $data = $this->fetchDestinationWithRetry($currentFrom, $currentTo, 3, 'ENG');
 
             if ($data === null) {
                 $this->error("Failed to fetch destinations from {$currentFrom} to {$currentTo}. Skipping this batch.");
@@ -186,7 +188,6 @@ class FetchDestination extends Command
                 }
             }
 
-            Zone::truncate();
             Zone::upsert($zoneData, ['code'], [
                 'destination_code',
                 'name',
@@ -194,6 +195,51 @@ class FetchDestination extends Command
             ]);
 
             $destinationCount += count($destinationData);
+            $this->info("Fetched destinations {$currentFrom}-{$currentTo} ({$destinationCount}/{$total} total)");
+
+            $currentFrom += self::PAGINATION_LIMIT;
+            $currentTo += self::PAGINATION_LIMIT;
+        }
+
+        $total = null;
+        $currentFrom = $from;
+        $currentTo = $to;
+        $destinationCount = 0;
+        $failedRanges = [];
+
+        $this->info('Now fetching destinations in Arabic...');
+        // Fetch all destinations in batches until we reach the total
+        while (is_null($total) || $currentFrom <= $total) {
+            $data = $this->fetchDestinationWithRetry($currentFrom, $currentTo, 3, 'ARA');
+
+            if ($data === null) {
+                $this->error("Failed to fetch destinations from {$currentFrom} to {$currentTo}. Skipping this batch.");
+                $failedRanges[] = "{$currentFrom}-{$currentTo}";
+                $currentFrom += self::PAGINATION_LIMIT;
+                $currentTo += self::PAGINATION_LIMIT;
+                continue;
+            }
+
+            $total = $data['total'] ?? 0;
+
+            if (empty($data['destinations'])) {
+                $this->info('No more destinations to fetch.');
+                break;
+            }
+
+            // Update existing destinations with Arabic names
+            foreach ($data['destinations'] as $destination) {
+                if (!empty($destination['name']['content'])) {
+                    Destination::where('code', $destination['code'])
+                        ->update([
+                            'name_ar' => $destination['name']['content'],
+                            'updated_at' => now(),
+                        ]);
+                }
+            }
+
+            $destinationCount += count($data['destinations']);
+
             $this->info("Fetched destinations {$currentFrom}-{$currentTo} ({$destinationCount}/{$total} total)");
 
             $currentFrom += self::PAGINATION_LIMIT;
