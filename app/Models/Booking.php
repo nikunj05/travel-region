@@ -33,6 +33,7 @@ class Booking extends Model
         'net_total_price',
         'net_currency',
         'status',
+        'payment_status',
         'special_requests',
         'cancellation_in_progress',
         'coupon_id',
