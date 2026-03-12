@@ -38,7 +38,7 @@
 
 <body style="margin: 0; padding: 0; box-sizing: border-box; direction: rtl">
     <div id="pdf-footer">
-        Payable through <strong>{{ $booking->supplier_name }}</strong>, acting as agent for the service operating company, details of which can be provided upon request. VAT: <strong>{{ $booking->vat_number }}</strong> Reference: <strong>{{ $booking->booking_reference }}</strong>
+        الدفع من خلال <strong>{{ $booking->supplier_name }}</strong>، الذي يعمل كوكيل لشركة تشغيل الخدمة، يمكن تقديم تفاصيلها عند الطلب. الرقم الضريبي: <strong>{{ $booking->vat_number }}</strong> المرجع: <strong>{{ $booking->booking_reference }}</strong>
     </div>
     <div
         style="display: flex;justify-content: center;padding: 0px 0;font-family: DejaVu Sans, sans-serif;direction: rtl;">
@@ -346,7 +346,7 @@
                                                         <tr>
                                                             <td align="right" style="font-size: 14px">
                                                                 <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
-                                                                    Guest Name:
+                                                                    الضيوف:
                                                                 </span>
                                                                 <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
                                                                     {{ $booking_room->guest->first_name }} {{ $booking_room->guest->last_name }}
