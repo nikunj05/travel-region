@@ -267,7 +267,7 @@
                 <div>
                     <h4 style="font-size: 18px; font-weight: 700; margin: 15px 0 8px 0;">Rooms</h4>
 
-                    @foreach ($booking->booking_room as $booking_room)
+                    @foreach ($booking->booking_room as $index => $booking_room)
                         <div style="border: 1px solid #dbc8b6; border-radius: 6px; margin-bottom: 24px; padding:0;">
                         <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                             <tr>
@@ -285,14 +285,20 @@
                                                 </span>
                                             </td>
                                         </tr>
-                                        @if ($booking_room->guest)
+                                        @php
+                                            $room_booking_detail = $booking->details->skip($index)->first();
+                                            if (!$room_booking_detail) {
+                                                $room_booking_detail = $booking->primary_details;
+                                            }
+                                        @endphp
+                                        @if ($room_booking_detail)
                                             <tr>
                                                 <td valign="top" style="padding-right:12px; padding-top: 12px; width: 50%;" colspan="2">
                                                     <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
-                                                        Guest Name:
+                                                        User Name:
                                                     </span>
                                                     <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
-                                                        {{ $booking_room->guest->first_name }} {{ $booking_room->guest->last_name }}
+                                                        {{ $room_booking_detail->first_name }} {{ $room_booking_detail->last_name }}
                                                     </span>
                                                 </td>
                                             </tr>
