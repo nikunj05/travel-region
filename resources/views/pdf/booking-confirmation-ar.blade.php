@@ -311,7 +311,7 @@
                         الغرف
                     </h4>
 
-                    @foreach ($booking->booking_room as $booking_room)
+                    @foreach ($booking->booking_room as $index => $booking_room)
                         <table width="100%" cellspacing="0" cellpadding="0"
                             style="
                     border: 1px solid #d1d5dc;
