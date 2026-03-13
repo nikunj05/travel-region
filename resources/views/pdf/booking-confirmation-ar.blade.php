@@ -342,14 +342,20 @@
 
                                                 <!-- DETAILS -->
                                                 <table width="100%" cellspacing="0" cellpadding="0" align="right">
-                                                    @if ($booking_room->guest)
+                                                    @php
+                                                        $room_booking_detail = $booking->details->skip($index)->first();
+                                                        if (!$room_booking_detail) {
+                                                            $room_booking_detail = $booking->primary_details;
+                                                        }
+                                                    @endphp
+                                                    @if ($room_booking_detail)
                                                         <tr>
                                                             <td align="right" style="font-size: 14px">
                                                                 <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
                                                                     الضيوف:
                                                                 </span>
                                                                 <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
-                                                                    {{ $booking_room->guest->first_name }} {{ $booking_room->guest->last_name }}
+                                                                    {{ $room_booking_detail->first_name }} {{ $room_booking_detail->last_name }}
                                                                 </span>
                                                             </td>
                                                         </tr>
