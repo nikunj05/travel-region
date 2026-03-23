@@ -133,8 +133,8 @@ class HotelController extends Controller
 
         if ($request->has('search')) {
             $destinations = $destinations->where(function($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('name_ar', 'like', '%' . $request->search . '%');
+                $query->where('name', 'like', $request->search . '%')
+                    ->orWhere('name_ar', 'like', $request->search . '%');
             });
         }
 
