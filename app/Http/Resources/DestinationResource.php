@@ -14,10 +14,16 @@ class DestinationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $matchedName = $this->when(
+            isset($this->matched_name),
+            $this->matched_name,
+            app()->getLocale() === 'ar' && $this->name_ar ? $this->name_ar : $this->name
+        );
+
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'name' => app()->getLocale() === 'ar' && $this->name_ar ? $this->name_ar : $this->name,
+            'name' => $matchedName,
             'name_ar' => $this->name_ar,
             'country_code' => $this->country_code,
             'iso_code' => $this->iso_code,

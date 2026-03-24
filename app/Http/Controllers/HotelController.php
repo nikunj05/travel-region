@@ -134,13 +134,27 @@ class HotelController extends Controller
         if ($request->has('search')) {
             $destinations = $destinations->where(function($query) use ($request) {
                 $query->where('name', 'like', $request->search . '%')
-                    ->orWhere('name_ar', 'like', $request->search . '%');
+                    ->orWhere('name_ar', 'like', $request->search . '%')
+                    ->orWhere('name_ar1', 'like', $request->search . '%')
+                    ->orWhere('name_ar2', 'like', $request->search . '%');
             });
         }
 
         $destinations = $destinations
             ->limit(10)
             ->get();
+
+        // Determine which field matched and attach it to the model
+        if ($request->has('search')) {
+            $search = strtolower($request->search);
+            $destinations->each(function ($destination) use ($search) {
+                if (str_starts_with(strtolower($destination->name_ar1 ?? ''), $search)) {
+                    $destination->matched_name = $destination->name_ar1;
+                } elseif (str_starts_with(strtolower($destination->name_ar2 ?? ''), $search)) {
+                    $destination->matched_name = $destination->name_ar2;
+                }
+            });
+        }
 
         $hotels = Hotel::where('status', 1);
 
