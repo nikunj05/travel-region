@@ -94,16 +94,31 @@ trait CurrencyConversion
             case '5 STARS':
                 $commission_percentage = $setting->five_star_commission;
                 break;
+            case 'خمسه نجوم':
+                $commission_percentage = $setting->five_star_commission;
+                break;
             case '4 STARS':
+                $commission_percentage = $setting->four_star_commission;
+                break;
+            case 'اربعه نجوم':
                 $commission_percentage = $setting->four_star_commission;
                 break;
             case '3 STARS':
                 $commission_percentage = $setting->three_star_commission;
                 break;
+            case 'ثلاثه نجوم':
+                $commission_percentage = $setting->three_star_commission;
+                break;
             case '2 STARS':
                 $commission_percentage = $setting->two_star_commission;
                 break;
+            case 'نجمتان':
+                $commission_percentage = $setting->two_star_commission;
+                break;
             case '1 STAR':
+                $commission_percentage = $setting->one_star_commission;
+                break;
+            case 'نجمه':
                 $commission_percentage = $setting->one_star_commission;
                 break;
             default:
