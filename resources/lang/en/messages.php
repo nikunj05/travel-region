@@ -23,6 +23,7 @@ return [
         'favorites_fetched' => 'Favorite hotels fetched successfully.',
         'favorite_added' => 'Hotel added to favorites.',
         'favorite_removed' => 'Hotel removed from favorites.',
+        'images_fetched' => 'Hotel images fetched successfully.',
     ],
     'blog' => [
         'fetched' => 'Blogs fetched successfully.',
