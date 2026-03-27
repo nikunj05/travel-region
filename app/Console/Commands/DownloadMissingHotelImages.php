@@ -33,7 +33,7 @@ class DownloadMissingHotelImages extends Command
      */
     public function handle()
     {
-        $hotelCodes = Hotel::whereDoesntHave('images')->where('status', 1)->pluck('code')->toArray(); // Fix #1
+        $hotelCodes = Hotel::whereDoesntHave('images')->pluck('code')->toArray(); // Fix #1
 
         $this->info("Found " . count($hotelCodes) . " hotels with missing images.");
 
