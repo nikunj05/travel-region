@@ -114,7 +114,8 @@ trait HotelBedsTrait
             return DB::table('hotel_images')
                 ->whereIn('hotel_code', $hotelCodes)
                 ->select(['hotel_code', 'path', 'image_type_code'])
-                ->get();
+                ->get()
+                ->keyBy('hotel_code');
         });
 
         // 5. Cache facilities grouped by hotel code
@@ -257,16 +258,16 @@ trait HotelBedsTrait
 
             // O(1) lookups from cached data
             $localHotel      = $localHotelsMap[$code] ?? null;
+            $image           = $firstImages[$code] ?? null;
             $hotelFacilities = $facilitiesByHotel[$code] ?? collect();
 
             $hotel['accommodationTypeCode'] = $localHotel['accommodation_type_code'] ?? null;
             $hotel['address']               = ['content' => $localHotel['address'] ?? null];
             $hotel['city']                  = ['content' => $localHotel['city'] ?? null];
-            $hotel['images']                = collect($firstImages->where('hotel_code', $code)->take(5))->map(fn($i) => [
-                'path' => $i->path ?? null,
-                'imageTypeCode' => $i->image_type_code ?? null,
-                'code' => $i->hotel_code ?? null,
-            ])->values()->toArray();
+            $hotel['images']                = [[
+                'path'          => $image->path ?? null,
+                'imageTypeCode' => $image->image_type_code ?? null,
+            ]];
 
             $hotel['facilities'] = $hotelFacilities->map(fn($f) => [
                 'facilityCode'      => $f->facility_code,
