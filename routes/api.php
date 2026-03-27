@@ -29,6 +29,7 @@ Route::prefix('v1')
         Route::get('/locations/destinations', [HotelController::class, 'locationsDestinations'])->name('hotels.locations.destinations');
         Route::get('/boards', [HotelController::class, 'boards'])->name('hotels.boards');
         Route::post('/{hotelCode}/details', [HotelController::class, 'show'])->name('hotels.details');
+        Route::get('/{hotelCode}/images', [HotelController::class, 'images'])->name('hotels.images');
         Route::get('/accommodation-types', [HotelController::class, 'accommodationTypes'])->name('hotels.accommodation-types');
         Route::get('/export-excel', [HotelController::class, 'exportExcel'])->name('hotels.export-excel');
     });

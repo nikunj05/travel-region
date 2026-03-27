@@ -10,6 +10,7 @@ use App\Models\Board;
 use App\Models\Destination;
 use App\Models\FavoriteHotel;
 use App\Models\Hotel;
+use App\Models\HotelImage;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -68,6 +69,21 @@ class HotelController extends Controller
                 'checkIn' => $hotels['checkIn'],
                 'checkOut' => $hotels['checkOut'],
                 'rooms' => $hotels['rooms'],
+            ]);
+        } catch (\Exception $e) {
+            return $this->sendApiResponse(false, __('messages.catch'), [
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function images(Request $request, string $hotelCode)
+    {
+        try {
+            $images = HotelImage::where('hotel_code', $hotelCode)->get();
+
+            return $this->sendApiResponse(true, __('messages.hotel.images_fetched'), [
+                'images' => $images
             ]);
         } catch (\Exception $e) {
             return $this->sendApiResponse(false, __('messages.catch'), [
