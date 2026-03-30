@@ -117,7 +117,6 @@ trait HotelBedsTrait
                         ROW_NUMBER() OVER (PARTITION BY hotel_code ORDER BY id) as rn
                     FROM hotel_images
                     WHERE hotel_code IN (" . implode(',', array_map(fn($c) => "'$c'", $hotelCodes)) . ")
-                    ORDER BY hotel_code, order
                 ) as t
             "))
             ->orderBy('order')
