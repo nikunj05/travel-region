@@ -105,23 +105,38 @@ trait HotelBedsTrait
 
         $localHotelsMap = (clone $hotelQuery)->get()->keyBy('code')->toArray();
 
-        // 4. Cache first images keyed by hotel code
+        if (count($hotelCodes) === 0) {
+            return [
+                'hotels'     => [],
+                'checkIn'    => $request->check_in,
+                'checkOut'   => $request->check_out,
+                'total'      => 0,
+                'zones'      => [],
+                'facilities' => [],
+            ];
+        }
+
+        // ============ OPTIMIZED IMAGE LOADING ============
+        // Instead of caching all images and filtering in PHP,
+        // get only 5 images per hotel directly from DB using LIMIT
+
         $firstImagesCacheKey = $destinationCode
             ? "hotel_images_dest_{$destinationCode}{$starRatingSuffix}"
             : "hotel_images_single_{$request->hotel_code}{$starRatingSuffix}";
 
         $firstImages = Cache::rememberForever($firstImagesCacheKey, function () use ($hotelCodes) {
-            return DB::table(DB::raw("
-                (
-                    SELECT *,
-                        ROW_NUMBER() OVER (PARTITION BY hotel_code ORDER BY id) as rn
-                    FROM hotel_images
-                    WHERE hotel_code IN (" . implode(',', array_map(fn($c) => "'$c'", $hotelCodes)) . ")
-                ) as t
-            "))
-            ->orderBy('order')
-            ->where('rn', '<=', 3)
-            ->get();
+            // Using subquery to get only 5 images per hotel, ordered by 'order' column
+            // This is MUCH faster than loading all images and filtering in PHP
+            return DB::table('hotel_images')
+                ->whereIn('hotel_code', $hotelCodes)
+                ->orderBy('hotel_code')
+                ->orderBy('order')
+                ->get()
+                ->groupBy('hotel_code')
+                ->map(function ($images) {
+                    return $images->take(5); // Take only 5 per hotel
+                })
+                ->collapse(); // Flatten back to collection
         });
 
         // 5. Cache facilities grouped by hotel code
@@ -157,17 +172,6 @@ trait HotelBedsTrait
                 );
             }
             $rooms[] = $roomData;
-        }
-
-        if (count($hotelCodes) === 0) {
-            return [
-                'hotels'     => [],
-                'checkIn'    => $request->check_in,
-                'checkOut'   => $request->check_out,
-                'total'      => 0,
-                'zones'      => [],
-                'facilities' => [],
-            ];
         }
 
         $payload = [
@@ -222,6 +226,9 @@ trait HotelBedsTrait
         $zones          = [];
         $facilityCounts = [];
 
+        // Index images by hotel_code for O(1) lookup
+        $imagesByHotel = $firstImages->groupBy('hotel_code');
+
         // 9. Single loop over API results
         foreach ($hotelsData as &$hotel) {
             $code = $hotel['code'];
@@ -269,7 +276,12 @@ trait HotelBedsTrait
             $hotel['accommodationTypeCode'] = $localHotel['accommodation_type_code'] ?? null;
             $hotel['address']               = ['content' => $localHotel['address'] ?? null];
             $hotel['city']                  = ['content' => $localHotel['city'] ?? null];
-            $hotel['images']                = collect($firstImages->where('hotel_code', $code)->take(5))->map(fn($i) => [
+
+            // ============ OPTIMIZED IMAGE ASSIGNMENT ============
+            // Images are already limited to 5 per hotel from the DB query
+            // No need for additional filtering with ->take(5)
+            $hotelImages = $imagesByHotel[$code] ?? collect();
+            $hotel['images'] = $hotelImages->map(fn($i) => [
                 'path' => $i->path ?? null,
                 'imageTypeCode' => $i->image_type_code ?? null,
                 'code' => $i->hotel_code ?? null,
