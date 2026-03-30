@@ -119,7 +119,9 @@ trait HotelBedsTrait
                     WHERE hotel_code IN (" . implode(',', array_map(fn($c) => "'$c'", $hotelCodes)) . ")
                 ) as t
             "))
-            ->where('rn', '<=', 5)
+            ->select(['hotel_code', 'path', 'order', 'image_type_code', 'visual_order'])
+            ->orderBy('visual_order')
+            ->where('rn', '<=', 3)
             ->get();
         });
 
