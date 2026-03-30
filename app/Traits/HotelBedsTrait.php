@@ -111,9 +111,16 @@ trait HotelBedsTrait
             : "hotel_images_single_{$request->hotel_code}{$starRatingSuffix}";
 
         $firstImages = Cache::rememberForever($firstImagesCacheKey, function () use ($hotelCodes) {
-            return DB::table('hotel_images')
-                ->whereIn('hotel_code', $hotelCodes)
-                ->get();
+            return DB::table(DB::raw("
+                (
+                    SELECT *,
+                        ROW_NUMBER() OVER (PARTITION BY hotel_code ORDER BY id) as rn
+                    FROM hotel_images
+                    WHERE hotel_code IN (" . implode(',', array_map(fn($c) => "'$c'", $hotelCodes)) . ")
+                ) as t
+            "))
+            ->where('rn', '<=', 5)
+            ->get();
         });
 
         // 5. Cache facilities grouped by hotel code
