@@ -113,7 +113,6 @@ trait HotelBedsTrait
         $firstImages = Cache::rememberForever($firstImagesCacheKey, function () use ($hotelCodes) {
             return DB::table('hotel_images')
                 ->whereIn('hotel_code', $hotelCodes)
-                ->select(['hotel_code', 'path', 'image_type_code'])
                 ->get();
         });
 
