@@ -131,6 +131,7 @@ trait HotelBedsTrait
                 ->whereIn('hotel_code', $hotelCodes)
                 ->orderBy('hotel_code')
                 ->orderBy('order')
+                ->orderBy('visual_order')
                 ->get()
                 ->groupBy('hotel_code')
                 ->map(function ($images) {
