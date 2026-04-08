@@ -6,14 +6,12 @@ use App\Forms\Components\GradientColorPicker;
 use App\Models\Setting;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -47,15 +45,19 @@ class HeroContent extends Page
                 Form::make([
                     Section::make('Home Page Hero Content')
                         ->schema([
-                            TextInput::make('home_title')
+                            RichEditor::make('home_hero_content')
+                                ->toolbarButtons([
+                                    ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                                    ['h1', 'h2', 'h3'],
+                                    ['alignStart', 'alignCenter', 'alignEnd'],
+                                    ['textColor', 'highlight'],
+                                    ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+                                    ['table'],
+                                    ['undo', 'redo'],
+                                ])
                                 ->columnSpan(6)
                                 ->translatable()
-                                ->label('Hero Title'),
-
-                            TextInput::make('home_subtitle')
-                                ->columnSpan(6)
-                                ->translatable()
-                                ->label('Hero Subtitle'),
+                                ->label('Hero Content'),
                         ]),
 
                     Section::make('Home Page Hero Images')

@@ -24,6 +24,7 @@ class Setting extends Model
         'social_media_links',
         'home_title',
         'home_subtitle',
+        'home_hero_content',
         'home_hero_image',
         'home_hero_image_ar',
         'home_hero_image_tablet',
@@ -38,7 +39,7 @@ class Setting extends Model
         'faq_background_color',
     ];
 
-    public $translatable = ['copyright', 'footer_info', 'home_title', 'home_subtitle'];
+    public $translatable = ['copyright', 'footer_info', 'home_title', 'home_subtitle', 'home_hero_content'];
 
     protected function casts(): array
     {

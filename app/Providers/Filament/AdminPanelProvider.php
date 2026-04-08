@@ -20,7 +20,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Outerweb\FilamentTranslatableFields\Filament\Plugins\FilamentTranslatableFieldsPlugin;
+use Outerweb\FilamentTranslatableFields\TranslatableFieldsPlugin;
 use Throwable;
 
 class AdminPanelProvider extends PanelProvider
@@ -58,7 +58,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                FilamentTranslatableFieldsPlugin::make()
+                TranslatableFieldsPlugin::make()
                     ->supportedLocales([
                         'en' => 'English',
                         'ar' => 'Arabic',

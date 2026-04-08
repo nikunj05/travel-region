@@ -44,6 +44,7 @@ class SettingResource extends JsonResource
             'whatsapp_number' => $this->whatsapp_number,
             'home_title' => $this->home_title,
             'home_subtitle' => $this->home_subtitle,
+            'home_hero_content' => $this->home_hero_content,
             'home_hero_image' => $hero_image,
             'home_hero_image_tablet' => $hero_image_tablet,
             'home_hero_image_mobile' => $hero_image_mobile,

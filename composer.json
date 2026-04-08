@@ -8,12 +8,13 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
-        "filament/filament": "^4.0",
+        "filament/filament": "^5.0",
+        "filament/upgrade": "^5.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
-        "outerweb/filament-translatable-fields": "^3.0",
+        "outerweb/filament-translatable-fields": "^4.1",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
