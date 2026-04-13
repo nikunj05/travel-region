@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Forms\Components\GradientColorPicker;
 use App\Models\Setting;
 use BackedEnum;
@@ -45,16 +46,8 @@ class HeroContent extends Page
                 Form::make([
                     Section::make('Home Page Hero Content')
                         ->schema([
-                            RichEditor::make('home_hero_content')
-                                ->toolbarButtons([
-                                    ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
-                                    ['h1', 'h2', 'h3'],
-                                    ['alignStart', 'alignCenter', 'alignEnd'],
-                                    ['textColor', 'highlight'],
-                                    ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
-                                    ['table'],
-                                    ['undo', 'redo'],
-                                ])
+                            TinyEditor::make('home_hero_content')
+                                ->profile('default')
                                 ->columnSpan(6)
                                 ->translatable()
                                 ->label('Hero Content'),
