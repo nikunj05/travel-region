@@ -277,10 +277,10 @@
                                         style="border-collapse:collapse;">
                                         <tr>
                                             <td valign="top" style="padding-right:12px; width: 50%;" colspan="2">
-                                                <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                <span style="font-size:16px; font-weight:700; margin:9px 0 15px; font-family: 'DejaVu Sans';">
                                                     {{ $booking_room->room_name }}
                                                 </span>
-                                                <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                <span style="font-size:16px; font-weight:400; margin:9px 0 15px; font-family: 'DejaVu Sans';">
                                                     ({{ ucwords(strtolower($booking_room->board_name)) }})
                                                 </span>
                                             </td>

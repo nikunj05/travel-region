@@ -48,6 +48,13 @@ class BookingsTable
                     ])
             ])
             ->recordActions([
+                Action::make('downloadInvoice')
+                    ->label('PDF')
+                    ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (Booking $record): string => route('booking.download-pdf', ['order' => $record->order]))
+                    ->openUrlInNewTab(),
+
                 ViewAction::make()
                     ->modalHeading('Booking Details')
                     ->schema([
@@ -122,11 +129,6 @@ class BookingsTable
 
                     ])
                     ->modalWidth('2xl'),
-                Action::make('downloadInvoice')
-                    ->label('PDF')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Booking $record): string => route('booking.download-pdf', ['order' => $record->order]))
-                    ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
