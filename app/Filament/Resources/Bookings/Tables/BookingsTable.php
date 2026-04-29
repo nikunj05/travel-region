@@ -4,10 +4,8 @@ namespace App\Filament\Resources\Bookings\Tables;
 
 use App\Models\Booking;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -48,12 +46,26 @@ class BookingsTable
                     ])
             ])
             ->recordActions([
-                Action::make('downloadInvoice')
+                ActionGroup::make([
+                    Action::make('downloadInvoiceEnglish')
+                        ->label('English')
+                        ->url(fn (Booking $record): string => route('booking.download-pdf', [
+                            'order' => $record->order,
+                            'lang' => 'en',
+                        ]))
+                        ->openUrlInNewTab(),
+                    Action::make('downloadInvoiceArabic')
+                        ->label('Arabic')
+                        ->url(fn (Booking $record): string => route('booking.download-pdf', [
+                            'order' => $record->order,
+                            'lang' => 'ar',
+                        ]))
+                        ->openUrlInNewTab(),
+                ])
                     ->label('PDF')
                     ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Booking $record): string => route('booking.download-pdf', ['order' => $record->order]))
-                    ->openUrlInNewTab(),
+                    ->button(),
 
                 ViewAction::make()
                     ->modalHeading('Booking Details')

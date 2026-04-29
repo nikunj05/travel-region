@@ -326,19 +326,10 @@
                                                         <tr>
                                                             <td valign="middle"
                                                                 style="vertical-align:middle; font-size:14px; padding-top: 15px; width: 100%;">
-                                                                <span style="font-weight:700;">
-                                                                    Cancellation Policy:
-                                                                </span>
+                                                                <span style="font-weight:700;">Cancellation Policy:</span>
+                                                                {{ $booking_room->cancellation_policies->map(fn($p) => \Carbon\Carbon::parse($p->from)->format('d M Y h:i A'))->implode(' | ') }}
                                                             </td>
                                                         </tr>
-                                                        @foreach ($booking_room->cancellation_policies as $cancellation_policy)
-                                                            <tr>
-                                                                <td valign="middle"
-                                                                    style="vertical-align:middle; font-size:14px; padding-top: 10px; width: 100%;">
-                                                                    {{ \Carbon\Carbon::parse($cancellation_policy->from)->format('d M Y h:i A') }}
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
                                                     </table>
                                                 @endif
 

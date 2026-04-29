@@ -91,6 +91,9 @@ class BookingController extends Controller
     public function downloadPdf(Request $request, $order)
     {
         $language = $request->header('Accept-Language', 'en');
+        if ($request->has('lang')) {
+            $language = $request->query('lang');
+        }
         $response = $this->bookingRepository->downloadPdf($order, $language);
 
         if (! $request->expectsJson() && isset($response['data']['pdf_url'])) {
