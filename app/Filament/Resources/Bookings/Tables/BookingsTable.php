@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Bookings\Tables;
 
 use App\Models\Booking;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -121,6 +122,11 @@ class BookingsTable
 
                     ])
                     ->modalWidth('2xl'),
+                Action::make('downloadInvoice')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (Booking $record): string => route('booking.download-pdf', ['order' => $record->order]))
+                    ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

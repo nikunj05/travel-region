@@ -93,6 +93,10 @@ class BookingController extends Controller
         $language = $request->header('Accept-Language', 'en');
         $response = $this->bookingRepository->downloadPdf($order, $language);
 
+        if (! $request->expectsJson() && isset($response['data']['pdf_url'])) {
+            return redirect()->away($response['data']['pdf_url']);
+        }
+
         return $this->sendApiResponse($response['status'], $response['message'], $response['data'] ?? []);
     }
 
