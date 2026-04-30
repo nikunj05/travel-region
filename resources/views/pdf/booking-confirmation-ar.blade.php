@@ -84,11 +84,11 @@
                 </tr>
             </table>
 
-            <main style="color: #0b343a; padding-bottom: 65px;">
+            <main style="color: #0b343a;">
                 <div style="border: 1px solid #dbc8b6; border-radius: 6px;">
                     <table width="100%" cellspacing="0" cellpadding="0"
                         style="
-                padding: 24px 15px 0;
+                padding: 15px 15px 0;
                 border-bottom: 1px solid #dbc8b6;
                 font-family: DejaVu Sans, sans-serif;
                 ">
@@ -301,19 +301,19 @@
                 <div style="text-align:right;">
                     <h4
                         style="
-                    font-size: 18px;
+                    font-size: 14px;
                     font-weight: 700;
-                    margin: 15px 0 15px;
+                    margin: 12px 0 12px;
                     text-align: right;
                 ">
                         الغرف
                     </h4>
 
                     @foreach ($booking->booking_room as $index => $booking_room)
-                        <div style="border:1px solid #dbc8b6; border-radius:6px; margin-bottom:24px; padding:0;">
+                        <div style="border:1px solid #dbc8b6; border-radius:6px; margin-bottom:10px; padding:0;">
                         <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                             <tr>
-                                <td style="padding:15px 15px 24px;" align="right">
+                                <td style="padding:12px 15px 15px;" align="right">
                                     <!-- MAIN CONTENT TABLE -->
                                     <table width="100%" cellspacing="0" cellpadding="0" align="right" style="border-collapse:collapse;">
                                         <tr>
@@ -321,15 +321,15 @@
                                                 <!-- ROOM TITLE -->
                                                 <div
                                                     style="
-                                font-size: 16px;
+                                font-size: 14px;
                                 font-weight: 700;
                                 margin: 9px 0 15px;
                                 text-align: right;
                             ">
-                                                    <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                    <span style="font-size:14px; font-weight:700; margin:9px 0 15px;">
                                                         {{ $booking_room->room_name }}
                                                     </span>
-                                                    <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                    <span style="font-size:14px; font-weight:400; margin:9px 0 15px;">
                                                         ({{ ucwords(strtolower($booking_room->board_name)) }})
                                                     </span>
                                                 </div>
@@ -345,10 +345,10 @@
                                                     @if ($room_booking_detail)
                                                         <tr>
                                                             <td align="right" style="font-size: 14px">
-                                                                <span style="font-size:16px; font-weight:700; margin:9px 0 15px;">
+                                                                <span style="font-size:14px; font-weight:700; margin:9px 0 15px;">
                                                                     الضيوف:
                                                                 </span>
-                                                                <span style="font-size:16px; font-weight:400; margin:9px 0 15px;">
+                                                                <span style="font-size:14px; font-weight:400; margin:9px 0 15px;">
                                                                     {{ $room_booking_detail->first_name }} {{ $room_booking_detail->last_name }}
                                                                 </span>
                                                             </td>
@@ -366,7 +366,7 @@
 
                                                     @if ($booking_room->rate_comments)
                                                         <tr>
-                                                            <td align="right" style="font-size: 12px; padding-top: 8px;">
+                                                            <td align="right" style="font-size: 8px; padding-top: 8px;">
                                                                 <div style="border:1px solid #dbc8b6; border-radius:6px; margin-top:12px;">
                                                                     <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                                                                         <tr>
