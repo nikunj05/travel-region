@@ -62,8 +62,8 @@ class BookingRepository implements BookingInterface
     /**
      * Store a newly created booking in storage.
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param object $request
+     * @return Booking $booking
      */
     public function store($request)
     {
