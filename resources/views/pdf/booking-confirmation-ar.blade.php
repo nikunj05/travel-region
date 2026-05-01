@@ -157,7 +157,7 @@
                                 </p>
 
                                 <p style="font-size: 14px; margin: 0 0 4px 0">
-                                    نوع الإقامة: {{ $booking->accommodation_type }}
+                                    {{ $labels['accommodation_type'] ?? 'نوع الإقامة' }}: {{ $booking->accommodation_type }}
                                 </p>
 
                                 @if ($booking->phone)
@@ -203,7 +203,7 @@
                         font-weight: 700;
                         font-size: 14px;
                         margin-bottom: 6px;">
-                                        الدفع
+                                        {{ $labels['check_out'] ?? 'الدفع' }}
                                     </div>
                                     <div style="font-size: 16px; font-weight: 700">
                                         {{ $booking->check_out->format('D') }}, {{ $booking->check_out->format('d M') }}
@@ -218,7 +218,7 @@
                         font-weight: 700;
                         font-size: 14px;
                         margin-bottom: 6px;">
-                                        تحقق في
+                                        {{ $labels['check_in'] ?? 'تحقق في' }}
                                     </div>
                                     <div style="font-size: 16px; font-weight: 700">
                                         {{ $booking->check_in->format('D') }}, {{ $booking->check_in->format('d M') }}
@@ -235,7 +235,7 @@
                             padding-right: 6px;
                             font-weight: 700;
                             font-size: 15px;">
-                                                {{ $booking->nights }} ليالي الإقامة
+                                                {{ $booking->nights }} {{ $labels['nights'] ?? 'ليالي الإقامة' }}
                                             </td>
                                             <td align="right" style="width: 20px">
                                                 <img src="{{ public_path('images/calendar.svg') }}" width="20px" />
@@ -256,7 +256,7 @@
                         margin-bottom: 6px;
                       ">
                                         {{ $booking->primary_details->first_name . ' ' . $booking->primary_details->last_name }}
-                                        <span style="font-size: 14px; font-weight: 400">(الضيف الرئيسي)</span>
+                                        <span style="font-size: 14px; font-weight: 400">({{ $labels['primary_guest'] ?? 'الضيف الرئيسي' }})</span>
                                     </div>
 
                                     <div style="margin-top: 8px; font-size: 14px">
@@ -270,13 +270,13 @@
                                         <tr>
                                             <td align="right" style="padding-right: 6px">
                                                 <div style="font-weight: 700; font-size: 15px">
-                                                    {{ $booking->adults + $booking->children }} الضيوف
+                                                    {{ $booking->adults + $booking->children }} {{ $labels['guests'] ?? 'الضيوف' }}
                                                 </div>
                                                 <div style="font-size: 13px; margin-top: 4px">
-                                                    ({{ $booking->adults }} الكبار &amp; {{ $booking->children }} أطفال)
+                                                    ({{ $booking->adults }} {{ $labels['adults'] ?? 'الكبار' }} &amp; {{ $booking->children }} {{ $labels['children'] ?? 'أطفال' }})
                                                     @if($booking->child_age)
                                                         <br>
-                                                        <strong>السنوات:</strong>
+                                                        <strong>{{ $labels['ages'] ?? 'السنوات:' }}</strong>
                                                         @foreach(json_decode($booking->child_age) as $age)
                                                             {{ $age }}@if(!$loop->last), @endif
                                                         @endforeach
@@ -304,7 +304,7 @@
                                         <tr>
                                             <td align="right"
                                                 style="padding-right: 6px;font-weight: 700;font-size: 17px;">
-                                                {{ $booking->rooms }} غرفة
+                                                {{ $booking->rooms }} {{ $labels['room'] ?? 'غرفة' }}
                                             </td>
                                             <td align="right" style="width: 20px">
                                                 <img src="{{ public_path('images/door.svg') }}" width="20px" />
@@ -327,7 +327,7 @@
                     margin: 8px 0 8px;
                     text-align: right;
                 ">
-                        الغرف
+                        {{ $labels['rooms_title'] ?? 'الغرف' }}
                     </h4>
 
                     @foreach ($booking->booking_room as $index => $booking_room)
@@ -340,6 +340,12 @@
                                         <tr>
                                             <td valign="top" align="right">
                                                 <!-- ROOM TITLE -->
+                                                @php
+                                                    $boardName = $booking_room->board_name;
+                                                    if ($boardName && !preg_match('/[\x{0600}-\x{06FF}]/u', $boardName)) {
+                                                        $boardName = ucwords(strtolower($boardName));
+                                                    }
+                                                @endphp
                                                 <div
                                                     style="
                                 font-size: 14px;
@@ -351,7 +357,7 @@
                                                         {{ $booking_room->room_name }}
                                                     </span>
                                                     <span style="font-size:14px; font-weight:400; margin:6px 0 10px;">
-                                                        ({{ ucwords(strtolower($booking_room->board_name)) }})
+                                                        ({{ $boardName }})
                                                     </span>
                                                 </div>
 
@@ -367,7 +373,7 @@
                                                         <tr>
                                                             <td align="right" style="font-size: 14px">
                                                                 <span style="font-size:14px; font-weight:700; margin:9px 0 15px;">
-                                                                    الضيوف:
+                                                                    {{ $labels['room_guests'] ?? 'الضيوف:' }}
                                                                 </span>
                                                                 <span style="font-size:14px; font-weight:400; margin:9px 0 15px;">
                                                                     {{ $room_booking_detail->first_name }} {{ $room_booking_detail->last_name }}
@@ -379,7 +385,7 @@
                                                     @if ($booking_room->cancellation_policies->count() > 0)
                                                         <tr>
                                                             <td align="right" style="font-size: 14px; padding-top: 6px">
-                                                                <strong>سياسة الإلغاء:</strong>
+                                                                <strong>{{ $labels['cancellation_policy'] ?? 'سياسة الإلغاء:' }}</strong>
                                                                 {{ $booking_room->cancellation_policies->map(fn($p) => \Carbon\Carbon::parse($p->from)->format('d M Y h:i A'))->implode(' | ') }}
                                                             </td>
                                                         </tr>
@@ -392,7 +398,7 @@
                                                                     <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                                                                         <tr>
                                                                             <td align="right" style="font-size:12px; padding:10px 10px 0 10px;">
-                                                                                <strong>ملاحظات</strong>
+                                                                                <strong>{{ $labels['notes'] ?? 'ملاحظات' }}</strong>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>

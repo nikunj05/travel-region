@@ -228,6 +228,7 @@ class BookingRepository implements BookingInterface
     public function downloadPdf($order, $language = 'en')
     {
         $booking = Booking::where('order', $order)->firstOrFail();
+        $labels  = [];
 
         // File name & full path
         $fileName = 'booking-confirmation-' . $booking->id . '.pdf';
@@ -242,50 +243,83 @@ class BookingRepository implements BookingInterface
             $this->bookingReconfirmation($booking->booking_reference);
         }
 
+        if ($language === 'ar') {
+            // Shape all dynamic Arabic fields from DB
+            $booking->hotel_name         = $this->shapeArabic($booking->hotel_name);
+            $booking->address            = $this->shapeArabic($booking->address);
+            $booking->accommodation_type = $this->shapeArabic($booking->accommodation_type);
+            $booking->supplier_name      = $this->shapeArabic($booking->supplier_name);
+
+            foreach ($booking->booking_room as $room) {
+                $room->room_name     = $this->shapeArabic($room->room_name);
+                $room->board_name    = $this->shapeArabic($room->board_name);
+                $room->rate_comments = $this->shapeArabic($room->rate_comments);
+            }
+
+            // Shape all hardcoded Arabic labels
+            // NOTE: check_in/check_out labels corrected to proper Arabic
+            $labels = array_map(
+                fn($label) => $this->shapeArabic($label),
+                [
+                    'accommodation_type'  => 'نوع الإقامة',
+                    'check_in'            => 'تسجيل الوصول',
+                    'check_out'           => 'تسجيل المغادرة',
+                    'nights'              => 'ليالي الإقامة',
+                    'primary_guest'       => 'الضيف الرئيسي',
+                    'guests'              => 'الضيوف',
+                    'adults'              => 'الكبار',
+                    'children'            => 'أطفال',
+                    'ages'                => 'السنوات:',
+                    'room'                => 'غرفة',
+                    'rooms_title'         => 'الغرف',
+                    'room_guests'         => 'الضيوف:',
+                    'cancellation_policy' => 'سياسة الإلغاء:',
+                    'notes'               => 'ملاحظات',
+                    // Phone type labels (used inline in blade)
+                    'phone_booking'       => 'رقم هاتف الحجز',
+                    'phone_hotel'         => 'هاتف الفندق',
+                    'phone_management'    => 'هاتف الإدارة',
+                    'phone_fax'           => 'رقم الفاكس',
+                    // Header labels
+                    'booking_id'          => 'معرف الحجز:',
+                    'hotel_ref'           => 'مرجع أسرة الفندق:',
+                    'booked_on'           => 'تم الحجز على',
+                    'booking_voucher'     => 'قسيمة الحجز',
+                    // Footer
+                    'footer_payment'      => 'الدفع من خلال',
+                    'footer_agent'        => 'الذي يعمل كوكيل لشركة تشغيل الخدمة، يمكن تقديم تفاصيلها عند الطلب.',
+                    'footer_vat'          => 'الرقم الضريبي:',
+                    'footer_ref'          => 'المرجع:',
+                ]
+            );
+        }
+
         $data = [
             'booking' => $booking,
+            'labels'  => $labels,
         ];
 
-        // Shape all Arabic text fields
-        $booking->hotel_name        = $this->shapeArabic($booking->hotel_name);
-        $booking->address           = $this->shapeArabic($booking->address);
-        $booking->accommodation_type = $this->shapeArabic($booking->accommodation_type);
-        $booking->supplier_name     = $this->shapeArabic($booking->supplier_name);
+        $view = $language === 'ar'
+            ? 'pdf.booking-confirmation-ar'
+            : 'pdf.booking-confirmation';
 
-        foreach ($booking->booking_room as $room) {
-            $room->room_name   = $this->shapeArabic($room->room_name);
-            $room->board_name  = $this->shapeArabic($room->board_name);
-            $room->rate_comments = $this->shapeArabic($room->rate_comments);
-        }
-
-        // Generate PDF
-        if ($language === 'ar') {
-            $pdf = Pdf::loadView('pdf.booking-confirmation-ar', $data)->setOptions([
+        $pdf = Pdf::loadView($view, $data)
+            ->setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled'      => true,   // ← allows local file:// font loading
                 'defaultFont'          => 'Amiri',
                 'chroot'               => public_path(), // ← lets DomPDF access public/
-            ])->setPaper('A4', 'portrait');
-        } else {
-            $pdf = Pdf::loadView('pdf.booking-confirmation', $data)->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled'      => true,   // ← allows local file:// font loading
-                'defaultFont'          => 'Amiri',
-                'chroot'               => public_path(), // ← lets DomPDF access public/
-            ])->setPaper('A4', 'portrait');
-        }
+                'isFontSubsettingEnabled' => true,
+            ])
+            ->setPaper('A4', 'portrait');
 
-        // Save to public folder
         $pdf->save($filePath);
 
-        // Public URL
-        $publicUrl = url('booking-pdfs/' . $fileName);
-
         return [
-            'status' => true,
+            'status'  => true,
             'message' => __('messages.booking.pdf.generated'),
-            'data' => [
-                'pdf_url' => $publicUrl,
+            'data'    => [
+                'pdf_url' => url('booking-pdfs/' . $fileName),
             ],
         ];
     }
