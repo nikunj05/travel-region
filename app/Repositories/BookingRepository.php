@@ -10,6 +10,7 @@ use App\Models\BookingRoom;
 use App\Models\BookingRoomCancellationPolicy;
 use App\Models\Coupon;
 use App\Traits\HotelBedsTrait;
+use ArPHP\I18N\Arabic;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Exception;
@@ -241,14 +242,36 @@ class BookingRepository implements BookingInterface
             $this->bookingReconfirmation($booking->booking_reference);
         }
 
+        $data = [
+            'booking' => $booking,
+        ];
+
+        // Shape all Arabic text fields
+        $booking->hotel_name        = $this->shapeArabic($booking->hotel_name);
+        $booking->address           = $this->shapeArabic($booking->address);
+        $booking->accommodation_type = $this->shapeArabic($booking->accommodation_type);
+        $booking->supplier_name     = $this->shapeArabic($booking->supplier_name);
+
+        foreach ($booking->booking_room as $room) {
+            $room->room_name   = $this->shapeArabic($room->room_name);
+            $room->board_name  = $this->shapeArabic($room->board_name);
+            $room->rate_comments = $this->shapeArabic($room->rate_comments);
+        }
+
         // Generate PDF
         if ($language === 'ar') {
-            $pdf = Pdf::loadView('pdf.booking-confirmation-ar', [
-                'booking' => $booking
+            $pdf = Pdf::loadView('pdf.booking-confirmation-ar', $data)->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled'      => true,   // ← allows local file:// font loading
+                'defaultFont'          => 'Amiri',
+                'chroot'               => public_path(), // ← lets DomPDF access public/
             ])->setPaper('A4', 'portrait');
         } else {
-            $pdf = Pdf::loadView('pdf.booking-confirmation', [
-                'booking' => $booking
+            $pdf = Pdf::loadView('pdf.booking-confirmation', $data)->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled'      => true,   // ← allows local file:// font loading
+                'defaultFont'          => 'Amiri',
+                'chroot'               => public_path(), // ← lets DomPDF access public/
             ])->setPaper('A4', 'portrait');
         }
 
@@ -265,6 +288,21 @@ class BookingRepository implements BookingInterface
                 'pdf_url' => $publicUrl,
             ],
         ];
+    }
+
+    private function shapeArabic($text): string
+    {
+        if (empty($text)) return $text;
+
+        $arabic = new Arabic();
+        $p = $arabic->arIdentify($text);
+
+        for ($i = count($p) - 1; $i >= 0; $i -= 2) {
+            $utf8ar = $arabic->utf8Glyphs(substr($text, $p[$i-1], $p[$i] - $p[$i-1]));
+            $text = substr_replace($text, $utf8ar, $p[$i-1], $p[$i] - $p[$i-1]);
+        }
+
+        return $text;
     }
 
     public function showCancellationPolicies($order)
