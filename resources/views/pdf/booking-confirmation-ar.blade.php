@@ -371,7 +371,7 @@
                                 <tr>
                                     <td align="right" style="padding-bottom:12px">
                                         <span style="font-size:24px; font-weight:700; color:#f6be00;">
-                                            Travel Region Support
+                                            Travel Regions Support
                                         </span>
                                     </td>
                                 </tr>

@@ -30,7 +30,7 @@ class ContactUsJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to('info@travelregions.sa', 'Travel Region Support')
+        Mail::to('info@travelregions.sa', 'Travel Regions Support')
             ->send(new ContactUsMail($this->name, $this->email, $this->message));
     }
 }

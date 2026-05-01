@@ -32,7 +32,7 @@ class ContactUsMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Travel Region - Contact Us')
+        return $this->subject('Travel Regions - Contact Us')
             ->from($this->email, $this->name)
             ->markdown('mail.contact_us', [
                 'name' => $this->name,

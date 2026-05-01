@@ -28,7 +28,7 @@ class WelcomeEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Welcome To Travel Region')
+        return $this->subject('Welcome To Travel Regions')
             ->markdown('mail.welcome', [
                 'user' => $this->user,
             ]);
