@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\BookingCancellationAdminJob;
 use App\Http\Requests\BookingRequest;
 use App\Http\Requests\CouponCodeRequest;
 use App\Http\Resources\BookingResource;
@@ -125,6 +126,8 @@ class BookingController extends Controller
                 'status' => 'cancelled',
             ]);
         }
+
+        dispatch(new BookingCancellationAdminJob($booking->fresh()));
 
         return $this->sendApiResponse(true, __('messages.booking.cancelled'), [
             'booking' => new BookingResource($booking->fresh()),
