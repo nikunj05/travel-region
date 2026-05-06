@@ -137,6 +137,11 @@ class BookingsTable
                                     ->size('lg')
                                     ->color('success')
                                     ->columnSpan(6),
+
+                                TextEntry::make('created_at')
+                                    ->label('Created At')
+                                    ->icon('heroicon-o-calendar')
+                                    ->columnSpan(6),
                             ]),
 
                     ])
