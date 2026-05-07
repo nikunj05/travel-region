@@ -637,6 +637,44 @@ trait HotelBedsTrait
     }
 
     /**
+     * Calculate HotelBeds booking tolerance dynamically.
+     *
+     * Uses booking margin ((payable - net) / net) as a safe upper bound and keeps
+     * values inside HotelBeds-friendly limits.
+     */
+    private function calculateBookingTolerance(array $data): float
+    {
+        $defaultTolerance = 5.0;
+        $minTolerance = 1.0;
+        $maxTolerance = 25.0;
+
+        // Allow explicit override from caller when needed.
+        if (isset($data['tolerance']) && is_numeric($data['tolerance'])) {
+            return max($minTolerance, min($maxTolerance, (float) $data['tolerance']));
+        }
+
+        if (empty($data['booking_id'])) {
+            return $defaultTolerance;
+        }
+
+        $booking = Booking::select(['id', 'total_price', 'discount_amount', 'net_total_price'])
+            ->find($data['booking_id']);
+
+        if (!$booking || empty($booking->net_total_price) || (float) $booking->net_total_price <= 0) {
+            return $defaultTolerance;
+        }
+
+        $payableAmount = max(0, ((float) $booking->total_price) - ((float) ($booking->discount_amount ?? 0)));
+        $netAmount = (float) $booking->net_total_price;
+
+        // Increase tolerance only when there is positive margin.
+        $marginPercent = (($payableAmount - $netAmount) / $netAmount) * 100;
+        $dynamicTolerance = $defaultTolerance + max(0, $marginPercent);
+
+        return max($minTolerance, min($maxTolerance, round($dynamicTolerance, 2)));
+    }
+
+    /**
      * Confirm booking with HotelBeds API
      *
      * @param array $data
@@ -647,6 +685,8 @@ trait HotelBedsTrait
         try {
             // Ensure URLs are initialized
             $this->initializeUrls();
+
+            $tolerance = $this->calculateBookingTolerance($data);
 
             $apiKey = env('HOTEL_BEDS_API_KEY');
             $url = "{$this->baseUrl}/hotel-api/{$this->version}/bookings";
@@ -667,7 +707,7 @@ trait HotelBedsTrait
                 'rooms' => $data['rate_keys'],
                 'clientReference' => $data['order'],
                 'remark' => $data['remark'] ?? null,
-                'tolerance' => 5,
+                'tolerance' => $tolerance,
             ]);
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             Log::error('HotelBeds Booking Confirmation Connection Failed', [
@@ -675,7 +715,8 @@ trait HotelBedsTrait
                 'url' => $url ?? 'URL not set',
                 'baseUrl' => $this->baseUrl ?? 'BaseURL not set',
                 'order' => $data['order'] ?? 'N/A',
-                'booking_id' => $data['booking_id'] ?? 'N/A'
+                'booking_id' => $data['booking_id'] ?? 'N/A',
+                'tolerance' => $tolerance ?? null,
             ]);
 
             return [
@@ -688,7 +729,8 @@ trait HotelBedsTrait
                 'url' => $url ?? 'URL not set',
                 'baseUrl' => $this->baseUrl ?? 'BaseURL not set',
                 'order' => $data['order'] ?? 'N/A',
-                'booking_id' => $data['booking_id'] ?? 'N/A'
+                'booking_id' => $data['booking_id'] ?? 'N/A',
+                'tolerance' => $tolerance ?? null,
             ]);
 
             return [
