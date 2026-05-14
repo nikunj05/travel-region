@@ -13,6 +13,7 @@ use App\Models\Hotel;
 use App\Models\HotelImage;
 use App\Traits\HotelBedsTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class HotelController extends Controller
@@ -33,6 +34,10 @@ class HotelController extends Controller
             return $this->sendApiResponse(true, __('messages.hotel.fetched'), $response);
 
         } catch (\Exception $e) {
+            Log::error('Error fetching hotels: ' . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
             return $this->sendApiResponse(false, __('messages.catch'), [
                 'error' => $e->getMessage()
             ], 500);
