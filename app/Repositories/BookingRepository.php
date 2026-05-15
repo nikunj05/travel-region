@@ -15,6 +15,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class BookingRepository implements BookingInterface
@@ -228,7 +229,8 @@ class BookingRepository implements BookingInterface
     public function downloadPdf($order, $language = 'en')
     {
         $booking = Booking::where('order', $order)->firstOrFail();
-        $labels  = [];
+        $labels = [];
+        $statusMapAr = [];
 
         // File name & full path
         $fileName = 'booking-confirmation-' . $booking->id . '.pdf';
@@ -243,71 +245,124 @@ class BookingRepository implements BookingInterface
             $this->bookingReconfirmation($booking->booking_reference);
         }
 
-        if ($language === 'ar') {
-            // Shape all dynamic Arabic fields from DB
-            $booking->hotel_name         = $this->shapeArabic($booking->hotel_name);
-            $booking->address            = $this->shapeArabic($booking->address);
-            $booking->accommodation_type = $this->shapeArabic($booking->accommodation_type);
-            $booking->supplier_name      = $this->shapeArabic($booking->supplier_name);
+        // Shape all dynamic Arabic fields from DB.
+        // Voucher is bilingual, so this should run regardless of language flag.
+        $booking->hotel_name         = $this->shapeArabic($booking->hotel_name);
+        $booking->address            = $this->shapeArabic($booking->address);
+        $booking->accommodation_type = $this->shapeArabic($booking->accommodation_type);
+        $booking->supplier_name      = $this->shapeArabic($booking->supplier_name);
+        $booking->special_requests   = $this->shapeArabic($booking->special_requests);
 
-            foreach ($booking->booking_room as $room) {
-                $room->room_name     = $this->shapeArabic($room->room_name);
-                $room->board_name    = $this->shapeArabic($room->board_name);
-                $room->rate_comments = $this->shapeArabic($room->rate_comments);
-            }
+        if ($booking->primary_details) {
+            $booking->primary_details->first_name = $this->shapeArabic($booking->primary_details->first_name);
+            $booking->primary_details->last_name = $this->shapeArabic($booking->primary_details->last_name);
+        }
 
-            // Shape all hardcoded Arabic labels
-            // NOTE: check_in/check_out labels corrected to proper Arabic
-            $labels = array_map(
-                fn($label) => $this->shapeArabic($label),
+        foreach ($booking->booking_room as $room) {
+            $room->room_name     = $this->shapeArabic($room->room_name);
+            $room->board_name    = $this->shapeArabic($room->board_name);
+            $room->rate_comments = $this->shapeArabic($room->rate_comments);
+        }
+
+        $labels = [
+            'voucher_title_ar' => 'قسيمة حجز فندق',
+            'hotel_information_ar' => 'معلومات الفندق',
+            'booking_status_ar' => 'حالة الحجز',
+            'lead_guest_ar' => 'اسم النزيل الرئيس',
+            'stay_details_ar' => 'تفاصيل الاقامة',
+            'check_in_ar' => 'تاريخ الوصول',
+            'check_out_ar' => 'تاريخ المغادرة',
+            'rooms_count_ar' => 'عدد الغرف',
+            'room_ar' => 'غرفة',
+            'services_ar' => 'الخدمات',
+            'breakfast_included_ar' => 'شامل الافطار',
+            'free_wifi_ar' => 'انترنت مجاني',
+            'room_details_ar' => 'تفاصيل الغرفة',
+            'room_type_ar' => 'نوع الغرفة',
+            'occupancy_ar' => 'عدد الضيوف',
+            'adult_ar' => 'بالغ',
+            'child_ar' => 'طفل',
+            'years_ar' => 'سنوات',
+            'cancellation_policy_ar' => 'سياسة الإلغاء',
+            'refundable_until_ar' => 'الغاء مسترد حتى تاريخ',
+            'additional_info_ar' => 'معلومات اضافية',
+            'contact_help_ar' => 'للمساعدة أثناء إقامتكم يرجى التواصل معنا.',
+            'footer_wish_ar' => 'نتمنى لكم اقامة ممتعة و رحلة سعيدة',
+            'status_confirmed' => 'مؤكد',
+            'status_cancelled' => 'ملغي',
+            'status_pending' => 'قيد الانتظار',
+        ];
+
+        $labels = array_map(fn($label) => $this->shapeArabic($label), $labels);
+
+        $statusMapAr = [
+            'confirmed' => $labels['status_confirmed'],
+            'cancelled' => $labels['status_cancelled'],
+            'pending' => $labels['status_pending'],
+        ];
+
+        $selectedFacilities = [
+            'Internet access',
+            'Minibar',
+            'Restaurant',
+            'Wheelchair-accessible',
+            '24-hour reception',
+            'Outdoor swimming pool',
+            'Gym',
+            'Valet parking',
+            'Spa centre',
+            'Bathroom',
+            'Shower',
+            'Hot tub',
+            'Private Pool',
+            'TV',
+            'Connecting rooms',
+        ];
+
+        $facilityRows = DB::table('hotel_facilities as hf')
+            ->join('facilities as f', 'f.code', '=', 'hf.facility_code')
+            ->where('hf.hotel_code', $booking->hotel_code)
+            ->whereNotNull('f.name')
+            ->whereIn('f.name', $selectedFacilities)
+            ->orderBy('hf.id')
+            ->limit(2)
+            ->get(['f.name']);
+
+        $services = $facilityRows->values()->map(function ($facility, $index) {
+            $serviceName = trim((string) ($facility->name ?? ''));
+
+            return [
+                'en' => $serviceName,
+            ];
+        })->all();
+
+        if (count($services) < 2) {
+            $fallbackServices = [
                 [
-                    'accommodation_type'  => 'نوع الإقامة',
-                    'check_in'            => 'تسجيل الوصول',
-                    'check_out'           => 'تسجيل المغادرة',
-                    'nights'              => 'ليالي الإقامة',
-                    'primary_guest'       => 'الضيف الرئيسي',
-                    'guests'              => 'الضيوف',
-                    'adults'              => 'الكبار',
-                    'children'            => 'أطفال',
-                    'ages'                => 'السنوات:',
-                    'room'                => 'غرفة',
-                    'rooms_title'         => 'الغرف',
-                    'room_guests'         => 'الضيوف:',
-                    'cancellation_policy' => 'سياسة الإلغاء:',
-                    'notes'               => 'ملاحظات',
-                    // Phone type labels (used inline in blade)
-                    'phone_booking'       => 'رقم هاتف الحجز',
-                    'phone_hotel'         => 'هاتف الفندق',
-                    'phone_management'    => 'هاتف الإدارة',
-                    'phone_fax'           => 'رقم الفاكس',
-                    // Header labels
-                    'booking_id'          => 'معرف الحجز:',
-                    'hotel_ref'           => 'مرجع أسرة الفندق:',
-                    'booked_on'           => 'تم الحجز على',
-                    'booking_voucher'     => 'قسيمة الحجز',
-                    // Footer
-                    'footer_payment'      => 'الدفع من خلال',
-                    'footer_agent'        => 'الذي يعمل كوكيل لشركة تشغيل الخدمة، يمكن تقديم تفاصيلها عند الطلب.',
-                    'footer_vat'          => 'الرقم الضريبي:',
-                    'footer_ref'          => 'المرجع:',
-                ]
-            );
+                    'en' => 'Breakfast',
+                ],
+                [
+                    'en' => 'Free WiFi',
+                ],
+            ];
+
+            $services = array_slice(array_merge($services, array_slice($fallbackServices, count($services))), 0, 2);
         }
 
         $data = [
             'booking' => $booking,
-            'labels'  => $labels,
+            'labels' => $labels,
+            'statusMapAr' => $statusMapAr,
+            'services' => $services,
         ];
 
-        $view = $language === 'ar'
-            ? 'pdf.booking-confirmation-ar'
-            : 'pdf.booking-confirmation';
+        $view = 'pdf.booking-voucher';
 
         $pdf = Pdf::loadView($view, $data)
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled'      => true,   // ← allows local file:// font loading
-                'defaultFont'          => 'Amiri',
+                'defaultFont'          => 'Montserrat',
                 'chroot'               => public_path(), // ← lets DomPDF access public/
                 'isFontSubsettingEnabled' => true,
             ])
@@ -326,7 +381,7 @@ class BookingRepository implements BookingInterface
 
     private function shapeArabic($text): string
     {
-        if (empty($text)) return $text;
+        if (empty($text)) return (string) $text;
 
         $arabic = new Arabic();
         $p = $arabic->arIdentify($text);
