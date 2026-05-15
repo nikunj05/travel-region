@@ -46,23 +46,13 @@ class BookingsTable
                     ])
             ])
             ->recordActions([
-                ActionGroup::make([
-                    Action::make('downloadInvoiceEnglish')
-                        ->label('English')
-                        ->url(fn (Booking $record): string => route('booking.download-pdf', [
-                            'order' => $record->order,
-                            'lang' => 'en',
-                        ]))
-                        ->openUrlInNewTab(),
-                    Action::make('downloadInvoiceArabic')
-                        ->label('Arabic')
-                        ->url(fn (Booking $record): string => route('booking.download-pdf', [
-                            'order' => $record->order,
-                            'lang' => 'ar',
-                        ]))
-                        ->openUrlInNewTab(),
-                ])
+                Action::make('downloadPdf')
                     ->label('PDF')
+                    ->url(fn (Booking $record): string => route('booking.download-pdf', [
+                        'order' => $record->order,
+                        'lang' => 'en',
+                    ]))
+                    ->openUrlInNewTab()
                     ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->button(),
