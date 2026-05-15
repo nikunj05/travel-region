@@ -67,7 +67,21 @@
     @php
         $labels = $labels ?? [];
         $primaryGuest = $booking->primary_details;
-        $firstRoom = $booking->booking_room->first();
+        $bookingRooms = $booking->booking_room ?? collect();
+        $roomCount = $bookingRooms->count() > 0 ? $bookingRooms->count() : (int) ($booking->rooms ?? 0);
+
+        // Group rooms by type and count occurrences
+        $roomsByType = [];
+        foreach ($bookingRooms as $room) {
+            $roomType = trim((string) ($room->room_name ?? ''));
+            if ($roomType !== '') {
+                if (!isset($roomsByType[$roomType])) {
+                    $roomsByType[$roomType] = 0;
+                }
+                $roomsByType[$roomType]++;
+            }
+        }
+        $firstRoom = $bookingRooms->first();
 
         $starsCount = 0;
         if (!empty($booking->category)) {
@@ -92,11 +106,29 @@
         }
 
         $cancellationDate = optional(
-            $booking->booking_room
+            $bookingRooms
                 ->flatMap(fn($room) => $room->cancellation_policies)
                 ->sortBy('from')
                 ->first()
         )->from;
+
+        $patterns = [
+            '/[\s\.\-–—]*\bLGTBIQ\s*friendly\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bLGBTQ\s*friendly\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bLGBT\s*friendly\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bGay\s*friendly\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bLGBTQ\s*amigable\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bLGBTQ\s*freundlich\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bLGBTQ\s*amical\b[\s\.\-–—]*/i',
+            '/[\s\.\-–—]*\bLGBTQ\s*友好\b[\s\.\-–—]*/u',
+            '/[\s\.\-–—]*\bLGTBIQ\b[\s\.\-–—]*/i',
+        ];
+
+        $rateComments = trim((string) ($firstRoom?->rate_comments ?? ''));
+        $rateComments = preg_replace($patterns, ' ', $rateComments);
+        $rateComments = preg_replace('/\s{2,}/', ' ', (string) $rateComments);
+        $rateComments = trim((string) $rateComments, " \t\n\r\0\x0B,;:-");
+        $rateComments = $rateComments !== '' ? $rateComments : '-';
     @endphp
 
     <div style="width: 100%; margin: 0; background: #fff;">
@@ -369,7 +401,7 @@
                             <div style="font-size: 15px; color: #000; font-weight: 500; margin-bottom: 2px;">ROOM</div>
                             <div
                                 style="font-size: 24px; font-weight: 700; color: #132358; margin-bottom: 5px; line-height: 1;">
-                                {{ $booking->rooms }}</div>
+                                {{ $roomCount > 0 ? $roomCount : '-' }}</div>
 
                             <table>
                                 <tr>
@@ -457,9 +489,18 @@
                                         <div
                                             style="font-size: 14px; color: #000; font-weight: 500; line-height: 1; margin-top: 2px;">
                                             ROOM TYPE</div>
-                                        <div
-                                            style="font-size: 17px; color: #132358; font-weight: 700; margin-top: 7px; line-height: 1;">
-                                            {{ $firstRoom->room_name ?? '-' }}</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"
+                                        style="padding-left: 12px; text-align: center; vertical-align: top; width: 100%;">
+                                        @forelse ($roomsByType as $roomType => $count)
+                                            <div style="font-size: {{ $loop->first ? '17' : '13' }}px; color: #132358; font-weight: {{ $loop->first ? '700' : '600' }}; margin-top: {{ $loop->first ? '7' : '5' }}px; line-height: 1.2; word-wrap: break-word;">
+                                                {{ $count }} X {{ strtoupper($roomType) }}
+                                            </div>
+                                        @empty
+                                            <div style="font-size: 17px; color: #132358; font-weight: 700; margin-top: 7px; line-height: 1;">-</div>
+                                        @endforelse
                                     </td>
                                 </tr>
                             </table>
@@ -581,7 +622,7 @@
                                 </div>
                             </div>
                             <div style="margin-top: 8px; font-size: 12px; color: #052757; line-height: 1.3; text-align: center;">
-                                {{ $booking->special_requests ?: '-' }}
+                                {{ $rateComments }}
                             </div>
                         </td>
 
